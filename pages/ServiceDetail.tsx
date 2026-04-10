@@ -135,7 +135,7 @@ const ServiceDetail: React.FC = () => {
           </div>
                   <Link
                     to="/contact"
-                    className="bg-green-800 text-white px-6 sm:px-8 py-4 sm:py-4 rounded-full font-bold hover:bg-lime-600 transition-colors text-lg sm:text-base text-center"
+                    className="bg-green-800 text-white px-6  ml-4 sm:px-8 py-4 sm:py-4 rounded-full font-bold hover:bg-lime-600 transition-colors text-lg sm:text-base text-center"
                   >
                     Book Service
                   </Link>
@@ -146,7 +146,7 @@ const ServiceDetail: React.FC = () => {
                       const whatsappUrl = `https://api.whatsapp.com/send?phone=+23277840105&text=${encodeURIComponent(message)}`;
                       window.open(whatsappUrl, '_blank');
                     }}
-                    className="bg-white border border-lime-200 text-slate-700 px-6 sm:px-8 py-4 sm:py-4 rounded-full font-bold hover:bg-lime-200 transition-colors text-lg sm:text-base"
+                    className="bg-white ml-6 border border-lime-200 text-slate-700 px-6 sm:px-8 py-4 sm:py-4 rounded-full font-bold hover:bg-lime-200 transition-colors text-lg sm:text-base"
                   >
                     Inquire Now
                   </button>

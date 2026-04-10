@@ -12,7 +12,7 @@ const WhatsAppWidget: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[60]">
+    <div className="fixed bottom-6 right-6 z-60">
       {isOpen && (
         <div className="absolute bottom-16 right-0 w-72 bg-white rounded-2xl shadow-2xl overflow-hidden animate-bounce-in border border-slate-100">
           <div className="bg-lime-600 p-4 text-white flex items-center justify-between">
@@ -52,7 +52,7 @@ const WhatsAppWidget: React.FC = () => {
       )}
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="w-14 h-14 bg-lime-600 text-white rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform active:scale-95 text-3xl"
+        className="w-14 h-14 bg-lime-600 text-white rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform active:scale-95 text-3xl infinity-animate"
       >
         <i className={isOpen ? 'ri-close-line' : 'ri-whatsapp-line'}></i>
       </button>
