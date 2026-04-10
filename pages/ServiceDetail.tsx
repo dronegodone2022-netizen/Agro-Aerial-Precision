@@ -96,15 +96,15 @@ const ServiceDetail: React.FC = () => {
       <div className="relative z-10 h-full text-white mt-4 py-12 pb-2  text-center">
         <AnimatedSection className="container mx-auto mt-10 sm:mt-5 lg:mt-20 px-3 sm:px-4" animationType="unveil-scale" delay={0.05}>
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4">{displayCategory} Solutions</h1>
-          <p className="text-slate-300 sm:text-slate-400 text-sm  lg:text-2xl sm:text-base max-w-xl mx-auto">
+          <p className="text-slate-300 sm:text-slate-400 text-lg mb-8  lg:text-2xl sm:text-base max-w-xl mx-auto">
             Explore our professional aerial solutions tailored for {displayCategory.toLowerCase()} operations.
           </p>
         </AnimatedSection>
       </div>
 
-      <AnimatedSection className="container mx-auto px-3 lg:mb-12 xl:mb-12 sm:px-4 mt-12 sm:mt-40 sm:pt lg:pt-0 xl:pt-24" animationType="unveil" delay={0.1}>
+      <AnimatedSection className="container mx-auto px-3 lg:mb-12 xl:mb-12 sm:px-4 mt-12 sm:mt-8 lg:pt-0 xl:pt-24" animationType="unveil" delay={0.1}>
         {filteredServices.length > 0 ? (
-          <div className="grid grid-cols-1 gap-8 sm:gap-10 lg:gap-15 max-w-5xl lg:mt-12 mx-auto">
+          <div className="grid grid-cols-1 gap-8 sm:gap-10 lg:gap-15 max-w-5xl mb-8 lg:mt-12 mx-auto">
             {filteredServices.map((service, idx) => (
               <div key={service.id} className={`flex flex-col lg:flex-row gap-6 sm:gap-8 lg:gap-12 items-center ${idx % 2 !== 0 ? 'lg:flex-row-reverse' : ''}`}>
                 <div className="w-full lg:w-1/2">
@@ -113,7 +113,7 @@ const ServiceDetail: React.FC = () => {
                 <div className="w-full lg:w-1/2 space-y-4 sm:space-y-6">
                   <span className="text-green-800 font-bold uppercase tracking-widest text-xs sm:text-sm">{service.category}</span>
                   <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">{service.title}</h2>
-                 <div className="text-slate-600 text-base sm:text-lg leading-relaxed space-y-3">
+                 <div className="text-slate-600 text-lg sm:text-lg leading-relaxed space-y-3">
               {(service.longDescription || service.description).split('\n\n').map((section, idx) => (
                 <div key={idx}>
                   {section.includes('•') ? (
@@ -135,7 +135,7 @@ const ServiceDetail: React.FC = () => {
           </div>
                   <Link
                     to="/contact"
-                    className="bg-green-800 text-white px-6 sm:px-8 py-4 sm:py-4 rounded-full font-bold hover:bg-lime-600 transition-colors text-sm sm:text-base text-center"
+                    className="bg-green-800 text-white px-6 sm:px-8 py-4 sm:py-4 rounded-full font-bold hover:bg-lime-600 transition-colors text-lg sm:text-base text-center"
                   >
                     Book Service
                   </Link>
@@ -146,7 +146,7 @@ const ServiceDetail: React.FC = () => {
                       const whatsappUrl = `https://api.whatsapp.com/send?phone=+23277840105&text=${encodeURIComponent(message)}`;
                       window.open(whatsappUrl, '_blank');
                     }}
-                    className="bg-white border border-lime-200 text-slate-700 px-6 sm:px-8 py-4 sm:py-4 rounded-full font-bold hover:bg-lime-200 transition-colors text-sm sm:text-base"
+                    className="bg-white border border-lime-200 text-slate-700 px-6 sm:px-8 py-4 sm:py-4 rounded-full font-bold hover:bg-lime-200 transition-colors text-lg sm:text-base"
                   >
                     Inquire Now
                   </button>

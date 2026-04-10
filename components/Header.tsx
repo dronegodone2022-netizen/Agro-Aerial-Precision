@@ -105,7 +105,7 @@ const Header: React.FC = () => {
               {link.dropdown && (
                 <div className="pl-4 flex flex-col gap-2 border-l-2 border-lime-400">
                   {link.dropdown.map((sub) => (
-                    <Link key={sub.path} to={sub.path} onClick={() => setIsOpen(false)} className="text-slate-600 hover:text-green-600">
+                    <Link key={sub.path} to={sub.path} onClick={() => setIsOpen(false)} className="text-lg text-slate-600 hover:text-green-600">
                       {sub.label}
                     </Link>
                   ))}

@@ -42,7 +42,7 @@ const About: React.FC = () => {
                   <h2 className="text-4xl font-bold mb-6">
                     Pioneering Aerial Intelligence in Sierra Leone
                   </h2>
-                  <p className="text-slate-600 mb-6 leading-relaxed">
+                  <p className="text-slate-600 mb-6 leading-relaxed text-lg">
                     Agro Aerial Precision was founded by Sylvester Abu Gbamoi in
                     2023 to bridge the gap between traditional farming practices
                     and the rapidly evolving digital age. We saw a future where
@@ -120,8 +120,8 @@ const About: React.FC = () => {
               return fullContent;
             })()}
 
-            <div className="mt-12 grid grid-cols-3 gap-8">
-              <div className="p-4 bg-lime-200 rounded-2xl">
+            <div className="mt-12  grid grid-cols-3 gap-6 ">
+              <div className="p-4 bg-lime-200  rounded-2xl">
                 <h3 className="text-3xl font-bold text-green-800 mb-1">500+</h3>
                 <p className="text-sm font-semibold text-slate-500">
                   Clients Helped
@@ -195,7 +195,7 @@ const About: React.FC = () => {
       <section className="py-24 bg-slate-50">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl font-bold mb-4">Meet Our Management</h2>
-          <p className="text-slate-500 mb-16 max-w-2xl mx-auto">
+          <p className="text-slate-500 text-lg mb-16 max-w-2xl mx-auto">
             Dedicated professionals who bring a wealth of experience and
             expertise to drive our mission forward.
           </p>
@@ -216,10 +216,10 @@ const About: React.FC = () => {
 
                 {/* Content Container */}
                 <div className="p-4 sm:p-4 md:p-6 lg:p-8">
-                  <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-1">
+                  <h3 className="text-2xl sm:text-xl font-bold text-slate-900 mb-1">
                     {member.name}
                   </h3>
-                  <p className="text-green-800 font-semibold text-xs sm:text-sm mb-4">
+                  <p className="text-green-800 font-semibold text-lg sm:text-sm mb-4">
                     {member.role}
                   </p>
 
@@ -231,7 +231,7 @@ const About: React.FC = () => {
                         href={link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-8 sm:w-9 h-8 sm:h-9 rounded-lg bg-lime-300 text-green-900 flex items-center justify-center hover:bg-green-800 hover:text-white transition-colors duration-300"
+                        className="w-8 sm:w-9 h-8 sm:h-9  rounded-lg bg-lime-300 text-green-900 flex items-center justify-center hover:bg-green-800 hover:text-white transition-colors duration-300"
                       >
                         <i
                           className={`ri-${platform}-fill text-sm sm:text-base`}

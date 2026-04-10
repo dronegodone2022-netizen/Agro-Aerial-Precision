@@ -30,11 +30,11 @@ const Home: React.FC = () => {
         {/* Content */}
         <AnimatedSection className="container mx-auto pt-16 px-4 sm:px-6 md:px-8 relative z-10 text-white w-full" animationType="unveil-scale" delay={0.1}>
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-2xl mx-4 sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight mb-4 sm:mb-6 md:mb-8">
+            <h1 className="text-2xl mx-4 sm:text-3xl md:text-4xl lg:text-5xl/tight xl:text-6xl/tight font-bold leading-tight mb-4 sm:mb-6 md:mb-4">
               Using Drones For Precision Agriculture Solutions to Empower <span className="text-lime-500 sm:text-lime-600">Modern Industries.</span>
             </h1>
-            <p className="text-xs mx-40 sm:text-sm md:text-base lg:text-lg text-slate-300 mb-6 sm:mb-10 md:mb-20 leading-relaxed">
-              We are committed to providing farmers,construction,mining companies, and other industries with advanced drone technology and data analytics tools tailored to their specific needs.
+            <p className="text-slate-300 sm:text-slate-400 text-base sm:text-lg md:text-lg lg:text-xl mb-8 max-w-xl mx-auto">
+              We are committed to providing farmers, construction, mining companies, and other industries with advanced drone technology and data analytics tools tailored to their specific needs.
             </p>
             <div className="flex flex-col pt-12 md:pt-4 sm:flex-row gap-4 md:flex-row sm:gap-5 justify-center items-center">
               <Link
@@ -58,11 +58,19 @@ const Home: React.FC = () => {
       <section className="py-4 bg-lime-100 border-b border-slate-300">
         <AnimatedSection className="container mx-auto px-4 lg:mb-2 sm:px-4" animationType="unveil" delay={0.05}>
           <h2 className="text-center text-slate-400 font-semibold uppercase tracking-widest text-sm mb-10">Trusted By Industry Leaders</h2>
-          <div className="flex justify-center items-center gap-12 opacity-90">
-            <div className="w-12 hover:scale-110 transition-transform duration-300"><img src={aiphLogo} alt="AIPH industry partner logo displayed as trusted brand endorsement" /></div>
-            <div className="w-24 hover:scale-110 transition-transform duration-300"><img src={brand2Logo} alt="trust logos" /></div>
-            <div className="w-12 hover:scale-110 transition-transform duration-300"><img src={brand3Logo} alt="trust logos" /></div>
-            <div className="w-24 hover:scale-110 transition-transform duration-300"><img src={bayerLogo} alt="trust logos" /></div>
+          <div className="flex justify-center items-center gap-6 sm:gap-8 md:gap-10 lg:gap-12 opacity-90 flex-wrap">
+            <div className="w-12 sm:w-12 md:w-14 lg:w-16 hover:scale-110 transition-transform duration-300">
+              <img src={aiphLogo} alt="AIPH industry partner logo displayed as trusted brand endorsement" />
+            </div>
+            <div className="w-16 sm:w-20 md:w-24 lg:w-28 hover:scale-110 transition-transform duration-300">
+              <img src={brand2Logo} alt="trust logos" />
+            </div>
+            <div className="w-12 sm:w-12 md:w-14 lg:w-16 hover:scale-110 transition-transform duration-300">
+              <img src={brand3Logo} alt="trust logos" />
+            </div>
+            <div className="w-20 sm:w-20 md:w-24 lg:w-28 hover:scale-110 transition-transform duration-300">
+              <img src={bayerLogo} alt="trust logos" />
+            </div>
           </div>
         </AnimatedSection>
       </section>
