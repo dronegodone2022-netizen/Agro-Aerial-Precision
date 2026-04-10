@@ -1,94 +1,16 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agro Aerial Precision - Drone Solutions</title>
-    <link rel="icon" type="image/png" href="./public/favicon.png">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <style>
-      body {
-        font-family: 'Jost', sans-serif;
-        margin: 10rem;
-      }
-      html {
-        scroll-behavior: smooth;
-      }
-      .dropdown-animate {
-        transition: all 0.3s ease-in-out;
-      }
-      /* Hide scrollbar for webkit browsers */
-     
-     
-      /* Hide scrollbar for Firefox */
-      * {
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-      }
-      
-      /* Unveil animations */
-      .unveil,
-      .unveil-left,
-      .unveil-right,
-      .unveil-scale {
-        opacity: 0;
-        transition: opacity 0.9s ease-out, transform 0.9s ease-out;
-        will-change: opacity, transform;
-      }
-      
-      .unveil {
-        transform: translateY(30px);
-      }
-      
-      .unveil.animate {
-        opacity: 1;
-        transform: translateY(0);
-      }
-      
-      .unveil-left {
-        transform: translateX(-30px);
-      }
-      
-      .unveil-left.animate {
-        opacity: 1;
-        transform: translateX(0);
-      }
-      
-      .unveil-right {
-        transform: translateX(30px);
-      }
-      
-      .unveil-right.animate {
-        opacity: 1;
-        transform: translateX(0);
-      }
-      
-      .unveil-scale {
-        transform: scale(0.92);
-      }
-      
-      .unveil-scale.animate {
-        opacity: 1;
-        transform: scale(1);
-      }
-    </style>
-<script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^19.2.4",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "react/": "https://esm.sh/react@^19.2.4/",
-    "react-router-dom": "https://esm.sh/react-router-dom@^7.13.0"
-  }
-}
-</script>
-<link rel="stylesheet" href="./index.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agro Aerial Precision - Drone Solutions</title>
+  <link rel="icon" type="image/png" href="./src/assets/favicon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
+  <link rel="stylesheet" href="./index.css" />
 </head>
 <body class="bg-slate-50 text-slate-900">
-    <div id="root"></div>
-<script type="module" src="./index.tsx"></script>
+  <div id="root"></div>
+  <script type="module" src="./index.tsx"></script>
 </body>
 </html>

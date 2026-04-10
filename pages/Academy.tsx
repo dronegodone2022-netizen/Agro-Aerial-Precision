@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import AnimatedSection from "../components/AnimatedSection";
 
+const asset = (file: string) => new URL(`../src/assets/${file}`, import.meta.url).href;
+
 const courses = [
   {
     id: "drone-basics",
     title: "Drone Basics for Field Operators Certification",
-    image: "public/train.jpg",
+    image: asset('train.jpg'),
     summary:
       "Introduction to drone types, regulations, safety checks, and manual operation for agriculture use.",
     outline: [
@@ -20,7 +22,7 @@ const courses = [
   {
     id: "precision-spraying",
     title: "Precision Aerial Spraying Certification",
-    image: "public/spray1.jpg",
+    image: asset('spray1.jpg'),
     summary:
       "Advanced spraying techniques, nozzle calibration, chemical safety, and precision application planning.",
     outline: [
@@ -35,7 +37,7 @@ const courses = [
   {
     id: "mapping-analytics",
     title: "Drone Aerial Mapping Survey Certification",
-    image: "public/mmap.jpeg",
+    image: asset('mmap.jpeg'),
     summary:
       "Comprehensive aerial survey and mapping with orthomosaic, DEM, and crop health layers for smarter field planning.",
     outline: [
@@ -50,7 +52,7 @@ const courses = [
   {
     id: "data-processing",
     title: "Drone Data Processing & Analysis Certification",
-    image: "public/proce.png",
+    image: asset('proce.png'),
     summary:
       "Transform raw aerial capture into actionable farm intelligence with mapping, analytics, and report-driven decision support.",
     outline: [
@@ -112,15 +114,15 @@ const Academy: React.FC = () => {
 
   return (
     <div className="overflow-x-hidden">
-      <section className="relative min-h-[60vh] bg-[url('public/train.jpg')] bg-cover bg-center bg-no-repeat opacity-80 sm:opacity-80">
-        <div className="absolute inset-0 bg-gradient-to-b from-green-900 via-slate-900/70 to-lime-900/40" />
+      <section className="relative min-h-[60vh] bg-cover bg-center bg-no-repeat opacity-80 sm:opacity-80" style={{ backgroundImage: `url(${asset('train.jpg')})` }}>
+        <div className="absolute inset-0 bg-linear-to-b from-green-900 via-slate-900/70 to-lime-900/40" />
         <AnimatedSection className="relative container mx-auto px-4 sm:px-6 md:px-8 py-20 sm:py-24 text-white text-center flex flex-col items-center justify-center" animationType="unveil-scale" delay={0.1}>
             <div className="text-center mt-20 sm:mt-24 flex flex-col items-center justify-center">
                 <h1 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4 mx-4 sm:mx-12 md:mx-24 max-w-5xl">
                     “Enhance Your Career With Professional UAV Data Collection &
                     Analysis Training.”
                 </h1>
-                <p className="max-w-xl sm:max-w-2xl text-sm sm:text-base md:text-lg/2 mb-8  text-slate-200">
+                <p className="max-w-xl sm:max-w-2xl text-sm sm:text-base md:text-lg/6 mb-8  text-slate-200">
                     Join our AA-PRECISION ACODEMY to gain hands-on experience in drone
                     operations, precision spraying, aerial mapping, and data analytics
                     for agriculture and environmental monitoring. Our expert-led courses are designed to equip you

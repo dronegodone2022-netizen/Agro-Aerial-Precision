@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { NAV_LINKS } from '../constants';
 
+const logoSrc = new URL('../src/assets/AAPLOGO.png', import.meta.url).href;
+
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -31,7 +33,7 @@ const Header: React.FC = () => {
 
   return (
     <header className={`fixed  top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-lime-600 shadow-md py-2': 'bg-transparent py-4'} text-white`}>
-      <nav className="container mx-auto px-4 py-2 flex items-center justify-between">
+      <nav className="container h-12 mx-auto px-4 py-2 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2" onClick={(e) => {
           if (location.pathname === '/') {
             e.preventDefault();
@@ -39,10 +41,10 @@ const Header: React.FC = () => {
           }
           setIsOpen(false);
         }}>
-        <div className="w-32 h-70 overflow-hidden flex-shrink-0">
-          <img src="public/AAPLOGO.png" alt="Agro Aerial Precision company logo with stylized text and agricultural drone imagery, representing precision aerial services for farming" className={`min-w-32 h-full object-contain ${scrolled ? 'brightness-0 invert' : ''}`} />
+        <div className="w-32 h-70 overflow-hidden shrink-0">
+          <img src={logoSrc} alt="Agro Aerial Precision company logo with stylized text and agricultural drone imagery, representing precision aerial services for farming" className={`min-w-32 h-full object-contain ${scrolled ? 'brightness-0 invert' : ''}`} />
         </div>
-          <span className={`font-bold text-sm sm:text-base sm:hidden lg:text-xl hidden sm:block ${scrolled ? 'text-slate-900' : 'text-lime-300'}`}>
+          <span className={`font-bold text-sm sm:text-base lg:text-xl hidden sm:block ${scrolled ? 'text-slate-900' : 'text-lime-300'}`}>
       
           </span>
         </Link>

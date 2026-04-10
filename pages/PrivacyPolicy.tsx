@@ -3,7 +3,7 @@ import AnimatedSection from "../components/AnimatedSection";
 
 export default function PrivacyPolicy() {
   return (
-    <AnimatedSection className="px-12 py-28 max-w-4xl mx-auto text-gray-800" animationType="unveil" delay={0.05}>
+    <AnimatedSection className="px-12 py-28 max-w-4xl mx-auto text-gray-800 bg-gray-200" animationType="unveil" delay={0.05}>
       <h1 className="text-3xl font-bold mb-6">Privacy Policy</h1>
       <p className="mb-4">Last Updated: 04/01/2024</p>
 

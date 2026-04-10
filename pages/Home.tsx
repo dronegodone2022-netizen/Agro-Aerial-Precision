@@ -4,6 +4,14 @@ import { Link } from 'react-router-dom';
 import { SERVICES, TESTIMONIALS } from '../constants';
 import AnimatedSection from '../components/AnimatedSection';
 
+const asset = (file: string) => new URL(`../src/assets/${file}`, import.meta.url).href;
+const serviceBg = asset('service bg.jpg');
+const aiphLogo = asset('aiph.jpeg');
+const brand2Logo = asset('brand 2.png');
+const brand3Logo = asset('brand 3.png');
+const bayerLogo = asset('bayer.png');
+const agricVideo = asset('agric-video.mp4');
+
 const Home: React.FC = () => {
   return (
     <div className="overflow-x-hidden">
@@ -12,21 +20,21 @@ const Home: React.FC = () => {
         {/* Background Image */}
         <div className="absolute inset-0 bg-slate-900">
           <img
-            src="public/service bg.jpg"
+            src={serviceBg}
             alt="Hero Background"
             className="w-full h-full object-cover opacity-40 sm:opacity-50"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/70 to-slate-900/40"></div>
+          <div className="absolute inset-0 bg-linear-to-r from-slate-900 via-slate-900/70 to-slate-900/40"></div>
         </div>
 
         {/* Content */}
         <AnimatedSection className="container mx-auto pt-16 px-4 sm:px-6 md:px-8 relative z-10 text-white w-full" animationType="unveil-scale" delay={0.1}>
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-2xl mx-4 sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight mb-4 sm:mb-6 md:mb-8">
-              Using Drones For Precision Agriculture Solutions to Empower <span className="text-lime-500 sm:text-lime-600">Modern Farmers.</span>
+              Using Drones For Precision Agriculture Solutions to Empower <span className="text-lime-500 sm:text-lime-600">Modern Industries.</span>
             </h1>
             <p className="text-xs mx-40 sm:text-sm md:text-base lg:text-lg text-slate-300 mb-6 sm:mb-10 md:mb-20 leading-relaxed">
-              We are committed to providing farmers with advanced drone technology and data analytics tools tailored to their specific needs.
+              We are committed to providing farmers,construction,mining companies, and other industries with advanced drone technology and data analytics tools tailored to their specific needs.
             </p>
             <div className="flex flex-col pt-12 md:pt-4 sm:flex-row gap-4 md:flex-row sm:gap-5 justify-center items-center">
               <Link
@@ -51,10 +59,10 @@ const Home: React.FC = () => {
         <AnimatedSection className="container mx-auto px-4 lg:mb-2 sm:px-4" animationType="unveil" delay={0.05}>
           <h2 className="text-center text-slate-400 font-semibold uppercase tracking-widest text-sm mb-10">Trusted By Industry Leaders</h2>
           <div className="flex justify-center items-center gap-12 opacity-90">
-            <div className="w-12 hover:scale-110 transition-transform duration-300"><img src="public/aiph.jpeg" alt="AIPH industry partner logo displayed as trusted brand endorsement" /></div>
-            <div className="w-24 hover:scale-110 transition-transform duration-300"><img src="public/brand 2.png" alt="trust logos" /></div>
-            <div className="w-12 hover:scale-110 transition-transform duration-300"><img src="public/brand 3.png" alt="trust logos" /></div>
-            <div className="w-24 hover:scale-110 transition-transform duration-300"><img src="public/bayer.png" alt="trust logos" /></div>
+            <div className="w-12 hover:scale-110 transition-transform duration-300"><img src={aiphLogo} alt="AIPH industry partner logo displayed as trusted brand endorsement" /></div>
+            <div className="w-24 hover:scale-110 transition-transform duration-300"><img src={brand2Logo} alt="trust logos" /></div>
+            <div className="w-12 hover:scale-110 transition-transform duration-300"><img src={brand3Logo} alt="trust logos" /></div>
+            <div className="w-24 hover:scale-110 transition-transform duration-300"><img src={bayerLogo} alt="trust logos" /></div>
           </div>
         </AnimatedSection>
       </section>
@@ -107,21 +115,21 @@ const Home: React.FC = () => {
               <h2 className="text-4xl font-bold mb-8">How It Works</h2>
               <div className="space-y-10">
                 <AnimatedSection className="flex gap-6" animationType="unveil-left" delay={0.2}>
-                  <div className="flex-shrink-0 w-12 h-12 bg-lime-600 rounded-xl flex items-center justify-center font-bold text-xl">1</div>
+                  <div className="shrink-0 w-12 h-12 bg-lime-600 rounded-xl flex items-center justify-center font-bold text-xl">1</div>
                   <div>
                     <h4 className="text-xl font-bold mb-2">Precision Crop Management</h4>
                     <p className="text-slate-400">Embracing a data-driven revolution that leverages advanced technologies to enhance productivity and sustainability.</p>
                   </div>
                 </AnimatedSection>
                 <AnimatedSection className="flex gap-6" animationType="unveil-left" delay={0.4}>
-                  <div className="flex-shrink-0 w-12 h-12 bg-lime-600 rounded-xl flex items-center justify-center font-bold text-xl">2</div>
+                  <div className="shrink-0 w-12 h-12 bg-lime-600 rounded-xl flex items-center justify-center font-bold text-xl">2</div>
                   <div>
                     <h4 className="text-xl font-bold mb-2">Data Collection & Analytics</h4>
                     <p className="text-slate-400">Redefining modern agriculture by enabling farmers to harness unprecedented levels of precision and insight.</p>
                   </div>
                 </AnimatedSection>
                 <AnimatedSection className="flex gap-6" animationType="unveil-left" delay={0.6}>
-                  <div className="flex-shrink-0 w-12 h-12 bg-lime-600 rounded-xl flex items-center justify-center font-bold text-xl">3</div>
+                  <div className="shrink-0 w-12 h-12 bg-lime-600 rounded-xl flex items-center justify-center font-bold text-xl">3</div>
                   <div>
                     <h4 className="text-xl font-bold mb-2">Transforming Data into Action</h4>
                     <p className="text-slate-400">Our high-resolution maps and specialized sensors turn raw aerial imagery into actionable management plans.</p>
@@ -131,7 +139,7 @@ const Home: React.FC = () => {
             </div>
             <AnimatedSection className="relative" animationType="unveil-right" delay={0.3}>
               <video
-                src="public/agric-video.mp4"
+                src={agricVideo}
                 className="rounded-3xl shadow-2xl border-2 border-lime-600"
                 autoPlay
                 loop
@@ -166,7 +174,7 @@ const Home: React.FC = () => {
               >
                 <i className="ri-double-quotes-l text-3xl sm:text-4xl text-lime-400 absolute top-4 sm:top-6 right-4 sm:right-6"></i>
                 <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-                  <img src={t.avatar} alt={t.name} className="w-12 sm:w-14 h-12 sm:h-14 rounded-full border-2 border-lime-500 p-0.5 flex-shrink-0" />
+                  <img src={t.avatar} alt={t.name} className="w-12 sm:w-14 h-12 sm:h-14 rounded-full border-2 border-lime-500 p-0.5 shrink-0" />
                   <div className="min-w-0">
                     <h5 className="font-bold text-slate-900 text-sm sm:text-base truncate">{t.name}</h5>
                     <p className="text-xs sm:text-sm text-slate-500 truncate">{t.company}</p>

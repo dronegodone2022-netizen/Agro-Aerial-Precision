@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import AnimatedSection from '../components/AnimatedSection';
 
+const contactBg = new URL('../src/assets/service bg.jpg', import.meta.url).href;
+
 const Contact: React.FC = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -42,11 +44,11 @@ const Contact: React.FC = () => {
       <section className="bg-green-800 text-white h-[50dvh]  py-20 text-center">
            <div className="absolute inset-0 bg-slate-900 h-[70dvh]">
           <img 
-            src="public/service bg.jpg" 
+            src={contactBg} 
             alt="Hero Background" 
             className="w-full h-[70dvh]  object-cover opacity-40 sm:opacity-50" 
           />
-          <div className="h-[70dvh] absolute inset-0 bg-gradient-to-r from-slate-900 via-lime-900/70 to-slate-900/40"></div>
+          <div className="h-[70dvh] absolute inset-0 bg-linear-to-r from-slate-900 via-lime-900/70 to-slate-900/40"></div>
         </div>
 
 
@@ -59,7 +61,7 @@ const Contact: React.FC = () => {
       </section>
 
       {/* Contact Content */}
-      <section className="py-24">
+      <section className="py-12">
         <AnimatedSection className="container mx-auto px-4" animationType="unveil" delay={0.05}>
           <div className="max-w-6xl mx-auto bg-white rounded-3xl shadow-2xl lg:mt-20 overflow-hidden grid grid-cols-1 lg:grid-cols-5">
             
@@ -165,6 +167,7 @@ const Contact: React.FC = () => {
                     <option>Agriculture Services</option>
                     <option>Industrial Inspection</option>
                     <option>Partnership</option>
+                    <option>Training Programs</option>
                   </select>
                 </div>
 

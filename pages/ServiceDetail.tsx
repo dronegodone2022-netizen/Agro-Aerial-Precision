@@ -4,6 +4,8 @@ import { useParams, Link } from 'react-router-dom';
 import { SERVICES } from '../constants';
 import AnimatedSection from '../components/AnimatedSection';
 
+const serviceDetailVideo = new URL('../src/assets/home-videoBG1.mp4', import.meta.url).href;
+
 const ServiceDetail: React.FC = () => {
   const { category } = useParams<{ category: string }>();
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
@@ -81,14 +83,14 @@ const ServiceDetail: React.FC = () => {
     <div className="pt-16 sm:pt-20  min-h-screen bg-slate-50 pb-16 sm:pb-20"> 
       <div className="absolute inset-0  bg-slate-900 h-[50dvh] sm:h-[50dvh] md:h-[80dvh] lg:h-[70dvh] overflow-hidden">
         <video
-          src="public/home-videoBG1.mp4"
+          src={serviceDetailVideo}
           autoPlay
           loop
           muted
           playsInline
           className="w-full h-[50dvh] sm:h-[50dvh] md:h-[80dvh] lg:h-[70dvh] object-cover opacity-30"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-green-900 via-slate-900/60 to-transparent opacity-50"></div>
+        <div className="absolute inset-0 bg-linear-to-b from-green-900 via-slate-900/60 to-transparent opacity-50"></div>
       </div>
       
       <div className="relative z-10 h-full text-white mt-4 py-12 pb-2  text-center">
@@ -119,7 +121,7 @@ const ServiceDetail: React.FC = () => {
                       {section.split('\n').map((line, lineIdx) => (
                         line.trim() && (
                           <li key={lineIdx} className="flex items-start gap-3">
-                            <i className="ri-checkbox-circle-fill text-lime-500 font-bold text-2xl flex-shrink-0 mt-0.5"></i>
+                            <i className="ri-checkbox-circle-fill text-lime-500 font-bold text-2xl shrink-0 mt-0.5"></i>
                             <span>{line.replace('•', '').trim()}</span>
                           </li>
                         )
@@ -131,22 +133,23 @@ const ServiceDetail: React.FC = () => {
                 </div>
               ))}
           </div>
-                  <button 
-                    onClick={() => {
-                      const message = `Hi, I'm interested in booking the ${service.title} service for ${displayCategory}. Please provide me with more details and pricing information.`;
-                      const whatsappUrl = `https://api.whatsapp.com/send?phone=+23277840105&text=${encodeURIComponent(message)}`;
-                      const mailtoUrl = `mailto:info@aaprecision.llc?subject=${encodeURIComponent(`Service Booking Request - ${service.title}`)}&body=${encodeURIComponent(`Hello Agro Aerial Precision team,\n\n${message}\n\nI look forward to hearing from you.\n\nBest regards`)}`;
-                      
-                      window.open(whatsappUrl, '_blank');
-                      window.location.href = mailtoUrl;
-                    }}
-                    className="bg-green-800 text-white px-6 sm:px-8 py-4 sm:py-4 rounded-full font-bold hover:bg-lime-600 transition-colors text-sm sm:text-base"
+                  <Link
+                    to="/contact"
+                    className="bg-green-800 text-white px-6 sm:px-8 py-4 sm:py-4 rounded-full font-bold hover:bg-lime-600 transition-colors text-sm sm:text-base text-center"
                   >
                     Book Service
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const message = `Hi, I'm inquiring about the ${service.title} service for ${displayCategory}. Please provide me with more details and pricing information.`;
+                      const whatsappUrl = `https://api.whatsapp.com/send?phone=+23277840105&text=${encodeURIComponent(message)}`;
+                      window.open(whatsappUrl, '_blank');
+                    }}
+                    className="bg-white border border-lime-200 text-slate-700 px-6 sm:px-8 py-4 sm:py-4 rounded-full font-bold hover:bg-lime-200 transition-colors text-sm sm:text-base"
+                  >
+                    Inquire Now
                   </button>
-                    <Link to="/contact" className="bg-white border border-lime-200 text-slate-700 px-6 sm:px-8 py-4 sm:py-4 rounded-full font-bold hover:bg-lime-200 transition-colors text-center text-sm sm:text-base">
-                      Inquire Now
-                    </Link>
                   </div>
                 </div>
               
@@ -175,7 +178,7 @@ const ServiceDetail: React.FC = () => {
                { title: 'Enhanced Safety', text: 'Mitigate human risk by deploying drones into hazardous or hard-to-reach areas.', icon: 'ri-shield-check-line' },
                { title: 'Data Accuracy', text: 'Make decisions based on sub-centimeter accuracy data and high-res imaging.', icon: 'ri-radar-line' },
              ].map(benefit => (
-               <div key={benefit.title} className="bg-lime-200/5 p-10 rounded-3xl border border-white/10 hover:border-lime-500/50 transition-all">
+               <div key={benefit.title} className="bg-lime-800/30 p-10 rounded-3xl border border-white/10 hover:border-lime-500/50 transition-all">
                  <i className={`${benefit.icon} text-5xl text-lime-500 mb-6 block`}></i>
                  <h4 className="text-2xl font-bold mb-4">{benefit.title}</h4>
                  <p className="text-slate-400 leading-relaxed">{benefit.text}</p>
@@ -193,7 +196,7 @@ const ServiceDetail: React.FC = () => {
               <p className="text-slate-600 text-sm sm:text-base lg:text-lg">Find answers to common questions about our {displayCategory.toLowerCase()} solutions.</p>
             </div>
 
-            <div className="space-y-3 sm:space-y-4 bg-green-50">
+            <div className=" space-y-3 sm:space-y-4 bg-green-50">
               {categoryFAQs.map((faq, idx) => (
                 <div key={idx} className="border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-all">
                   <button
@@ -201,7 +204,7 @@ const ServiceDetail: React.FC = () => {
                     className="w-full flex items-center justify-between p-4 sm:p-6 text-left hover:bg-lime-200 transition-colors"
                   >
                     <span className="text-base sm:text-lg font-bold text-green-900">{faq.question}</span>
-                    <span className={`flex-shrink-0 ml-3 sm:ml-4 text-green-800 text-xl sm:text-2xl transition-transform duration-300 ${openFAQ === idx ? 'rotate-180' : ''}`}>
+                    <span className={`shrink-0 ml-3 sm:ml-4 text-green-800 text-xl sm:text-2xl transition-transform duration-300 ${openFAQ === idx ? 'rotate-180' : ''}`}>
                       <i className="ri-arrow-down-s-line"></i>
                     </span>
                   </button>
@@ -215,7 +218,7 @@ const ServiceDetail: React.FC = () => {
               ))}
             </div>
 
-            <div className="mt-10 sm:mt-12 lg:mt-16 p-6 sm:p-8 bg-gradient-to-b from-green-100 to-lime-50 rounded-lg border border-lime-200">
+            <div className="mt-10 sm:mt-12 lg:mt-16 p-6 sm:p-8 bg-linear-to-b from-green-100 to-lime-50 rounded-lg border border-lime-200">
               <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2">Still have questions?</h3>
               <p className="text-slate-600 text-sm sm:text-base mb-4">Don't find the answer you're looking for? Please contact our team.</p>
               <Link to="/contact" className="inline-block bg-green-800 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full font-bold hover:bg-lime-600 transition-colors text-sm sm:text-base">

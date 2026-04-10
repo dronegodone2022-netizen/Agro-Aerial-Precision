@@ -2,6 +2,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+const footerLogo = new URL('../src/assets/AAP LOGO w.png', import.meta.url).href;
+
 const Footer: React.FC = () => {
   return (
     <footer className="bg-green-950 text-slate-300 pt-16 pb-8">
@@ -9,7 +11,7 @@ const Footer: React.FC = () => {
         {/* About */}
         <div>
           <div className="flex items-center flex-col gap-2 mb-6">
-            <img src="public/AAP LOGO w.png" alt="Agro Aerial Precision Logo" className="w-12 " />
+            <img src={footerLogo} alt="Agro Aerial Precision Logo" className="w-12 " />
             <span className="font-bold text-white text-xl">Agro Aerial Precision</span>
           </div>
           <p className="text-slate-400 mb-6">
