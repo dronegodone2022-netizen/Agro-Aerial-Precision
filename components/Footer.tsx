@@ -1,10 +1,50 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const footerLogo = new URL('../src/assets/AAP LOGO w.png', import.meta.url).href;
 
 const Footer: React.FC = () => {
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const [subscribeMessage, setSubscribeMessage] = useState('');
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubscribing(true);
+    setSubscribeMessage('');
+
+    try {
+      // MailerLite API configuration
+      const API_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI0IiwianRpIjoiNWUwMjhjMDVlODhlZjBlZjhjYzRhNWZiNWU3ZTRhNjE5ZjM4NjE4YzZhNTZjYjEzZmI2N2EwNTEzMDMwOGVkZjVmZDliNDE0OTcwZTVhYjUiLCJpYXQiOjE3NzU5MjExMjguMjk3MTQ3LCJuYmYiOjE3NzU5MjExMjguMjk3MTUsImV4cCI6NDkzMTU5NDcyOC4yODk1MDEsInN1YiI6IjIyNTk3NzAiLCJzY29wZXMiOltdfQ.m_Uofcvm2HPxpO9iB3c_JscROpYBsvXTxgOdnPhJGh34gfrBQj92OG1CUdDDlAulEjbV6kjke6LkD-S7v8Ya-EeoYLk2wPzfPg4QGWcE0AY8Oy6ijuFFeczLO15mtjd2jUpp6ZZLuSoN-k_jvOKyJF6peZ2czoV6RPG0Kqkw8lEBIaGpSiMe7uys9hfoafZDay0uvqIZWjE-c43syG7fO-EhcRxu6S6lGe0L69Zt2-uwTWvZHKPHXi77f3eepiKzw2Xq_NWqVjS--C4MbBmHru4uEZVOrEFzRGZGTl9pJc4TIpA5CTnknsCZIBT7iW3BuVuh1uZVe-sol9q92vh-88YZrWEy2gN3BhKyM9g6z6NecOdk7a5naJXbW4g-5V2GMlSvZpDPf-lYzLLVZ0ihAs1Cisl6nVM80NObHLWvHdJKtYTDaXJeBkui5RP6k_U7fpUGiIlhw9ccX0gY30UeGLVedX0nbmOtblv527SHZHoUGCXHKLxRLQqUwE0IFue0DbAEZEpaDTv6EanrxuZc6zGa899HRmAKRwyiGyvm3LlffiyE5_fhvdWkRMkGqLX35fhjUe6MlsTrQ7gwlXvcmGOoMZQQNdZo5WP_yWjGa1h7crDxYffbIL8Pm2JZ89yCa4l6V9KoW2JaHDcCZfM--dPRficnpyQLNtmtWBoZQzI'; // Replace with your MailerLite API key
+      const GROUP_ID = '184458818206303987'; // Replace with your MailerLite group ID
+
+      const response = await fetch('https://connect.mailerlite.com/api/subscribers', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${API_KEY}`
+        },
+        body: JSON.stringify({
+          email: newsletterEmail,
+          groups: [GROUP_ID]
+        })
+      });
+
+      if (response.ok) {
+        setSubscribeMessage('Successfully subscribed! Welcome to our newsletter.');
+        setNewsletterEmail('');
+      } else {
+        const errorData = await response.json();
+        setSubscribeMessage(errorData.message || 'Failed to subscribe. Please try again.');
+      }
+    } catch (error) {
+      setSubscribeMessage('Network error. Please try again later.');
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
   return (
     <footer className="bg-green-950 text-slate-300 pt-16 pb-8">
       <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
@@ -58,21 +98,27 @@ const Footer: React.FC = () => {
         <div>
           <h4 className="text-white font-bold text-lg mb-6">Newsletter</h4>
           <p className="text-sm text-slate-400 mb-4">Stay updated with the latest in precision agriculture.</p>
-          <form action="https://api.web3forms.com/submit" method="POST" className="flex flex-col gap-2">
-            <input type="hidden" name="access_key" value="1fa81b81-fe27-43db-a1f6-5aa4821adfaa" />
+          <form onSubmit={handleNewsletterSubmit} className="flex flex-col gap-2">
             <input
               type="email"
-              name="email"
+              value={newsletterEmail}
+              onChange={(e) => setNewsletterEmail(e.target.value)}
               placeholder="Enter your email"
               required
               className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-lime-500"
             />
             <button
               type="submit"
-              className="bg-lime-500 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+              disabled={isSubscribing}
+              className="bg-lime-500 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Subscribe <i className="ri-send-plane-fill"></i>
+              {isSubscribing ? 'Subscribing...' : 'Subscribe'} <i className="ri-send-plane-fill"></i>
             </button>
+            {subscribeMessage && (
+              <p className={`text-sm mt-2 ${subscribeMessage.includes('Successfully') ? 'text-green-400' : 'text-red-400'}`}>
+                {subscribeMessage}
+              </p>
+            )}
           </form>
         </div>
       </div>
