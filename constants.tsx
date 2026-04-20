@@ -82,7 +82,21 @@ export const TEAM: Team []=[
     role: 'Marketing Manager & Sales',
     image: asset('john.jpg'),
     socials: { facebook: 'https://www.facebook.com/johnps.kamara.3/', instagram: 'https://www.instagram.com/johngodwin.kamara/' }
-  }
+  },
+  {
+    id: 4,
+    name: 'Jon Doe 1',
+    role: 'Managing Partner',
+    image: asset('johnDoe.jpg'),
+    socials: { facebook: 'https://www.facebook.com', instagram: 'https://www.instagram.com/' }
+  },
+  {
+    id: 4,
+    name: 'Jon Doe 2',
+    role: 'Managing Partner',
+    image: asset('johnDoe.jpg'),
+    socials: { facebook: 'https://www.facebook.com', instagram: 'https://www.instagram.com/' }
+  },
 ];
 
 export const TESTIMONIALS: Testimonial[] = [
