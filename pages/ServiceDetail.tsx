@@ -270,6 +270,8 @@ const ServiceDetail: React.FC = () => {
               {categoryFAQs.map((faq, idx) => (
                 <div key={idx} className="border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-all">
                   <button
+                    type="button"
+                    aria-label={faq.question}
                     onClick={() => setOpenFAQ(openFAQ === idx ? null : idx)}
                     className="w-full flex items-center justify-between p-4 sm:p-6 text-left hover:bg-lime-200 transition-colors"
                   >
