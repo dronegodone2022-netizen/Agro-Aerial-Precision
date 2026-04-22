@@ -313,6 +313,7 @@ const ServiceDetail: React.FC = () => {
                     <button
                       onClick={() => setIsPopupOpen(false)}
                       className="text-white hover:text-lime-200 transition-colors"
+                      aria-label="Close inquiry popup"
                     >
                       <i className="ri-close-line text-2xl"></i>
                     </button>
