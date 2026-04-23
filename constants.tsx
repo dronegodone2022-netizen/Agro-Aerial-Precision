@@ -64,10 +64,10 @@ export const TEAM: Team []=[
   },
   {
     id: 2,
-    name: 'Jestina N. Fillie',
-    role: 'Co-Founder / CTO',
-    image: asset('team (3).jpg'),
-    socials: { facebook: 'https://www.facebook.com/share/1BAAFtYQdY/', instagram: '#' }
+    name: 'Foday Mansaray',
+    role: 'Co-Founder / Managing Partner',
+    image: asset('foday.jpg'),
+    socials: { facebook: 'https://www.facebook.com/AgroAerialPrecision/', linkedin: 'https://www.linkedin.com/company/agro-aerial-precision/' }
   },
   {
     id: 3,
