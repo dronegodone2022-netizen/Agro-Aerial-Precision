@@ -33,7 +33,7 @@ const Header: React.FC = () => {
 
   return (
     <header className={`fixed  top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-lime-600 shadow-md py-2': 'bg-transparent py-4'} text-white`}>
-      <nav className="container h-12 mx-auto px-4 py-2 flex items-center justify-between">
+      <nav className="container h-15 mx-auto px-4 py-2 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2" onClick={(e) => {
           if (location.pathname === '/') {
             e.preventDefault();
@@ -120,7 +120,7 @@ const Header: React.FC = () => {
                  <a href="https://www.facebook.com/AgroAerialPrecision/" className="text-blue-600"><i className="ri-facebook-box-fill"></i></a>
              </div>
             <a
-              href="mailto:info@aaprecision.llc"
+              href="mailto:info@agroaerialprecision.com"
               className="block text-center bg-green-800 text-white py-4 rounded-xl font-bold hover:bg-lime-700 transition-colors"
               onClick={() => setIsOpen(false)}
             >
