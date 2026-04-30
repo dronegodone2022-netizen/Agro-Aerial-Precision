@@ -1,27 +1,31 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import AnimatedSection from "../components/AnimatedSection";
+import { fetchCertificates } from "../src/data/useCertificates";
 
 const asset = (file: string) => new URL(`../src/assets/${file}`, import.meta.url).href;
 
 const courses = [
   {
     id: "drone-basics",
-    title: "Drone Basics for Field Operators Certification",
+    title: "Basics Drone for Multimedia Production Certification",
     image: asset('train.jpg'),
     summary:
-      "Introduction to drone types, regulations, safety checks, and manual operation for agriculture use.",
+      "Introduction to drone types, regulations, safety checks, and manual operation for multimedia production.",
     outline: [
       "Regulations & permits",
       "Pre-flight checks",
-      "Battery and payload management",
+      "Battery and Drone maintenance",
       "Basic flight exercises",
+      "Cinematography techniques",
+      "Emergency procedures",
     ],
     duration: "1 weeks",
-    price: "$288",
+    price: "$249",
   },
   {
     id: "precision-spraying",
-    title: "Precision Aerial Spraying Certification",
+    title: "Drone For Precision Aerial Spraying Certification",
     image: asset('spray1.jpg'),
     summary:
       "Advanced spraying techniques, nozzle calibration, chemical safety, and precision application planning.",
@@ -30,13 +34,15 @@ const courses = [
       "Droplet size & drift reduction",
       "Product handling",
       "Field verification & reporting",
+      "Drone maintenance for spraying",
+      "Battery management for spraying operations",
     ],
     duration: "3 weeks",
-    price: "$599",
+    price: "$499",
   },
   {
     id: "mapping-analytics",
-    title: "Drone Aerial Mapping Survey Certification",
+    title: "Drone For Aerial Mapping & Survey Certification",
     image: asset('mmap.jpeg'),
     summary:
       "Comprehensive aerial survey and mapping with orthomosaic, DEM, and crop health layers for smarter field planning.",
@@ -47,7 +53,7 @@ const courses = [
       "Types of drone data: RGB, multispectral, thermal, LiDAR",
     ],
     duration: "3 weeks",
-    price: "$399",
+    price: "$310",
   },
   {
     id: "data-processing",
@@ -58,11 +64,12 @@ const courses = [
     outline: [
       "Data ingestion & quality checks",
       "Orthomosaic and DEM generation",
+      "Point cloud processing and 3D modeling",
       "NDVI/NDRE indices and thermal analytics",
       "Field-level recommendations & action plans",
     ],
     duration: "3 weeks",
-    price: "$470",
+    price: "$399",
   },
 ];
 
@@ -74,6 +81,12 @@ const Academy: React.FC = () => {
   const [selectedCourse, setSelectedCourse] = useState('drone-basics');
   const [message, setMessage] = useState('');
   const [activeFaq, setActiveFaq] = useState<string | null>(null);
+
+  // Certificate verification state
+  const [verifyOpen, setVerifyOpen] = useState(false);
+  const [certId, setCertId] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [certificate, setCertificate] = useState<any>(null);
 
   const faqItems = [
     {
@@ -112,6 +125,29 @@ const Academy: React.FC = () => {
 	setIsOpen(false);
   };
 
+  const searchCertificate = async (query: string) => {
+    if (!query.trim()) return;
+    setLoading(true);
+    const normalized = query.toUpperCase();
+    try {
+      const data: any = await fetchCertificates();
+      const match = (data || []).find(
+        (c: any) => c.id?.toUpperCase() === normalized
+      );
+      setCertificate(match || null);
+    } catch (error) {
+      console.error("Certificate verification failed", error);
+      setCertificate(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifySearch = () => {
+    if (!certId.trim()) return;
+    searchCertificate(certId);
+  };
+
   return (
     <div className="overflow-x-hidden">
       <section className="relative min-h-[60vh] bg-cover bg-center bg-no-repeat opacity-80 sm:opacity-80" style={{ backgroundImage: `url(${asset('train.jpg')})` }}>
@@ -130,17 +166,15 @@ const Academy: React.FC = () => {
                     Drone technology.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
-                    <a
-                      href="https://whatsapp.com/channel/0029VbA1kgHC1FuH5zCjq132"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-block bg-lime-600 hover:bg-green-800 text-white font-bold py-3 px-6 rounded-xl transition-colors duration-300"
+                    <button
+                      onClick={() => setVerifyOpen(true)}
+                      className="inline-block bg-lime-500 hover:bg-green-800 hover:text-white text-slate-900 font-bold py-3 px-6 rounded-xl transition-colors duration-300"
                     >
-                      Join Our Channel
-                    </a>
+                      Verify Certificate
+                    </button>
                     <button
                       onClick={() => setIsOpen(true)}
-                      className="inline-block bg-white/20 hover:bg-white/40 text-white font-bold py-3 px-6 rounded-xl transition-colors duration-300"
+                      className="inline-block bg-lime-300 hover:bg-green-600 hover:text-white text-slate-900 font-bold py-3 px-6 rounded-xl transition-colors duration-300"
                     >
                       Enroll Now
                     </button>
@@ -196,7 +230,7 @@ const Academy: React.FC = () => {
                 <a
                   href={`https://api.whatsapp.com/send?phone=+23277840105&text=${encodeURIComponent(`Hi, I'm interested in ${course.title} at AA-PRECISION ACODEMY. Please send me details.`)}`}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="mt-4 inline-flex w-full justify-center bg-green-800 text-white font-bold py-2 rounded-xl hover:bg-lime-700 transition-colors"
                 >
                   Enquire Now
@@ -364,6 +398,73 @@ const Academy: React.FC = () => {
               </div>
               <p className="text-xs text-slate-500">After submitting, WhatsApp opens in a new tab and your email client will prepare a message.</p>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Certificate Verification Modal */}
+      {verifyOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-lime-800/70 p-4">
+          <div className="w-full max-w-lg mx-auto rounded-2xl bg-white/95 p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-lime-900">AAP Academy Certificate Verification</h3>
+              <button onClick={() => {
+                setVerifyOpen(false);
+                setCertificate(null);
+                setCertId('');
+              }} className="text-slate-500 hover:text-slate-900">
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <p className="text-slate-600 text-sm">Enter your certificate ID to verify its authenticity.</p>
+
+              <input
+                className="border p-3 rounded w-full"
+                placeholder="Enter Certificate ID (e.g. AAP-001)"
+                value={certId}
+                onChange={(e) => setCertId(e.target.value)}
+              />
+
+              <button
+                onClick={handleVerifySearch}
+                className="w-full bg-lime-600 text-white py-3 px-4 rounded hover:bg-green-700 transition-colors"
+              >
+                Verify Certificate
+              </button>
+
+              {loading && <p className="text-center text-slate-600">Checking…</p>}
+
+              {certificate && (
+                <div className="border border-green-500 bg-green-50 p-4 rounded">
+                  <h4 className="text-lg font-semibold text-green-700 mb-2">Certificate Verified ✔</h4>
+                  <p><strong>ID:</strong> {certificate.id}</p>
+                  <p><strong>Name:</strong> {certificate.name}</p>
+                  <p><strong>Course:</strong> {certificate.course}</p>
+                  <p><strong>Issued:</strong> {certificate.issued_on}</p>
+
+                  <a
+                    href={certificate.drive_link}
+                    target="_blank"
+                    className="inline-block mt-3 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
+                  >
+                    View Certificate
+                  </a>
+
+                  {certificate.qr && (
+                    <img src={certificate.qr} alt="QR Code" className="mt-4 w-32 h-32 mx-auto" />
+                  )}
+                </div>
+              )}
+
+              {certificate === null && !loading && certId && (
+                <div className="border border-red-500 bg-red-50 p-4 rounded">
+                  <p className="text-red-700 font-semibold">Certificate Not Found ❌</p>
+                  <p className="text-sm text-slate-600 mt-1">Please check the certificate ID and try again.</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

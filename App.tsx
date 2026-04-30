@@ -12,6 +12,8 @@ import ServiceDetail from './pages/ServiceDetail';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 
+import QRGenerator from './pages/QRGenerator';
+
 // Scroll to top on route change
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -39,6 +41,7 @@ const App: React.FC = () => {
             <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="/services/:category" element={<ServiceDetail />} />
             <Route path="/services" element={<Home />} /> {/* Fallback or Services overview */}
+            <Route path="/qr" element={<QRGenerator />} />
           </Routes>
         </main>
         
@@ -46,6 +49,7 @@ const App: React.FC = () => {
         <WhatsAppWidget />
       </div>
     </Router>
+       
   );
 };
 
