@@ -65,16 +65,17 @@ export const TEAM: Team []=[
   {
     id: 2,
     name: 'Foday Mansaray',
-    role: 'Co-Founder / Managing Partner',
+    role: 'Founding Partner',
     image: asset('foday.jpg'),
     socials: { facebook: 'https://www.facebook.com/AgroAerialPrecision/', linkedin: 'https://www.linkedin.com/company/agro-aerial-precision/' }
   },
   {
     id: 3,
-    name: 'Bintu Gbamoi',
-    role: 'Admin Finance & Sales',
-    image: asset('bint.jpg'),
-    socials: { facebook: 'https://www.facebook.com/bintu.gbamoi.9/ ', instagram: 'https://www.instagram.com/bintu_gbamoi/ ', tiktok: 'https://www.tiktok.com/@missgbamoi/' }
+    name: 'Alimu Bah',
+    role: 'CEO & Managing Partner',
+    image: asset('johnDoe.jpg'),
+    socials: { facebook: 'https://www.facebook.com', instagram: 'https://www.instagram.com/', linkedin: 'https://www.linkedin.com/company/agro-aerial-precision/' }
+    
   },
   {
     id: 4,
@@ -85,10 +86,10 @@ export const TEAM: Team []=[
   },
   {
     id: 5,
-    name: 'Jon Doe 1',
-    role: 'Managing Partner',
-    image: asset('johnDoe.jpg'),
-    socials: { facebook: 'https://www.facebook.com', instagram: 'https://www.instagram.com/' }
+   name: 'Bintu Gbamoi',
+    role: 'Admin Finance & Sales',
+    image: asset('bint.jpg'),
+    socials: { facebook: 'https://www.facebook.com/bintu.gbamoi.9/ ', instagram: 'https://www.instagram.com/bintu_gbamoi/ ', tiktok: 'https://www.tiktok.com/@missgbamoi/' }
   },
   {
     id: 6,

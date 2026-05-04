@@ -24,40 +24,14 @@ const ServiceDetail: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // MailerLite API configuration
-      const API_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI0IiwianRpIjoiNWUwMjhjMDVlODhlZjBlZjhjYzRhNWZiNWU3ZTRhNjE5ZjM4NjE4YzZhNTZjYjEzZmI2N2EwNTEzMDMwOGVkZjVmZDliNDE0OTcwZTVhYjUiLCJpYXQiOjE3NzU5MjExMjguMjk3MTQ3LCJuYmYiOjE3NzU5MjExMjguMjk3MTUsImV4cCI6NDkzMTU5NDcyOC4yODk1MDEsInN1YiI6IjIyNTk3NzAiLCJzY29wZXMiOltdfQ.m_Uofcvm2HPxpO9iB3c_JscROpYBsvXTxgOdnPhJGh34gfrBQj92OG1CUdDDlAulEjbV6kjke6LkD-S7v8Ya-EeoYLk2wPzfPg4QGWcE0AY8Oy6ijuFFeczLO15mtjd2jUpp6ZZLuSoN-k_jvOKyJF6peZ2czoV6RPG0Kqkw8lEBIaGpSiMe7uys9hfoafZDay0uvqIZWjE-c43syG7fO-EhcRxu6S6lGe0L69Zt2-uwTWvZHKPHXi77f3eepiKzw2Xq_NWqVjS--C4MbBmHru4uEZVOrEFzRGZGTl9pJc4TIpA5CTnknsCZIBT7iW3BuVuh1uZVe-sol9q92vh-88YZrWEy2gN3BhKyM9g6z6NecOdk7a5naJXbW4g-5V2GMlSvZpDPf-lYzLLVZ0ihAs1Cisl6nVM80NObHLWvHdJKtYTDaXJeBkui5RP6k_U7fpUGiIlhw9ccX0gY30UeGLVedX0nbmOtblv527SHZHoUGCXHKLxRLQqUwE0IFue0DbAEZEpaDTv6EanrxuZc6zGa899HRmAKRwyiGyvm3LlffiyE5_fhvdWkRMkGqLX35fhjUe6MlsTrQ7gwlXvcmGOoMZQQNdZo5WP_yWjGa1h7crDxYffbIL8Pm2JZ89yCa4l6V9KoW2JaHDcCZfM--dPRficnpyQLNtmtWBoZQzI'; // Replace with your MailerLite API key
-      const GROUP_ID = '184458818206303987'; // Replace with your MailerLite group ID
+      const whatsappText = `Hello Agro Aerial Precision team,\n\nName: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nService Category: ${displayCategory}\nMessage: ${formData.message}\n\nPlease contact me with more details.`;
+      const whatsappUrl = `https://api.whatsapp.com/send?phone=+23277840105&text=${encodeURIComponent(whatsappText)}`;
+      window.open(whatsappUrl, '_blank');
 
-      // Subscribe to newsletter and send inquiry
-      const response = await fetch('https://connect.mailerlite.com/api/subscribers', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${API_KEY}`
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          fields: {
-            name: formData.name,
-            phone: formData.phone,
-            message: formData.message,
-            service_category: displayCategory,
-            inquiry_type: 'service_inquiry'
-          },
-          groups: [GROUP_ID]
-        })
-      });
-
-      if (response.ok) {
-        setIsSubmitted(true);
-        setFormData({ name: '', email: '', phone: '', message: '' });
-      } else {
-        const errorData = await response.json();
-        alert(`Failed to send inquiry: ${errorData.message || 'Please try again.'}`);
-      }
+      setIsSubmitted(true);
+      setFormData({ name: '', email: '', phone: '', message: '' });
     } catch (error) {
-      alert('Network error. Please try again later.');
+      alert('Unable to send inquiry. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

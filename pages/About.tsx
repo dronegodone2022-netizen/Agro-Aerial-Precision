@@ -191,6 +191,97 @@ const About: React.FC = () => {
         </AnimatedSection>
       </section>
 
+      {/* Certifications and Recognition */}
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-4 text-center">
+          <AnimatedSection animationType="unveil" delay={0.05}>
+            <h2 className="text-4xl text-green-950 font-bold mb-4">Certifications and Recognition Received</h2>
+            <p className="text-slate-500 text-lg mb-16 max-w-2xl mx-auto">
+              Our commitment to excellence is recognized through industry certifications and partnerships.
+            </p>
+          </AnimatedSection>
+          
+          <div className="flex flex-col md:flex-row justify-center items-center gap-8 max-w-5xl mx-auto">
+            {/* Certification 1 */}
+            <div className="flip-card w-full md:w-1/2 lg:w-1/2 max-w-md">
+              <div className="flip-card-inner">
+                <div className="flip-card-front bg-linear-to-br from-green-50 to-lime-50 p-8 rounded-3xl shadow-lg border border-green-100">
+                  <div className="w-20 h-20 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center text-4xl mb-6 mx-auto">
+                    <i className="ri-award-line"></i>
+                  </div>
+                  <h3 className="text-2xl font-bold mb-4">Certification Of Registration </h3>
+                  <p className="text-slate-600 leading-relaxed">
+                    Corporate Registration Certificate issued by the Corporate Affairs Commission of Sierra Leone, confirming our legal status as a registered company in Sierra Leone.
+                  </p>
+                  <div className="mt-6 text-sm font-bold text-slate-500">
+                    Issued by: Corporate Affairs Commission of Sierra Leone • Date: 31st January 2025
+                  </div>
+                </div>
+                <div className="flip-card-back bg-white p-8 rounded-3xl shadow-lg border border-green-100">
+                  <img
+                    src={new URL('../src/assets/AAP-R CERT.jpg', import.meta.url).href}
+                    alt="Corporate Registration Certificate"
+                    className="w-full h-full object-contain shadow-sm border-lime-200 border-2 rounded-lg"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Certification 2 */}
+            <div className="flip-card w-full md:w-1/2 lg:w-1/2 max-w-md">
+              <div className="flip-card-inner">
+                <div className="flip-card-front bg-linear-to-br from-blue-50 to-cyan-50 p-8 rounded-3xl shadow-lg border border-blue-100">
+                  <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-4xl mb-6 mx-auto">
+                    <i className="ri-shield-check-line"></i>
+                  </div>
+                  <h3 className="text-2xl font-bold mb-4">Certificate of Incorporation</h3>
+                  <p className="text-slate-600 leading-relaxed">
+                    Certificate of Incorporation issued by the Corporate Affairs Commission of Sierra Leone, confirming our legal status as a registered company in Sierra Leone.
+                  </p>
+                  <div className="mt-6 text-sm font-bold text-slate-500">
+                    Issued by: Corporate Affairs Commission of Sierra Leone • Date: 31st January 2025
+                  </div>
+                </div>
+                <div className="flip-card-back bg-white p-8 rounded-3xl shadow-lg border border-blue-100">
+                  <img
+                    src={new URL('../src/assets/AAP-CERT.jpg', import.meta.url).href}
+                    alt="Certificate of Incorporation"
+                    className="w-full h-full object-contain shadow-sm border-lime-200 border-2 rounded-lg"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Certification 3 - Hidden for now */}
+            {/*
+            <div className="flip-card ">
+              <div className="flip-card-inner">
+                <div className="flip-card-front bg-linear-to-br from-purple-50 to-pink-50 p-8 rounded-3xl shadow-lg border border-purple-100">
+                  <div className="w-20 h-20 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center text-4xl mb-6 mx-auto">
+                    <i className="ri-global-line"></i>
+                  </div>
+                  <h3 className="text-2xl font-bold mb-4">SLCAA</h3>
+                  <p className="text-slate-600 leading-relaxed">
+                    Certification from the Sierra Leone Civil Aviation Authority. This certification confirms that Agro Aerial Precision has met the necessary regulatory requirements and standards set by the SLCAA to operate drones and provide aerial services in Sierra Leone.
+                  </p>
+                  <div className="mt-6 text-sm font-bold text-slate-500">
+                    Issued by: SLCAA • Valid: 2023-2026
+                  </div>
+                </div>
+                <div className="flip-card-back bg-white p-8 rounded-3xl shadow-lg border border-purple-100">
+                  <img
+                    src={new URL('../src/assets/aiph.jpeg', import.meta.url).href}
+                    alt="GIS Certificate"
+                    className="w-full h-full object-contain shadow-sm border-lime-200 border-2 rounded-lg"
+                  />
+                </div>
+              </div>
+            </div>
+            */}
+          </div>
+        </div>
+      </section>
+
       {/* Management Team */}
       <section className="py-24 bg-slate-50">
         <div className="container mx-auto px-4 text-center">

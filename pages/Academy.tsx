@@ -8,7 +8,7 @@ const asset = (file: string) => new URL(`../src/assets/${file}`, import.meta.url
 const courses = [
   {
     id: "drone-basics",
-    title: "Basics Drone for Multimedia Production Certification",
+    title: "Basic  Drone Training for Multimedia Production Certification",
     image: asset('train.jpg'),
     summary:
       "Introduction to drone types, regulations, safety checks, and manual operation for multimedia production.",
@@ -110,20 +110,29 @@ const Academy: React.FC = () => {
       answer: 'Use the course application form, then our team will send payment details by WhatsApp and email. We support bank transfer and mobile money.',
     },
   ];
+const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  event.preventDefault();
 
-  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const course = courses.find((c) => c.id === selectedCourse);
-    const courseName = course?.title ?? 'selected course';
-    const body = `Hello Agro Aerial Precision team,%0A%0AName: ${encodeURIComponent(name)}%0AEmail: ${encodeURIComponent(email)}%0APhone: ${encodeURIComponent(phone)}%0ACourse: ${encodeURIComponent(courseName)}%0AMessage: ${encodeURIComponent(message)}%0A%0APlease contact me with enrollment details.`;
-    const mailTo = `mailto:info@agroaerialprecision.com?subject=AA-PRECISION%20ACODEMY%20Course%20Application&body=${body}`;
-    const waMessage = `Hello Agro Aerial Precision team,\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nCourse: ${courseName}\nMessage: ${message}\n\nPlease contact me with enrollment details.`;
-    const waUrl = `https://api.whatsapp.com/send?phone=+23277840105&text=${encodeURIComponent(waMessage)}`;
+  const course = courses.find((c) => c.id === selectedCourse);
+  const courseName = course?.title ?? "selected course";
 
-    window.open(waUrl, '_blank');
-    window.location.href = mailTo;
-	setIsOpen(false);
-  };
+  // Build a clean body first
+  const mailBody = `
+Hello Agro Aerial Precision team,
+
+Name: ${name}
+Email: ${email}
+Phone: ${phone}
+Course: ${courseName}
+Message: ${message}
+
+Please contact me with enrollment details.
+`;
+
+  const waUrl = `https://api.whatsapp.com/send?phone=23277840105&text=${encodeURIComponent(mailBody)}`;
+  window.open(waUrl, "_blank");
+  setIsOpen(false);
+};
 
   const searchCertificate = async (query: string) => {
     if (!query.trim()) return;
@@ -227,14 +236,16 @@ const Academy: React.FC = () => {
                   <span className="text-sm">{course.duration}</span>
                   <span className="text-lg font-semibold">{course.price}</span>
                 </div>
-                <a
-                  href={`https://api.whatsapp.com/send?phone=+23277840105&text=${encodeURIComponent(`Hi, I'm interested in ${course.title} at AA-PRECISION ACODEMY. Please send me details.`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedCourse(course.id);
+                    setIsOpen(true);
+                  }}
                   className="mt-4 inline-flex w-full justify-center bg-green-800 text-white font-bold py-2 rounded-xl hover:bg-lime-700 transition-colors"
                 >
                   Enquire Now
-                </a>
+                </button>
               </div>
             </article>
           ))}
@@ -331,7 +342,7 @@ const Academy: React.FC = () => {
                   required
                   value={name}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
-                  className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 focus:border-lime-600 outline-none"
+                  className="mt-1 block w-full border border-green-700 rounded-lg px-3 py-2 focus:border-lime-600 outline-none"
                 />
               </label>
               <label className="block">
@@ -341,7 +352,7 @@ const Academy: React.FC = () => {
                   type="email"
                   value={email}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                  className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 focus:border-lime-600 outline-none"
+                  className="mt-1 block w-full border border-green-700 rounded-lg px-3 py-2 focus:border-lime-600 outline-none"
                 />
               </label>
                 <label className="block">
@@ -353,7 +364,7 @@ const Academy: React.FC = () => {
                   pattern="[0-9]+"
                   value={phone}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPhone(e.target.value.replace(/\D/g, ''))}
-                  className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 focus:border-lime-600 outline-none"
+                  className="mt-1 block w-full border border-green-700 rounded-lg px-3 py-2 focus:border-lime-600 outline-none"
                 />
                 </label>
               <label className="block">
@@ -362,7 +373,7 @@ const Academy: React.FC = () => {
                   required
                   value={selectedCourse}
                   onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedCourse(e.target.value)}
-                  className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 focus:border-lime-600 outline-none"
+                  className="mt-1 block w-full border border-green-700 rounded-lg px-3 py-2 focus:border-lime-600 outline-none"
                 >
                   {courses.map((course) => (
                     <option key={course.id} value={course.id}>
@@ -377,7 +388,7 @@ const Academy: React.FC = () => {
                   value={message}
                   onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMessage(e.target.value)}
                   rows={3}
-                  className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 focus:border-lime-600 outline-none"
+                  className="mt-1 block w-full border border-green-700 rounded-lg px-3 py-2 focus:border-lime-600 outline-none"
                   placeholder="Any additional notes..."
                 />
               </label>
@@ -385,7 +396,7 @@ const Academy: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="px-5 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-orange-300"
+                  className="px-5 py-2 rounded-lg border border-green-700 text-green-700 hover:bg-green-200"
                 >
                   Cancel
                 </button>
@@ -393,7 +404,7 @@ const Academy: React.FC = () => {
                   type="submit"
                   className="px-5 py-2 rounded-lg bg-green-800 text-white font-bold hover:bg-lime-700"
                 >
-                  Submit via WhatsApp + Email
+                  Submit Application
                 </button>
               </div>
               <p className="text-xs text-slate-500">After submitting, WhatsApp opens in a new tab and your email client will prepare a message.</p>
