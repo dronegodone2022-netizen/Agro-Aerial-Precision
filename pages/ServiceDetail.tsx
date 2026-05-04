@@ -127,7 +127,7 @@ const ServiceDetail: React.FC = () => {
         <div className="absolute inset-0 bg-linear-to-b from-green-900 via-slate-900/60 to-transparent opacity-50"></div>
       </div>
       
-      <div className="relative z-10 h-full text-white mt-6 py-4 lg:mt-35 pb-2 text-center">
+      <div className="relative z-10 h-full text-white mt-6 py-4 lg:mt-35 pb-6 text-center">
         <AnimatedSection className="container mx-auto mt-4 xs:mt-6 tablet:mt-8 px-3 xs:px-4" animationType="unveil-scale" delay={0.05}>
           <h1 className="text-3xl xs:text-3xl tablet:text-5xl laptop:text-5xl font-bold mb-3 xs:mb-4">{displayCategory} Solutions</h1>
           <p className="text-slate-300 xs:text-slate-400 text-lg xs:text-base tablet:text-lg laptop:text-xl mb-8 max-w-xl mx-auto">
@@ -136,7 +136,7 @@ const ServiceDetail: React.FC = () => {
           <div className="flex justify-center mt-8">
             <button
               onClick={() => setIsPopupOpen(true)}
-              className="bg-lime-500 hover:bg-lime-200 text-green-800 font-bold px-6 xs:px-8 tablet:px-10 py-3 rounded-full transition-colors text-sm xs:text-base tablet:text-lg"
+              className="bg-lime-500 hover:bg-lime-200 text-white font-bold px-6 xs:px-8 tablet:px-10 py-3 rounded-full transition-colors text-sm xs:text-base tablet:text-lg"
             >
               Inquire for Free
             </button>
