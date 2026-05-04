@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import AnimatedSection from '../components/AnimatedSection';
 
-const contactBg = new URL('../src/assets/service bg.jpg', import.meta.url).href;
+const getInTouch = new URL('../src/assets/getIn Touch.jpg', import.meta.url).href;
 
 const Contact: React.FC = () => {
   const [firstName, setFirstName] = useState('');
@@ -45,7 +45,7 @@ const Contact: React.FC = () => {
       <section className="bg-green-800 text-white h-[50dvh]  py-20 text-center">
            <div className="absolute inset-0 bg-slate-900 h-[70dvh]">
           <img 
-            src={contactBg} 
+            src={getInTouch} 
             alt="Hero Background" 
             className="w-full h-[70dvh]  object-cover opacity-40 sm:opacity-50" 
           />
