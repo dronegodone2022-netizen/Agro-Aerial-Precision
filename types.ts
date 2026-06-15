@@ -4,7 +4,7 @@ export interface Service {
   title: string;
   description: string;
   image: string;
-  category: 'Agriculture' | 'Construction' | 'Mining' | 'Health' | 'Inspection' | 'Filming';
+  category: 'Agriculture' | 'Construction' | 'Mining' | 'Health' | 'Inspection' | 'Drone Repairing';
   longDescription?: string;
 }
 

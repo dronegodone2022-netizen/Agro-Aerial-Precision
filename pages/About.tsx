@@ -1,11 +1,95 @@
 import React from "react";
+import { Users, Clock, Database, Plane } from "lucide-react";
 import { TEAM } from "../constants";
 import AnimatedSection from "../components/AnimatedSection";
+import { useIntersectionObserver } from "../hooks/useIntersectionObserver";
 
 const aboutImage1 = new URL('../src/assets/about2.jpeg', import.meta.url).href;
 const aboutImage2 = new URL('../src/assets/about (1).jpg', import.meta.url).href;
 const aboutImage3 = new URL('../src/assets/mmap.jpeg', import.meta.url).href;
 const aboutImage4 = new URL('../src/assets/about (3).jpg', import.meta.url).href;
+
+const impactStats = [
+  {
+    icon: <Users size={48} className="text-white" />,
+    value: 800,
+    suffix: "+",
+    label: "People Impacted",
+  },
+  {
+    icon: <Plane size={48} className="text-white" />,
+    value: 1000,
+    suffix: "+",
+    label: "Number of Flights",
+  },
+  {
+    icon: <Clock size={48} className="text-white" />,
+    value: 1000,
+    suffix: " Hrs+",
+    label: "Flight Time",
+  },
+  {
+    icon: <Database size={48} className="text-white" />,
+    value: 2000,
+    suffix: "+",
+    label: "Hectares Covered",
+  },
+];
+
+function ImpactStatsSection() {
+  const stats = impactStats;
+  const { ref, isIntersecting } = useIntersectionObserver({ threshold: 0.25, triggerOnce: true });
+  const [counts, setCounts] = React.useState<number[]>(stats.map(() => 0));
+
+  React.useEffect(() => {
+    if (!isIntersecting) return;
+
+    const duration = 1500;
+    const startTime = performance.now();
+    let animationFrame: number;
+
+    const animate = (timestamp: number) => {
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      setCounts(stats.map((item) => Math.floor(item.value * progress)));
+
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(animate);
+      } else {
+        setCounts(stats.map((item) => item.value));
+      }
+    };
+
+    animationFrame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrame);
+  }, [isIntersecting]);
+
+  return (
+    <section ref={ref} className="w-full bg-green-950 py-12 px-6">
+      <AnimatedSection animationType="unveil" delay={0.05}>
+        <h2 className="text-4xl text-white text-center font-bold mb-4">Our Impact</h2>
+        <p className="text-slate-200 text-lg mb-12 max-w-5xl mx-auto">
+          Since our founding, we’ve been dedicated to making a real difference in the lives of farmers, builders, capacity building efforts, and mining operations across Sierra Leone and beyond.
+        </p>
+      </AnimatedSection>
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 text-center">
+        {stats.map((item, i) => (
+          <div
+            key={i}
+            className="flex flex-col items-center text-white space-y-2"
+          >
+            <div>{item.icon}</div>
+            <h3 className="text-xl font-bold text-lime-300">
+              {counts[i]}{item.suffix}
+            </h3>
+            <p className="text-sm">{item.label}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 const About: React.FC = () => {
   return (
@@ -50,7 +134,7 @@ const About: React.FC = () => {
                     decisions powered by technology rather than burdened by
                     guesswork.
                   </p>
-                  <p className="text-slate-600 mb-6 leading-relaxed">
+                  <p className="text-slate-600 mb-6 leading-relaxed text-lg">
                     Our journey began with a simple but powerful realization:
                     drone technology has the potential to solve some of the most
                     pressing challenges in modern industries. From pest
@@ -60,7 +144,7 @@ const About: React.FC = () => {
                   </p>
                   {isExpanded && (
                     <>
-                      <p className="text-slate-600 mb-6 leading-relaxed">
+                      <p className="text-slate-600 mb-6 leading-relaxed text-lg">
                         The inspiration to start Agro Aerial Precision came from
                         witnessing firsthand the struggles famers,mining companies, and other industries face every
                         day:
@@ -95,7 +179,7 @@ const About: React.FC = () => {
                           </span>
                         </li>
                       </ul>
-                      <p className="text-slate-600 mb-4 leading-relaxed">
+                      <p className="text-slate-600 mb-4 leading-relaxed text-lg">
                         Through my work with drone technology at SKT Live in Ghana and Charis UAS in Rwanda and Ivory Coast, I witnessed firsthand the transformative power of UAVs in agriculture, construction, and rural development. I saw how advanced aerial solutions could improve accuracy, increase yields, reduce waste, cut operational costs, and ultimately support the long-term resilience of farming communities.
                         Recognizing the potential to bring these innovations to Sierra Leone, I founded Agro Aerial Precision a company built on the mission of introducing smarter, safer, and more sustainable ways of farming and data collection. By leveraging drones, artificial intelligence, and advanced data analytics, we empower farmers, construction companies, and mining operations across the region and beyond.
 
@@ -104,7 +188,7 @@ const About: React.FC = () => {
                       <h2 className="text-2xl font-bold mb-2">
                         Our mission is simple:{" "}
                       </h2>
-                      <p className="text-slate-600 mb-8 leading-relaxed">
+                      <p className="text-slate-600 mb-8 leading-relaxed text-lg">
                         Driving the future of agriculture, construction, and mining through precision-driven, cost-effective, and sustainable aerial solutions. At Agro Aerial Precision, we empower farmers, builders, and mining operations with accurate data, smarter insights, and innovative UAV technology. One field, one flight, and one dataset at a time we’re shaping a stronger, smarter, and more sustainable future. Let’s grow smarter, together.
                       </p>
                     </>
@@ -120,26 +204,7 @@ const About: React.FC = () => {
               return fullContent;
             })()}
 
-            <div className="mt-12  grid grid-cols-3 gap-6 ">
-              <div className="p-4 bg-lime-200  rounded-2xl">
-                <h3 className="text-3xl font-bold text-green-800 mb-1">500+</h3>
-                <p className="text-sm font-semibold text-slate-500">
-                  Clients Helped
-                </p>
-              </div>
-              <div className="p-4 bg-lime-200 rounded-2xl">
-                <h3 className="text-3xl font-bold text-green-800 mb-1">10k+</h3>
-                <p className="text-sm font-semibold text-slate-500">
-                  Hectares Mapped
-                </p>
-              </div>
-              <div className="p-4 bg-lime-200 rounded-2xl">
-                <h3 className="text-3xl font-bold text-green-800 mb-1">100+</h3>
-                <p className="text-sm font-semibold text-slate-500">
-                  Student Trained
-                </p>
-              </div>
-            </div>
+            
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -281,6 +346,10 @@ const About: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Impact Stats Section */}
+      
+      <ImpactStatsSection />
 
       {/* Management Team */}
       <section className="py-24 bg-slate-50">

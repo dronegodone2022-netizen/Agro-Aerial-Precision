@@ -13,6 +13,8 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 
 import QRGenerator from './pages/QRGenerator';
+import DroneExam from './pages/DroneExam';
+import StudentLogin from './pages/StudentLogin';
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -42,6 +44,8 @@ const App: React.FC = () => {
             <Route path="/services/:category" element={<ServiceDetail />} />
             <Route path="/services" element={<Home />} /> {/* Fallback or Services overview */}
             <Route path="/qr" element={<QRGenerator />} />
+            <Route path="/student-login" element={<StudentLogin />} />
+            <Route path="/drone-exam" element={<DroneExam />} />
           </Routes>
         </main>
         

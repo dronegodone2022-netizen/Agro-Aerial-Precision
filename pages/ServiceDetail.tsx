@@ -67,6 +67,24 @@ const ServiceDetail: React.FC = () => {
         answer: 'We provide detailed orthomosaic maps, elevation models, vegetation index maps (NDVI), and comprehensive reports with actionable insights for farm management.'
       }
     ],
+    'Drone Repairing': [
+      {
+        question: 'What types of drone repairs do you handle?',
+        answer: 'We repair motors, propellers, flight controllers, cameras, gimbals, batteries, and airframes for commercial and industrial drones, as well as software and firmware issues.'
+      },
+      {
+        question: 'Do you offer on-site repair services?',
+        answer: 'Yes, we provide on-site inspections and repairs for fleet operations, along with workshop service for more complex maintenance and rebuilds.'
+      },
+      {
+        question: 'How quickly can you restore a grounded drone?',
+        answer: 'Our technicians aim to diagnose most issues within 24 hours and complete repairs quickly with genuine replacement parts and certified testing.'
+      },
+      {
+        question: 'Can you help prevent future drone failures?',
+        answer: 'Absolutely — our preventive maintenance programs include inspections, firmware updates, calibration, and training recommendations to extend drone life and reliability.'
+      }
+    ],
     Inspection: [
       {
         question: 'How do you ensure safety during inspections?',
@@ -105,12 +123,23 @@ const ServiceDetail: React.FC = () => {
     ]
   };
 
-  const displayCategory = category ? category.charAt(0).toUpperCase() + category.slice(1) : 'Our Services';
+  const categoryLabelMap: Record<string, string> = {
+    agriculture: 'Agriculture',
+    construction: 'Construction',
+    mining: 'Mining',
+    health: 'Health',
+    inspection: 'Inspection',
+    'drone-repairing': 'Drone Repairing'
+  };
+
+  const displayCategory = category
+    ? categoryLabelMap[category.toLowerCase()] || category.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+    : 'Our Services';
 
   const categoryFAQs = FAQData[displayCategory] || [];
   
   const filteredServices = SERVICES.filter(
-    s => s.category.toLowerCase() === category?.toLowerCase()
+    s => s.category.toLowerCase() === displayCategory.toLowerCase()
   );
 
   return (
@@ -146,7 +175,7 @@ const ServiceDetail: React.FC = () => {
 
       <AnimatedSection className="container  mx-auto px-4 lg:mb-12 xl:mb-12 sm:px-4 sm:mt-30 mt-16 xs:mt-20 tablet:mt-28 laptop:mt-28" animationType="unveil" delay={0.1}>
         {filteredServices.length > 0 ? (
-          <div className="grid grid-cols-1 gap-8 sm:gap-10 lg:gap-12 max-w-7xl mb-8 lg:mt-12 mx-auto px-2 sm:px-0">
+          <div className="grid grid-cols-1 gap-8 sm:gap-10 lg:gap-12 max-w-7xl mb-8 lg:mt-60 mx-auto px-2 sm:px-0">
             {filteredServices.map((service, idx) => (
               <div key={service.id} className={`flex flex-col lg:flex-row gap-6 sm:gap-8 lg:gap-12 items-start ${idx % 2 !== 0 ? 'lg:flex-row-reverse' : ''}`}>
                 <div className="w-full lg:w-1/2">
@@ -200,7 +229,7 @@ const ServiceDetail: React.FC = () => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-12 sm:py-16 lg:py-20 bg-white rounded-2xl sm:rounded-3xl shadow-sm max-w-2xl mx-auto px-4">
+          <div className="text-center  py-12 sm:py-16 lg:py-20 rounded-2xl mt-55 sm:rounded-3xl shadow-sm max-w-2xl mx-auto px-4">
             <i className="ri-service-line text-5xl sm:text-6xl text-slate-200 mb-4 sm:mb-6 block"></i>
             <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">No specific services listed for {displayCategory} yet.</h2>
             <p className="text-slate-500 mb-6 sm:mb-8 text-sm sm:text-base">We offer custom drone solutions for all industrial needs. Please contact us for a personalized consultation.</p>

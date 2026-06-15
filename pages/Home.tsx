@@ -85,7 +85,7 @@ const Home: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {SERVICES.map((service, index) => (
+            {SERVICES.filter(s => s.id !== 'mosquito-control').map((service, index) => (
               <AnimatedSection
                 key={service.id}
                 className="group bg-white md:grid-cols-2 gap-12 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-lime-100"

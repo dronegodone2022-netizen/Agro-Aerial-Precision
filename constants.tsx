@@ -45,6 +45,14 @@ export const SERVICES: Service[] = [
     longDescription: 'Using drones equipped with specialized cameras and high-resolution sensors, we conduct thorough inspections of critical infrastructure including power lines, solar farms, construction sites, mining pits, and more. Our drones capture precise images and thermal data, allowing for comprehensive examination of assets without manual inspection risks.\n\n• Thermal imaging for infrastructure damage detection\n• High-definition video and photography\n• Quick turnaround on inspection reports\n• Safe access to hazardous or elevated areas\n• Cost-effective compared to traditional methods\n• Detailed documentation for compliance and insurance'
   },
   {
+    id: 'drone-repairing',
+    category: 'Drone Repairing',
+    title: 'Drone Repair & Maintenance',
+    description: 'Comprehensive repair, maintenance, and technical support services for industrial and commercial drones.',
+    image: asset('drone repair.jpg'),
+    longDescription: 'Our Drone Repairing service delivers fast, reliable repairs and preventive maintenance for professional UAV fleets. We handle hardware repairs, software calibration, battery health checks, and airframe restoration with certified technicians who understand the demands of industrial drone operations.\n\n• Fast diagnostics and component-level repairs for motors, controllers, cameras, and gimbals\n• Firmware updates, flight controller tuning, and sensor calibration\n• Battery testing, safe charging guidance, and replacement support\n• Crash and impact recovery for frames, arms, and landing gear\n• Preventive maintenance programs to reduce downtime and extend drone life\n• On-site and workshop repair options for fleet operators',
+  },
+  {
     id: 'mosquito-control',
     category: 'Health',
     title: 'Mosquito Control',
@@ -135,7 +143,7 @@ export const NAV_LINKS: NavLink[] = [
       { label: 'Mining', path: '/services/mining' },
       { label: 'Health', path: '/services/health' },
       { label: 'Inspection', path: '/services/inspection' },
-      { label: 'Filming', path: '/services/filming' },
+      { label: 'Drone Repairing', path: '/services/drone-repairing' },
     ]
   },
   { label: 'About Us', path: '/about' },
