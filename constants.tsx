@@ -207,6 +207,14 @@ export const TEAM: Team []=[
 
 export const TESTIMONIALS: Testimonial[] = [
   {
+    id: 4,
+    name: 'Mr Ishmaile',
+    company: 'Rift Valley Gold',
+    sector: 'Mining',
+    avatar: asset('avata4.jpg'),
+    content: 'We now use Agro Aerial Precision for our aerial surveys and stockpile volumes. Their drone surveys give us reliable, up-to-date data without putting our surveyors near the benches or heavy equipment, and the reports are clear enough to share directly with management.'
+  },
+  {
     id: 1,
     name: 'Samba Koroma',
     company: 'Fresh Vegetables Farm',
