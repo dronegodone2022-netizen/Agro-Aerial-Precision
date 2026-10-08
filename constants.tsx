@@ -191,29 +191,15 @@ export const TEAM: Team []=[
   },
   {
     id: 2,
-    name: 'Foday Mansaray',
+    name: 'Eng. Kallie Balla Koroma',
     role: 'Founding Partner',
-    image: asset('foday.jpg'),
-    socials: { facebook: 'https://www.facebook.com/AgroAerialPrecision/', linkedin: 'https://www.linkedin.com/company/agro-aerial-precision/' }
-  },
-  {
-    id: 3,
-    name: 'Alimu Bah',
-    role: 'CEO & Managing Partner',
-    image: asset('johnDoe.jpg'),
-    socials: { linkedin: 'https://www.linkedin.com/company/agro-aerial-precision/' }
-  },
-  {
-    id: 4,
-    name: 'John Pamusum Sillah',
-    role: 'Marketing Manager & Sales',
-    image: asset('john.jpg'),
-    socials: { facebook: 'https://www.facebook.com/johnps.kamara.3/', instagram: 'https://www.instagram.com/johngodwin.kamara/' }
+    image: asset('En_Kaillie.jpg'),
+    socials: { facebook: 'https://www.facebook.com/AgroAerialPrecision/', linkedin: 'https://www.linkedin.com/in/kallie-balla-koroma-583828282/' }
   },
   {
     id: 5,
     name: 'Bintu Gbamoi',
-    role: 'Admin Finance & Sales',
+    role: 'Admin Finance',
     image: asset('bint.jpg'),
     socials: { facebook: 'https://www.facebook.com/bintu.gbamoi.9/', instagram: 'https://www.instagram.com/bintu_gbamoi/', tiktok: 'https://www.tiktok.com/@missgbamoi/' }
   },
