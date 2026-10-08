@@ -22,8 +22,9 @@ export default function TermsOfService() {
 
       <h2 className="text-2xl font-semibold mt-8 mb-4">2. Our Services</h2>
       <p className="mb-6">
-        Agro Aerial Precision SL Ltd provides drone mapping, surveying, LiDAR data collection, precision
-        agriculture solutions, GIS analysis, and urban planning services. All services are subject to
+        Agro Aerial Precision SL Ltd provides drone mapping and surveying for mining and construction, LiDAR
+        data collection, infrastructure and thermal inspection, environmental monitoring, precision agriculture
+        solutions, GIS analysis, drone repair, and drone training services. All services are subject to
         availability, client agreements, and regulatory compliance.
       </p>
 

@@ -169,10 +169,14 @@ const Contact: React.FC = () => {
                     className="w-full px-4 py-3 bg-slate-50 border rounded-xl focus:outline-none focus:border-green-600"
                   >
                     <option>General Inquiry</option>
+                    <option>Mining Surveys & Volumes</option>
+                    <option>Construction Surveys & Monitoring</option>
+                    <option>Infrastructure & Thermal Inspection</option>
+                    <option>Environmental Monitoring</option>
                     <option>Agriculture Services</option>
-                    <option>Industrial Inspection</option>
-                    <option>Partnership</option>
+                    <option>Drone Repair</option>
                     <option>Training Programs</option>
+                    <option>Partnership</option>
                   </select>
                 </div>
 

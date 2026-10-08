@@ -4,8 +4,21 @@ export interface Service {
   title: string;
   description: string;
   image: string;
-  category: 'Agriculture' | 'Construction' | 'Mining' | 'Health' | 'Inspection' | 'Drone Repairing';
+  category: ServiceCategory;
   longDescription?: string;
+}
+
+export type ServiceCategory = 'Mining' | 'Construction' | 'Inspection' | 'Environment' | 'Agriculture' | 'Drone Repairing';
+
+/** An industry we serve - shown on the Home page and as /services/<slug> */
+export interface Industry {
+  category: ServiceCategory;
+  slug: string;
+  name: string;
+  tagline: string;
+  description: string;
+  image: string;
+  icon: string;
 }
 
 export interface Testimonial {

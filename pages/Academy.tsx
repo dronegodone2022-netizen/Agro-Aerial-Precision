@@ -153,10 +153,9 @@ const Academy: React.FC = () => {
                 </h1>
                 <p className="max-w-xl sm:max-w-2xl text-sm sm:text-base md:text-lg/6 mb-8  text-slate-200">
                     Join our AA-PRECISION ACADEMY to gain hands-on experience in drone
-                    operations, precision spraying, aerial mapping, and data analytics
-                    for agriculture and environmental monitoring. Our expert-led courses are designed to equip you
-                    with the skills needed to excel in the rapidly evolving field of
-                    Drone technology.
+                    operations, aerial surveying, data processing, mining software and
+                    precision agriculture. Our expert-led courses equip you with the skills
+                    that mining, construction, infrastructure and agriculture employers need.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                     <button
@@ -182,15 +181,14 @@ const Academy: React.FC = () => {
           <div className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-bold">Courses We Provide</h2>
             <p className="mt-3 text-slate-500 max-w-3xl mx-auto">
-              Pick the training path that fits your need as a student, farm, or
-              organization. Each course is hands-on with certification on
-              completion. This course equips learners with the skills to transform
-              drone imagery into actionable insights using advanced processing
-              techniques.
+              Pick the training path that fits you - whether you are starting out
+              as a pilot, working in mining or construction, or running a farm.
+              Every course is hands-on and ends with a certificate anyone can verify
+              online.
             </p>
           </div>
 
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {courses.map((course) => (
             <article
               key={course.id}
@@ -283,15 +281,15 @@ const Academy: React.FC = () => {
             <div className="bg-lime-200 rounded-xl p-5 shadow-sm">
               <h3 className="font-bold mb-2 text-green-800">Expert Instructors</h3>
               <p className="text-slate-600">
-                Learn from seasoned agronomists and drone pilots in precision
-                agriculture.
+                Learn from working drone pilots, surveyors and data analysts
+                who fly real mining, construction and agriculture jobs.
               </p>
             </div>
             <div className="bg-lime-200 rounded-xl p-5 shadow-sm">
               <h3 className="font-bold mb-2 text-green-800">Certification</h3>
               <p className="text-slate-600">
-                Get a completion badge for credible skills in drone-based farm
-                management.
+                Earn a QR-verifiable certificate that proves your skills to
+                employers and clients.
               </p>
             </div>
           </div>

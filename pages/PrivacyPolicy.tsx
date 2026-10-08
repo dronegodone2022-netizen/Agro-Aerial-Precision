@@ -29,7 +29,7 @@ export default function PrivacyPolicy() {
         <li>Aerial photographs and videos</li>
         <li>LiDAR point cloud data</li>
         <li>GIS coordinates</li>
-        <li>Crop health data and vegetation indices</li>
+        <li>Inspection imagery, thermal data, crop health data and vegetation indices</li>
         <li>Terrain models and measurement data</li>
       </ul>
 
@@ -52,8 +52,8 @@ export default function PrivacyPolicy() {
       <h2 className="text-2xl font-semibold mt-8 mb-4">2. How We Use Your Information</h2>
       <ul className="list-disc ml-6 mb-6">
         <li>Provide mapping, surveying, LiDAR, and analytics services</li>
-        <li>Deliver precision agriculture reports and insights</li>
-        <li>Conduct training programs, certifications, and skills development in drone surveying and precision agriculture</li>
+        <li>Deliver survey, inspection, environmental and agriculture reports and insights</li>
+        <li>Conduct training programs, certifications, and skills development in drone operations, surveying, data processing, mining software and precision agriculture</li>
         <li>Improve website functionality and service delivery</li>
         <li>Respond to inquiries and provide customer support</li>
         <li>Process service agreements and contracts</li>

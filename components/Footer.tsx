@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { INDUSTRIES } from '../constants';
 
 const footerLogo = new URL('../src/assets/AAP LOGO w.png', import.meta.url).href;
 
@@ -60,7 +61,7 @@ const Footer: React.FC = () => {
             <span className="font-bold text-white text-xl">Agro Aerial Precision</span>
           </div>
           <p className="text-slate-400 mb-6">
-            Pioneering precision agriculture and industrial inspection through advanced drone technology and data intelligence.
+            Drone surveys, inspection and aerial data for mining, construction, infrastructure and agriculture - and the academy that trains Sierra Leone's drone professionals.
           </p>
           <div className="flex gap-4">
             <a href="https://www.facebook.com/AgroAerialPrecision/" className="w-10 h-10 rounded-full bg-lime-800 flex items-center justify-center hover:bg-blue-800 hover:text-white transition-colors">
@@ -92,18 +93,18 @@ const Footer: React.FC = () => {
         <div>
           <h4 className="text-white font-bold text-lg mb-6">Our Solutions</h4>
           <ul className="flex flex-col gap-4">
-            <li><Link to="/services/agriculture" className="hover:text-lime-500 transition-colors">Agriculture</Link></li>
-            <li><Link to="/services/inspection" className="hover:text-lime-500 transition-colors">Asset Inspection</Link></li>
-            <li><Link to="/services/mining" className="hover:text-lime-500 transition-colors">Mining Solutions</Link></li>
-            <li><Link to="/services/health" className="hover:text-lime-500 transition-colors">Health & Environment</Link></li>
-            
+            {INDUSTRIES.map((industry) => (
+              <li key={industry.slug}>
+                <Link to={`/services/${industry.slug}`} className="hover:text-lime-500 transition-colors">{industry.name}</Link>
+              </li>
+            ))}
           </ul>
         </div>
 
         {/* Newsletter */}
         <div>
           <h4 className="text-white font-bold text-lg mb-6">Newsletter</h4>
-          <p className="text-sm text-slate-400 mb-4">Stay updated with the latest in precision agriculture.</p>
+          <p className="text-sm text-slate-400 mb-4">Stay updated on drone surveying, inspection, training and aerial data.</p>
           <form onSubmit={handleNewsletterSubmit} className="flex flex-col gap-2">
             <input
               type="email"

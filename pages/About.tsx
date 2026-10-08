@@ -70,7 +70,7 @@ function ImpactStatsSection() {
       <AnimatedSection animationType="unveil" delay={0.05}>
         <h2 className="text-4xl text-white text-center font-bold mb-4">Our Impact</h2>
         <p className="text-slate-200 text-lg mb-12 max-w-5xl mx-auto">
-          Since our founding, we’ve been dedicated to making a real difference in the lives of farmers, builders, capacity building efforts, and mining operations across Sierra Leone and beyond.
+          Since our founding, we’ve been dedicated to making a real difference for mining operations, construction projects, infrastructure owners, farmers and drone students across Sierra Leone and beyond.
         </p>
       </AnimatedSection>
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 text-center">
@@ -106,8 +106,8 @@ const About: React.FC = () => {
         <AnimatedSection className="container lg:mt-20 mx-auto mt-8 px-4 relative z-10" animationType="unveil-scale" delay={0.1}>
           <h1 className="text-5xl font-bold mb-4">About Us</h1>
           <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-            Revolutionizing agriculture and other industries through precision aerial technology and
-            sustainable innovation.
+            Precision aerial data for mining, construction, infrastructure and agriculture - delivered by
+            certified pilots, and taught in our drone academy.
           </p>
         </AnimatedSection>
       </section>
@@ -128,19 +128,21 @@ const About: React.FC = () => {
                   </h2>
                   <p className="text-slate-600 mb-6 leading-relaxed text-lg">
                     Agro Aerial Precision was founded by Sylvester Abu Gbamoi in
-                    2023 to bridge the gap between traditional farming practices
-                    and the rapidly evolving digital age. We saw a future where
-                    farmers could make faster, smarter, and more informed
-                    decisions powered by technology rather than burdened by
-                    guesswork.
+                    2023. We started in agriculture, helping farmers move from
+                    guesswork to data, and have grown into a full aerial data
+                    company: today we survey mines and construction sites, inspect
+                    power lines, telecom masts and solar farms, monitor the
+                    environment, and train the next generation of drone pilots
+                    and data analysts.
                   </p>
                   <p className="text-slate-600 mb-6 leading-relaxed text-lg">
                     Our journey began with a simple but powerful realization:
                     drone technology has the potential to solve some of the most
-                    pressing challenges in modern industries. From pest
-                    outbreaks to inefficient resource use, we recognized that
-                    many of these issues could be minimized or even prevented
-                    through precise, data-driven insights.
+                    pressing challenges in modern industries. From slow, risky
+                    ground surveys on mine sites to hidden faults on power lines
+                    and pest outbreaks on farms, we recognized that many of these
+                    issues could be minimized or even prevented through precise,
+                    data-driven insights.
                   </p>
                   {isExpanded && (
                     <>
@@ -153,7 +155,7 @@ const About: React.FC = () => {
                         <li className="flex items-start">
                           <i className="ri-checkbox-circle-fill text-green-500 mr-3"></i>
                           <span>
-                            Lack of modern technological tools for efficient farming and data collection
+                            Lack of modern technological tools for surveying, inspection, farming and data collection
                           </span>
                         </li>
                         <li className="flex items-start">
@@ -183,13 +185,13 @@ const About: React.FC = () => {
                         Through my work with drone technology at SKT Live in Ghana and Charis UAS in Rwanda and Ivory Coast, I witnessed firsthand the transformative power of UAVs in agriculture, construction, and rural development. I saw how advanced aerial solutions could improve accuracy, increase yields, reduce waste, cut operational costs, and ultimately support the long-term resilience of farming communities.
                         Recognizing the potential to bring these innovations to Sierra Leone, I founded Agro Aerial Precision a company built on the mission of introducing smarter, safer, and more sustainable ways of farming and data collection. By leveraging drones, artificial intelligence, and advanced data analytics, we empower farmers, construction companies, and mining operations across the region and beyond.
 
-                        At Agro Aerial Precision, we believe technology should uplift communities, strengthen food systems, and drive meaningful development. Our goal is to make agriculture and data collection more efficient, environmentally friendly, and future-ready
+                        At Agro Aerial Precision, we believe technology should uplift communities, strengthen food systems, and drive meaningful development. Our goal is to make surveying, inspection, agriculture and data collection more efficient, safer, environmentally friendly, and future-ready.
                       </p>
                       <h2 className="text-2xl font-bold mb-2">
                         Our mission is simple:{" "}
                       </h2>
                       <p className="text-slate-600 mb-8 leading-relaxed text-lg">
-                        Driving the future of agriculture, construction, and mining through precision-driven, cost-effective, and sustainable aerial solutions. At Agro Aerial Precision, we empower farmers, builders, and mining operations with accurate data, smarter insights, and innovative UAV technology. One field, one flight, and one dataset at a time we’re shaping a stronger, smarter, and more sustainable future. Let’s grow smarter, together.
+                        Driving the future of mining, construction, infrastructure, and agriculture through precision-driven, cost-effective, and sustainable aerial solutions. At Agro Aerial Precision, we empower mining operations, builders, infrastructure owners, and farmers with accurate data, smarter insights, and innovative UAV technology. One site, one flight, and one dataset at a time we’re shaping a stronger, smarter, and more sustainable future. Let’s build smarter, together.
                       </p>
                     </>
                   )}
@@ -239,7 +241,7 @@ const About: React.FC = () => {
             <h3 className="text-3xl font-bold mb-4">Our Vision</h3>
             <p className="text-slate-600 leading-relaxed text-lg">
               To be the leading provider of precision aerial intelligence in
-              Sierra Leone empowering, Students, and communities through technology that promotes economic growth and environmental sustainability.
+              Sierra Leone, empowering industries, students and communities through technology that promotes economic growth and environmental sustainability.
             </p>
           </div>
           <div className="bg-white p-8 rounded-3xl shadow-sm mb-4">

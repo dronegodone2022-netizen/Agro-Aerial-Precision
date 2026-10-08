@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { SERVICES } from '../constants';
+import { SERVICES, findIndustry } from '../constants';
 import AnimatedSection from '../components/AnimatedSection';
 
 const serviceDetailVideo = new URL('../src/assets/home-videoBG1.mp4', import.meta.url).href;
@@ -45,10 +45,46 @@ const ServiceDetail: React.FC = () => {
   };
 
   const FAQData: Record<string, Array<{ question: string; answer: string }>> = {
+    Mining: [
+      {
+        question: 'How accurate are your mine surveys and stockpile volumes?',
+        answer: 'With ground control points and RTK positioning, our surveys typically reach a few centimetres of accuracy. Stockpile volumes are measured from millions of data points, which is usually more reliable than a handful of ground survey shots. We confirm the accuracy target with you before each project.'
+      },
+      {
+        question: 'Will a survey interrupt our mining operations?',
+        answer: 'No. The drone flies above the operation, so haul trucks and loaders keep working. We agree flight times and safety zones with your site team before we fly.'
+      },
+      {
+        question: 'Can you deliver data for our mine planning software?',
+        answer: 'Yes. We deliver orthomosaics, surfaces, contours and point clouds in standard formats that load into Surpac, Datamine, Micromine, CAD and GIS software.'
+      },
+      {
+        question: 'How often should we survey?',
+        answer: 'Most operations survey monthly for production reporting and stockpile reconciliation. Some sites also survey after major blasts or before end-of-quarter reporting.'
+      }
+    ],
+    Construction: [
+      {
+        question: 'What do you deliver from a topographic survey?',
+        answer: 'Typically a high-resolution orthomosaic, a digital surface model, a bare-earth terrain model, contour lines and a point cloud - in formats your engineers can open in CAD and GIS software.'
+      },
+      {
+        question: 'How often should we fly progress monitoring?',
+        answer: 'Weekly or monthly, depending on how fast the project moves. We fly the same routes and viewpoints each time so every flight can be compared with the last one and with the design.'
+      },
+      {
+        question: 'When do we need LiDAR instead of normal photo mapping?',
+        answer: 'When the ground is covered by trees or bush. Photo mapping only sees the top of the vegetation; LiDAR reaches the ground through gaps in the canopy and gives you the true terrain.'
+      },
+      {
+        question: 'Can drones map a large or hard-to-reach site?',
+        answer: 'Yes - that is where drones save the most time. A site that takes a ground team several weeks can often be flown in one or two days.'
+      }
+    ],
     Agriculture: [
       {
         question: 'How accurate is your precision spraying technology?',
-        answer: 'Our drone spraying system achieves up to 95% accuracy in application rates, ensuring uniform coverage while reducing chemical usage by up to 30% compared to traditional methods.'
+        answer: 'Our drone spraying system applies products at precise, calibrated rates, ensuring uniform coverage while reducing chemical usage by up to 30% compared to traditional methods.'
       },
       {
         question: 'What is the recommended frequency for crop health monitoring?',
@@ -103,7 +139,15 @@ const ServiceDetail: React.FC = () => {
         answer: 'Initial visual reports are provided within 24 hours. Comprehensive analysis with detailed findings and recommendations typically takes 2-3 business days.'
       }
     ],
-    Health: [
+    Environment: [
+      {
+        question: 'What can environmental drone monitoring show?',
+        answer: 'Land reclamation and rehabilitation progress, erosion and drainage problems, vegetation health, and land-use change over time - all as dated, measurable maps you can share with regulators and communities.'
+      },
+      {
+        question: 'Can you help with environmental compliance reporting?',
+        answer: 'Yes. Regular surveys give you consistent before-and-after evidence for environmental management plans, rehabilitation commitments and stakeholder reports.'
+      },
       {
         question: 'How effective is drone-based mosquito control?',
         answer: 'Drone-based mosquito control reaches 85-90% effectiveness in coverage areas, with results visible within 2-3 days. It covers hard-to-reach areas that traditional methods cannot access.'
@@ -123,37 +167,18 @@ const ServiceDetail: React.FC = () => {
     ]
   };
 
-  const categoryLabelMap: Record<string, string> = {
-    agriculture: 'Agriculture',
-    construction: 'Construction',
-    mining: 'Mining',
-    health: 'Health',
-    inspection: 'Inspection',
-    'drone-repairing': 'Drone Repairing'
-  };
-
-  const displayCategory = category
-    ? categoryLabelMap[category.toLowerCase()] || category.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-    : 'Our Services';
+  const industry = findIndustry(category);
+  const displayCategory = industry ? industry.category : 'Our Services';
+  const pageTitle = industry ? industry.name : 'Our Services';
 
   const categoryFAQs = FAQData[displayCategory] || [];
-  
-  // Industries without their own service entries show the services that apply to them
-  const relatedServiceIds: Record<string, string[]> = {
-    Construction: ['mapping-survey', 'asset-inspection'],
-    Mining: ['mapping-survey', 'asset-inspection'],
-  };
 
-  const categoryServices = SERVICES.filter(
-    s => s.category.toLowerCase() === displayCategory.toLowerCase()
-  );
-  const filteredServices = categoryServices.length > 0
-    ? categoryServices
-    : SERVICES.filter(s => relatedServiceIds[displayCategory]?.includes(s.id));
+  const filteredServices = SERVICES.filter(s => s.category === displayCategory);
 
   return (
     <div className="pt-16 sm:pt-20 min-h-screen bg-slate-50 pb-16 sm:pb-20">
       <div className="absolute inset-0 bg-slate-900 h-[45dvh] sm:max-h-[40dvh] md:max-h-[35dvh] lg:max-h-[40dvh] lg:min-h-[70dvh] overflow-hidden">
+        {displayCategory === 'Agriculture' || !industry ? (
         <video
           src={serviceDetailVideo}
           autoPlay
@@ -162,14 +187,17 @@ const ServiceDetail: React.FC = () => {
           playsInline
           className="w-full h-full  lg:min-h-[40dvh] object-cover opacity-30"
         />
+        ) : (
+          <img src={industry.image} alt="" className="w-full h-full lg:min-h-[40dvh] object-cover opacity-30" />
+        )}
         <div className="absolute inset-0 bg-linear-to-b from-green-900 via-slate-900/60 to-transparent opacity-50"></div>
       </div>
       
       <div className="relative z-10 h-full text-white mt-6 py-4 lg:mt-35 pb-6 text-center">
         <AnimatedSection className="container mx-auto mt-4 xs:mt-6 tablet:mt-8 px-3 xs:px-4" animationType="unveil-scale" delay={0.05}>
-          <h1 className="text-3xl xs:text-3xl tablet:text-5xl laptop:text-5xl font-bold mb-3 xs:mb-4">{displayCategory} Solutions</h1>
+          <h1 className="text-3xl xs:text-3xl tablet:text-5xl laptop:text-5xl font-bold mb-3 xs:mb-4">{pageTitle}</h1>
           <p className="text-slate-300 xs:text-slate-400 text-lg xs:text-base tablet:text-lg laptop:text-xl mb-8 max-w-xl mx-auto">
-            Explore our professional aerial solutions tailored for {displayCategory.toLowerCase()} operations.
+            {industry ? industry.description : 'Explore our professional aerial solutions.'}
           </p>
           <div className="flex justify-center mt-8">
             <button

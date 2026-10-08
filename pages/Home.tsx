@@ -1,11 +1,11 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { SERVICES, TESTIMONIALS } from '../constants';
+import { INDUSTRIES, TESTIMONIALS } from '../constants';
 import AnimatedSection from '../components/AnimatedSection';
 
 const asset = (file: string) => new URL(`../src/assets/${file}`, import.meta.url).href;
-const serviceBg = asset('service bg.jpg');
+const heroBg = asset('sola3.jpg');
 const aiphLogo = asset('aiph.jpeg');
 const brand2Logo = asset('brand 2.png');
 const brand3Logo = asset('brand 3.png');
@@ -20,7 +20,7 @@ const Home: React.FC = () => {
         {/* Background Image */}
         <div className="absolute inset-0 bg-slate-900">
           <img
-            src={serviceBg}
+            src={heroBg}
             alt="Hero Background"
             className="w-full h-full object-cover opacity-40 sm:opacity-50"
           />
@@ -31,17 +31,17 @@ const Home: React.FC = () => {
         <AnimatedSection className="container mx-auto pt-16 px-4 sm:px-6 md:px-8 relative z-10 text-white w-full" animationType="unveil-scale" delay={0.1}>
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-2xl mx-4 sm:text-3xl md:text-4xl lg:text-5xl/tight xl:text-6xl/tight font-bold leading-tight mb-4 sm:mb-6 md:mb-4">
-              Using Drones For Precision Agriculture Solutions to Empower <span className="text-lime-500 sm:text-lime-600">Modern Industries.</span>
+              Drone Surveys, Inspection &amp; Aerial Data for <span className="text-lime-500 sm:text-lime-600">Mining, Construction &amp; Infrastructure.</span>
             </h1>
             <p className="text-slate-300 sm:text-slate-400 text-base sm:text-lg md:text-lg lg:text-xl mb-8 max-w-xl mx-auto">
-              We are committed to providing farmers, construction, mining companies, and other industries with advanced drone technology and data analytics tools tailored to their specific needs.
+              SLCAA-certified drone operations across Sierra Leone: mine and site surveys, stockpile volumes, infrastructure and thermal inspection, environmental monitoring and precision agriculture - plus professional drone training.
             </p>
             <div className="flex flex-col pt-12 md:pt-4 sm:flex-row gap-4 md:flex-row sm:gap-5 justify-center items-center">
               <Link
                 to="/contact"
                 className="w-full sm:w-auto px-6 sm:px-8 py-4 sm:py-3 md:py-4 lg:py-2 bg-green-700 rounded-full font-bold text-lg sm:text-base md:text-lg hover:bg-lime-700 transition-all"
               >
-                Consult for Free
+                Request a Survey
               </Link>
               <Link
                 to="/academy"
@@ -79,30 +79,30 @@ const Home: React.FC = () => {
       <section className="py-12 bg-slate-50">
         <AnimatedSection className="container mx-auto px-4" animationType="unveil" delay={0.05}>
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-4xl font-bold mb-4">Our Solutions</h2>
+            <h2 className="text-4xl font-bold mb-4">Industries We Serve</h2>
             <div className="h-1.5 w-20 bg-lime-500 mx-auto rounded-full mb-6"></div>
-            <p className="text-slate-600">Comprehensive aerial intelligence services designed to maximize yield, reduce costs, and ensure sustainable operations.</p>
+            <p className="text-slate-600">Accurate aerial data and drone services that make operations safer, faster and better informed - from the mine pit to the farm field.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {SERVICES.filter(s => s.id !== 'mosquito-control').map((service, index) => (
+            {INDUSTRIES.map((industry, index) => (
               <AnimatedSection
-                key={service.id}
-                className="group bg-white md:grid-cols-2 gap-12 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-lime-100"
+                key={industry.slug}
+                className="group bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-lime-100 flex flex-col"
                 animationType="unveil"
                 delay={index * 0.1}
               >
-                <div className="relative h-64 overflow-hidden">
-                  <img loading="lazy" src={service.image} alt={service.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                  <div className="absolute top-4 left-4 bg-lime-600 text-white text-xs font-bold px-3 py-1 rounded-full">
-                    {service.category}
+                <div className="relative h-56 overflow-hidden">
+                  <img loading="lazy" src={industry.image} alt={industry.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <div className="absolute top-4 left-4 bg-lime-600 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                    <i className={industry.icon} aria-hidden="true"></i> {industry.tagline}
                   </div>
                 </div>
-                <div className="p-8">
-                  <h3 className="text-2xl font-bold mb-3">{service.title}</h3>
-                  <p className="text-slate-600 mb-6 line-clamp-3">{service.description}</p>
-                  <Link to={`/services/${service.category.toLowerCase()}`} className="inline-flex items-center gap-2 font-bold text-green-800 group-hover:gap-4 transition-all">
-                    Read More <i className="ri-arrow-right-line"></i>
+                <div className="p-8 flex flex-col flex-1">
+                  <h3 className="text-2xl font-bold mb-3">{industry.name}</h3>
+                  <p className="text-slate-600 mb-6">{industry.description}</p>
+                  <Link to={`/services/${industry.slug}`} className="mt-auto inline-flex items-center gap-2 font-bold text-green-800 group-hover:gap-4 transition-all">
+                    Explore {industry.name} <i className="ri-arrow-right-line"></i>
                   </Link>
                 </div>
               </AnimatedSection>
@@ -125,22 +125,22 @@ const Home: React.FC = () => {
                 <AnimatedSection className="flex gap-6" animationType="unveil-left" delay={0.2}>
                   <div className="shrink-0 w-12 h-12 bg-lime-600 rounded-xl flex items-center justify-center font-bold text-xl">1</div>
                   <div>
-                    <h4 className="text-xl font-bold mb-2">Precision Crop Management</h4>
-                    <p className="text-slate-400">Embracing a data-driven revolution that leverages advanced technologies to enhance productivity and sustainability.</p>
+                    <h4 className="text-xl font-bold mb-2">Plan the Mission</h4>
+                    <p className="text-slate-400">We agree what you need - accuracy, outputs and deadlines - then plan safe, permitted flights for your site.</p>
                   </div>
                 </AnimatedSection>
                 <AnimatedSection className="flex gap-6" animationType="unveil-left" delay={0.4}>
                   <div className="shrink-0 w-12 h-12 bg-lime-600 rounded-xl flex items-center justify-center font-bold text-xl">2</div>
                   <div>
-                    <h4 className="text-xl font-bold mb-2">Data Collection & Analytics</h4>
-                    <p className="text-slate-400">Redefining modern agriculture by enabling farmers to harness unprecedented levels of precision and insight.</p>
+                    <h4 className="text-xl font-bold mb-2">Capture the Data</h4>
+                    <p className="text-slate-400">Certified pilots fly RGB, thermal, multispectral or LiDAR sensors with ground control and RTK for survey-grade accuracy.</p>
                   </div>
                 </AnimatedSection>
                 <AnimatedSection className="flex gap-6" animationType="unveil-left" delay={0.6}>
                   <div className="shrink-0 w-12 h-12 bg-lime-600 rounded-xl flex items-center justify-center font-bold text-xl">3</div>
                   <div>
-                    <h4 className="text-xl font-bold mb-2">Transforming Data into Action</h4>
-                    <p className="text-slate-400">Our high-resolution maps and specialized sensors turn raw aerial imagery into actionable management plans.</p>
+                    <h4 className="text-xl font-bold mb-2">Deliver Insights</h4>
+                    <p className="text-slate-400">Maps, 3D models, volumes, inspection reports and recommendations - in formats ready for your engineers, planners and managers.</p>
                   </div>
                 </AnimatedSection>
               </div>
@@ -200,9 +200,9 @@ const Home: React.FC = () => {
       {/* Contact CTA */}
       <section className="py-20 bg-lime-100 text-green-900">
         <AnimatedSection className="container mx-auto px-4 text-center" animationType="unveil-scale" delay={0.05}>
-          <h2 className="text-4xl font-bold mb-6">Ready to upgrade your farm management?</h2>
+          <h2 className="text-4xl font-bold mb-6">Ready to put aerial data to work?</h2>
           <p className="text-xl opacity-90 mb-10 max-w-2xl mx-auto">
-            Join hundreds of modern farmers who have increased their yield and reduced costs with our aerial solutions.
+            Whether it's a mine pit, a construction site, a power line or a farm, tell us what you need to know and we'll plan the right survey.
           </p>
           <Link to="/contact" className="inline-block bg-lime-600 text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-green-800 transition-all shadow-xl duration-500 hover:text-white">
             Get Started Today
