@@ -208,8 +208,9 @@ export const TEAM: Team []=[
 export const TESTIMONIALS: Testimonial[] = [
   {
     id: 1,
-    name: 'Samba  Koroma',
+    name: 'Samba Koroma',
     company: 'Fresh Vegetables Farm',
+    sector: 'Agriculture',
     avatar: asset('avata7.jpg'),
     content: '"Implementing Agro Aerial Precision\'s precision agriculture technology has completely transformed our farm\'s productivity. The detailed data and insights we receive have helped us make better decisions, resulting in a 20% increase in our crop yields."'
   },
@@ -217,6 +218,7 @@ export const TESTIMONIALS: Testimonial[] = [
     id: 2,
     name: 'David Samaka',
     company: 'Harmony Hills Farm',
+    sector: 'Agriculture',
     avatar: asset('avata8.jpg'),
     content: '"We consider Agro Aerial Precision more than just a service provider; they are a partner in our success. Their commitment to innovation and sustainability aligns perfectly with our values. Their technology has empowered us to achieve new levels of efficiency."'
   },
@@ -224,6 +226,7 @@ export const TESTIMONIALS: Testimonial[] = [
     id: 3,
     name: 'Mabinti Mansary',
     company: 'Sunrise Farms',
+    sector: 'Agriculture',
     avatar: asset('avata5.jpg'),
     content: '"The reliable data provided by Agro Aerial Precision has been crucial for our decision-making process. We now have a clear understanding of our fields\' conditions, which has led to more effective management and improved crop health."'
   }

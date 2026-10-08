@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { INDUSTRIES, TESTIMONIALS } from '../constants';
+import { INDUSTRIES } from '../constants';
+import Testimonials from '../components/Testimonials';
 import AnimatedSection from '../components/AnimatedSection';
 
 const asset = (file: string) => new URL(`../src/assets/${file}`, import.meta.url).href;
@@ -165,37 +166,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white overflow-hidden">
-        <AnimatedSection className="container mx-auto px-4 sm:px-6 md:px-8" animationType="unveil-right" delay={0.05}>
-          <div className="text-center mb-8 sm:mb-12 md:mb-16">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4">What Our Customers Say</h2>
-            <div className="h-1 sm:h-1.5 w-16 sm:w-20 bg-green-800 mx-auto rounded-full mb-4 sm:mb-6"></div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-            {TESTIMONIALS.map((t, index) => (
-              <AnimatedSection
-                key={t.id}
-                className="bg-green-50 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl relative hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-1"
-                animationType="unveil"
-                delay={index * 0.15}
-              >
-                <i className="ri-double-quotes-l text-3xl sm:text-4xl text-lime-400 absolute top-4 sm:top-6 right-4 sm:right-6"></i>
-                <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-                  <img loading="lazy" src={t.avatar} alt={t.name} className="w-12 sm:w-14 h-12 sm:h-14 rounded-full border-2 border-lime-500 p-0.5 shrink-0" />
-                  <div className="min-w-0">
-                    <h5 className="font-bold text-slate-900 text-sm sm:text-base truncate">{t.name}</h5>
-                    <p className="text-xs sm:text-sm text-slate-500 truncate">{t.company}</p>
-                  </div>
-                </div>
-                <p className="text-sm sm:text-base text-slate-700 italic leading-relaxed line-clamp-4">
-                  {t.content}
-                </p>
-              </AnimatedSection>
-            ))}
-          </div>
-        </AnimatedSection>
-      </section>
+      <Testimonials />
 
       {/* Contact CTA */}
       <section className="py-20 bg-lime-100 text-green-900">

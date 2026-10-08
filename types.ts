@@ -27,6 +27,8 @@ export interface Testimonial {
   company: string;
   avatar: string;
   content: string;
+  /** Industry label shown with the quote, e.g. 'Mining' or 'Agriculture' */
+  sector?: string;
 }
 export interface Team  {
   id: number;
