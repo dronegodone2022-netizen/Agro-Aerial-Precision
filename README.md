@@ -39,8 +39,8 @@ The answer key never reaches the browser.
    The `private/` folder is git-ignored; never commit the answer key.
    To edit questions later, use the `exam_questions` table. `options` is a list, and
    `correct_option` is the position of the right answer, starting at 1.
-4. **Table Editor > certificates**: import your certificate CSV (`id`, `name`, `course`,
-   `issued_on`, `drive_link`).
+4. Add certificates from `/#/admin` > Certificates (or import a CSV with `id`, `name`,
+   `course`, `issued_on`, `drive_link` in **Table Editor > certificates**).
 5. **Admins**: create the user in **Authentication > Users > Add user**, then run
    `insert into public.admins (user_id) select id from auth.users where email = 'you@example.com';`
 6. **Authentication > URL Configuration**:
@@ -76,9 +76,16 @@ The answer key never reaches the browser.
 
 ## Certificates
 
-`/#/qr` generates a QR code pointing to `/#/verify/<certificate id>`. Verification looks up
-one ID at a time in the Supabase `certificates` table. Until Supabase is configured, it
-falls back to the old published Google Sheet.
+* **Anyone** can verify a certificate without an account: scan its QR code (opens
+  `/#/verify/<certificate id>`) or type the ID on `/#/verify` or the Academy page.
+  Lookups are one ID at a time, so the list of certificate holders stays private.
+* **Admins** add, edit and delete certificates at `/#/admin` > **Certificates**: pick the
+  student (optional), course and date, upload the PDF/JPG/PNG (or paste a link), and
+  save. The certificate ID is suggested automatically (`AAPA-<course code>_<initials><year>-<number>`)
+  and the QR code is ready to download straight away.
+* Uploaded files live in the public `certificates` Supabase Storage bucket. Anyone with
+  the link can open a file, but only admins can upload, replace, delete or list them.
+* `/#/qr` can re-create the QR code for any existing certificate ID.
 
 ## Assets
 

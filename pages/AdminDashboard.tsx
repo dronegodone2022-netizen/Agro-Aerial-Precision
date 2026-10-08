@@ -14,6 +14,7 @@ import {
   type EnrollmentStatus,
   type LockedStudent,
 } from '../src/examApi';
+import CertificatesPanel from '../components/CertificatesPanel';
 
 // Admins are Supabase Auth users whose ID is listed in the public.admins table.
 // The database checks that on every admin call, so this page only controls the UI.
@@ -31,6 +32,7 @@ const AdminDashboard: React.FC = () => {
   const [locks, setLocks] = useState<LockedStudent[]>([]);
   const [attempts, setAttempts] = useState<AttemptSummary[]>([]);
   const [enrollments, setEnrollments] = useState<AdminEnrollment[]>([]);
+  const [tab, setTab] = useState<'students' | 'certificates'>('students');
 
   const loadData = async () => {
     setError('');
@@ -172,6 +174,35 @@ const AdminDashboard: React.FC = () => {
         )}
 
         {adminEmail && (
+          <div role="tablist" style={{ display: 'flex', gap: '8px', borderBottom: '2px solid #e2e8f0', marginBottom: '20px' }}>
+            {([['students', 'Students & Exams'], ['certificates', 'Certificates']] as const).map(([key, label]) => (
+              <button
+                key={key}
+                type="button"
+                role="tab"
+                aria-selected={tab === key}
+                onClick={() => setTab(key)}
+                style={{
+                  padding: '10px 16px',
+                  border: 'none',
+                  background: 'none',
+                  fontWeight: 700,
+                  fontSize: '15px',
+                  cursor: 'pointer',
+                  color: tab === key ? '#166534' : '#64748b',
+                  borderBottom: tab === key ? '3px solid #166534' : '3px solid transparent',
+                  marginBottom: '-2px',
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {adminEmail && tab === 'certificates' && <CertificatesPanel />}
+
+        {adminEmail && tab === 'students' && (
           <>
             <h2 style={{ fontSize: '20px', color: '#14532d', margin: '8px 0 12px' }}>
               Enrolments ({enrollments.filter((e) => e.status === 'pending').length} pending)

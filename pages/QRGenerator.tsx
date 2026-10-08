@@ -1,5 +1,6 @@
 import { useState } from "react";
-import QRCode from "qrcode";
+import { Link } from "react-router-dom";
+import { certificateQrDataUrl, certificateVerifyUrl } from "../src/certificateQr";
 
 export default function QRGenerator() {
   const [id, setId] = useState("");
@@ -9,17 +10,16 @@ export default function QRGenerator() {
   const generate = async () => {
     const certificateId = id.trim().toUpperCase();
     if (!certificateId) return;
-    // origin + pathname keeps the GitHub Pages base path (/Agro-Aerial-Precision/)
-    const url = `${window.location.origin}${window.location.pathname}#/verify/${encodeURIComponent(certificateId)}`;
-    setVerificationUrl(url);
-    setQR(await QRCode.toDataURL(url, { width: 512, margin: 2 }));
+    setVerificationUrl(certificateVerifyUrl(certificateId));
+    setQR(await certificateQrDataUrl(certificateId));
   };
 
   return (
     <div className="p-6 pt-28 max-w-xl mx-auto">
       <h1 className="text-xl font-bold">Generate Certificate QR</h1>
       <p className="text-sm text-slate-600 mt-2">
-        Add the certificate to the Supabase <code>certificates</code> table first, then print this QR code on it.
+        Admins: the easiest way to add a certificate is the <Link to="/admin" className="text-green-700 underline">Exam Admin</Link> page
+        (Certificates tab), which uploads the file and creates the QR code for you. Use this page to re-make a QR code for an existing certificate ID.
       </p>
 
       <label htmlFor="cert-id" className="block text-sm font-medium mt-4">

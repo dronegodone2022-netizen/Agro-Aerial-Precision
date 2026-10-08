@@ -210,3 +210,71 @@ export const adminListEnrollments = () => rpc<AdminEnrollment[]>('admin_list_enr
 
 export const adminSetEnrollmentStatus = (enrollmentId: number, status: EnrollmentStatus) =>
   rpc<Enrollment>('admin_set_enrollment_status', { p_enrollment_id: enrollmentId, p_status: status });
+
+// --- Admins: certificates -------------------------------------------------
+
+export interface AdminCertificate {
+  id: string;
+  name: string;
+  course: string;
+  issuedOn: string;
+  link: string;
+  studentId: string | null;
+  createdAt: string;
+}
+
+export interface AdminStudent extends StudentProfile {
+  passedExam: boolean;
+  hasCertificate: boolean;
+}
+
+const CERTIFICATE_BUCKET = 'certificates';
+const MAX_CERTIFICATE_FILE_BYTES = 10 * 1024 * 1024;
+const CERTIFICATE_FILE_TYPES: Record<string, string> = { 'application/pdf': 'pdf', 'image/jpeg': 'jpg', 'image/png': 'png' };
+
+export const adminListCertificates = () => rpc<AdminCertificate[]>('admin_list_certificates');
+
+export const adminListStudents = () => rpc<AdminStudent[]>('admin_list_students');
+
+export const adminSaveCertificate = (
+  certificate: { id: string; name: string; course: string; issuedOn: string; link: string; studentId: string | null },
+  isNew: boolean
+) =>
+  rpc<AdminCertificate>('admin_save_certificate', {
+    p_id: certificate.id,
+    p_name: certificate.name,
+    p_course: certificate.course,
+    p_issued_on: certificate.issuedOn,
+    p_link: certificate.link,
+    p_student_id: certificate.studentId || '',
+    p_is_new: isNew,
+  });
+
+export const adminDeleteCertificate = (certificateId: string) =>
+  rpc<AdminCertificate>('admin_delete_certificate', { p_id: certificateId });
+
+/** Uploads a certificate PDF/JPG/PNG to Supabase Storage and returns its public URL. */
+export const uploadCertificateFile = async (file: File, certificateId: string) => {
+  const extension = CERTIFICATE_FILE_TYPES[file.type];
+  if (!extension) throw new ExamApiError('The certificate file must be a PDF, JPG or PNG.');
+  if (file.size > MAX_CERTIFICATE_FILE_BYTES) throw new ExamApiError('The certificate file must be 10 MB or smaller.');
+
+  const supabase = await client();
+  // Random suffix so a replaced file never shows a cached old version
+  const safeId = certificateId.trim().toUpperCase().replace(/[^A-Z0-9_.-]/g, '');
+  const path = `${safeId}-${crypto.randomUUID().slice(0, 8)}.${extension}`;
+  const { error } = await supabase.storage.from(CERTIFICATE_BUCKET).upload(path, file, { contentType: file.type, upsert: false });
+  if (error) throw new ExamApiError(`Upload failed: ${error.message}`);
+
+  return supabase.storage.from(CERTIFICATE_BUCKET).getPublicUrl(path).data.publicUrl;
+};
+
+/** Deletes a file previously uploaded with uploadCertificateFile. Links elsewhere (e.g. Google Drive) are ignored. */
+export const deleteCertificateFile = async (link: string) => {
+  const marker = `/storage/v1/object/public/${CERTIFICATE_BUCKET}/`;
+  const index = link.indexOf(marker);
+  if (index === -1) return;
+
+  const supabase = await client();
+  await supabase.storage.from(CERTIFICATE_BUCKET).remove([decodeURIComponent(link.slice(index + marker.length))]);
+};
