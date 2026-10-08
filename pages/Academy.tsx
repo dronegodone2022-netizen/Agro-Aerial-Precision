@@ -177,7 +177,7 @@ const Academy: React.FC = () => {
       setEnrollSuccess(
         enrollment.alreadyEnrolled
           ? `You are already enrolled in ${course.title} (status: ${enrollment.status}). WhatsApp has opened so you can follow up with us.`
-          : `Enrolment received for ${course.title}. Send the WhatsApp message that just opened and we'll reply with payment details. You can track your status in the Student Portal.`
+          : `Enrolment received for ${course.title}. We've emailed you a confirmation - please also send the WhatsApp message that just opened and we'll reply with payment details. You can track your status in the Student Portal.`
       );
     } catch (err) {
       setEnrollError(getErrorMessage(err));
@@ -444,7 +444,7 @@ const Academy: React.FC = () => {
                   {enrolling ? 'Enrolling...' : 'Enrol'}
                 </button>
               </div>
-              <p className="text-xs text-slate-500">Your enrolment is saved to your student account, then WhatsApp opens so we can send you the payment details.</p>
+              <p className="text-xs text-slate-500">Your enrolment is saved to your student account and emailed to you and our team. WhatsApp then opens so we can send you the payment details.</p>
             </form>
             )}
           </div>
