@@ -17,50 +17,63 @@ copy `.env.example` to `.env`.
 
 | Variable | Purpose |
 | --- | --- |
-| `VITE_GOOGLE_APPS_SCRIPT_URL` | Web app URL of the exam backend (below). Without it the live exam portal shows "not configured". |
+| `VITE_SUPABASE_URL` | Supabase project URL (Project Settings > API). |
+| `VITE_SUPABASE_ANON_KEY` | Supabase **anon / publishable** key. It is safe to publish: the database only lets it call the exam and certificate functions. **Never** use the `service_role` key here. |
 | `VITE_MAILERLITE_FORM_ID` | ID of a MailerLite embedded form, used by the footer newsletter sign-up. |
 
-Never put API keys or passwords in frontend code or `VITE_*` variables: everything
+Never put secret keys or passwords in frontend code or `VITE_*` variables: everything
 in the build is visible to every visitor.
 
-## Exam backend (Google Apps Script)
+## Backend (Supabase)
 
-Grading, timing and exam locks all run in `google-apps-script.gs`, so the answer
-key never reaches the browser.
+The exam and certificate verification run on Supabase. All logic lives in Postgres
+functions in `supabase/migrations/`. Every table is locked down (RLS on, no policies,
+privileges revoked), so the browser can only call those functions. The answer key
+never reaches the browser.
 
 ### Setup
 
-1. Create a **private** Google Sheet. Open **Extensions > Apps Script** and paste in
-   the contents of `google-apps-script.gs`.
-2. Run the `setup` function once from the editor (approve the permissions). This
-   creates the `Students`, `Questions`, `Attempts` and `ExamLocks` tabs.
-3. **Students** tab: one row per student: `Student ID`, `Name`, `Email`, `PIN`.
-   Format the PIN column as **Plain text** so PINs like `0123` keep their leading zero.
-4. **Questions** tab: import `private/exam-questions.csv` (File > Import > Append to
-   current sheet), or type questions in. `Correct Option` is the option number (1-4).
+1. Create a project at [supabase.com](https://supabase.com).
+2. **SQL Editor**: paste and run `supabase/migrations/20261008000000_init.sql`.
+3. **SQL Editor**: run `private/seed-questions.sql` to load the exam questions.
    The `private/` folder is git-ignored; never commit the answer key.
-5. **Project Settings > Script Properties**: add `ADMIN_KEY` with a long random
-   password. Admins enter it on `/#/admin-reset`.
-6. **Deploy > New deployment > Web app**: Execute as **Me**, Who has access
-   **Anyone**. Copy the web app URL into the `VITE_GOOGLE_APPS_SCRIPT_URL` variable.
-   After editing the script later, use **Deploy > Manage deployments > Edit > New version**
-   so the URL stays the same.
+   To edit questions later, use the `exam_questions` table. `options` is a list, and
+   `correct_option` is the position of the right answer, starting at 1.
+4. **Table Editor > students**: add one row per student (`id`, `name`, `email`, `pin`).
+   Type the PIN as plain text. It is hashed automatically when saved.
+5. **Table Editor > certificates**: import your certificate CSV (columns `id`, `name`,
+   `course`, `issued_on`, `drive_link`; drop the old `qr` column). Then unpublish the old
+   Google Sheet, because it exposes every certificate holder's name.
+6. **Admins**:
+   * **Authentication > Users > Add user**: create your admin account (email + password).
+   * **SQL Editor**: `insert into public.admins (user_id) select id from auth.users where email = 'you@example.com';`
+   * Recommended: **Authentication > Sign In / Providers**: turn off "Allow new users to sign up".
+     Strangers who sign up still can't do anything, but there's no reason to allow it.
+7. Put the project URL and anon key into the GitHub repository variables above.
 
-### How it works
+### How the exam works
 
-* Students log in at `/#/student-login` and get a session token from the server.
-* The 5-minute timer is enforced by the server. Reloading or logging in again does
-  not reset it, and late submissions are graded as blank.
-* Pass mark is 80%. A failed attempt locks the exam and emails the admin the
-  results plus a one-time reset link.
-* After the retake fee is paid, the admin either opens that link or uses
-  `/#/admin-reset` with the admin key to unlock the exam.
+* Students log in at `/#/student-login` with their ID and PIN. 5 wrong PINs lock that ID
+  for 15 minutes.
+* The 5-minute timer is enforced by the database. Reloading or logging in again doesn't
+  reset it, and late submissions are graded as blank.
+* Pass mark is 80%. A failed attempt locks the exam.
+* Admins sign in at `/#/admin` to see locked students and recent results, and to unlock
+  a student after the retake fee is paid.
 * Correct answers and explanations are shown only to students who pass.
+* Timing, pass mark and session length are set in `_exam_config()` in the migration.
+
+### Local development
+
+Without `VITE_SUPABASE_*` set, `npm run dev` uses a built-in demo backend
+(`src/demoExamBackend.ts`): student `AAP-001` / `1234`, admin `admin@example.com` /
+`demo-admin`. It is never included in production builds.
 
 ## Certificates
 
-`/#/qr` generates a QR code pointing to `/#/verify/<certificate id>`. Verification
-reads the published certificates Google Sheet (see `src/data/useCertificates.ts`).
+`/#/qr` generates a QR code pointing to `/#/verify/<certificate id>`. Verification looks up
+one ID at a time in the Supabase `certificates` table. Until Supabase is configured, it
+falls back to the old published Google Sheet.
 
 ## Assets
 

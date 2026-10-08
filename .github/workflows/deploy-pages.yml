@@ -36,7 +36,8 @@ jobs:
         run: npm run build
         env:
           # Set these under GitHub repo > Settings > Secrets and variables > Actions > Variables
-          VITE_GOOGLE_APPS_SCRIPT_URL: ${{ vars.VITE_GOOGLE_APPS_SCRIPT_URL }}
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
           VITE_MAILERLITE_FORM_ID: ${{ vars.VITE_MAILERLITE_FORM_ID }}
 
       - name: Upload Pages artifact

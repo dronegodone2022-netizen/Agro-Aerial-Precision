@@ -1,27 +1,25 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { fetchCertificates } from "../src/data/useCertificates";
+import { verifyCertificate, type Certificate } from "../src/data/certificates";
 
 export default function Verify() {
   const { id: routeId } = useParams();
   const [id, setId] = useState(routeId || "");
   const [loading, setLoading] = useState(false);
-  const [certificate, setCertificate] = useState<any>(null);
+  const [certificate, setCertificate] = useState<Certificate | null>(null);
+  const [lookupError, setLookupError] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
   const searchCertificate = async (query: string) => {
     if (!query.trim()) return;
     setLoading(true);
-    const normalized = query.toUpperCase();
+    setLookupError(false);
     try {
-      const data: any = await fetchCertificates();
-      const match = (data || []).find(
-        (c: any) => c.id?.toUpperCase() === normalized
-      );
-      setCertificate(match || null);
+      setCertificate(await verifyCertificate(query));
     } catch (error) {
       console.error("Certificate verification failed", error);
       setCertificate(null);
+      setLookupError(true);
     } finally {
       setLoading(false);
       setHasSearched(true);
@@ -81,13 +79,14 @@ export default function Verify() {
             View Certificate
           </a>
 
-          {certificate.qr && (
-            <img src={certificate.qr} alt="QR" className="mt-4 w-40 h-40" />
-          )}
         </div>
       )}
 
-      {certificate === null && !loading && hasSearched && (
+      {lookupError && !loading && (
+        <p className="mt-6 text-amber-200">We couldn't check this certificate right now. Please check your connection and try again.</p>
+      )}
+
+      {certificate === null && !loading && hasSearched && !lookupError && (
         <p className="mt-6 text-red-600">Certificate Not Found ❌ </p>
       )}
     </div>

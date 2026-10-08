@@ -1,17 +1,20 @@
-// LOCAL DEVELOPMENT ONLY. Mimics google-apps-script.gs using localStorage so the
-// exam pages can be worked on without the real backend. examApi.ts only loads this
-// file when import.meta.env.DEV is true, so it is never part of the live site.
+// LOCAL DEVELOPMENT ONLY. Mimics the Supabase functions in supabase/migrations using
+// localStorage, so the exam pages can be worked on without a Supabase project.
+// examApi.ts only loads this file in dev when Supabase isn't configured, so it is
+// never part of the live site.
 //
-// Demo logins: AAP-001 / 1234, AAP-002 / 5678. Demo admin key: demo-admin.
-// The questions below are samples - the real ones live in the private Google Sheet.
+// Demo logins: AAP-001 / 1234, AAP-002 / 5678. Demo admin: admin@example.com / demo-admin.
+// The questions below are samples - the real ones live in the private Supabase table.
 
 import type { ApiResponse } from './examApi';
 
 const EXAM_DURATION_SECONDS = 5 * 60;
 const SUBMIT_GRACE_SECONDS = 60;
 const PASSING_PERCENTAGE = 80;
-const ADMIN_KEY = 'demo-admin';
+const ADMIN_EMAIL = 'admin@example.com';
+const ADMIN_PASSWORD = 'demo-admin';
 const STORAGE_KEY = 'demo_exam_backend';
+const ADMIN_SESSION_KEY = 'demo_exam_admin';
 
 const STUDENTS: Record<string, { name: string; email: string; pin: string }> = {
   'AAP-001': { name: 'Demo Student One', email: 'student1@example.com', pin: '1234' },
@@ -24,33 +27,54 @@ const QUESTIONS = [
   { id: '3', question: 'Demo question: where must a compass calibration be done?', options: ['In the air', 'On the ground', 'Either'], correctOption: 2, rationale: 'Always calibrate on the ground.' },
 ];
 
-interface Attempt { startedAt: number; submittedAt?: number; score?: number; total?: number; percentage?: number; passed?: boolean }
-interface Lock { studentId: string; studentName: string; email: string; score: number; percentage: number; resetToken: string; createdAt: string }
-interface DemoState { sessions: Record<string, string>; attempts: Record<string, Attempt>; locks: Record<string, Lock> }
+interface Attempt {
+  id: number;
+  studentId: string;
+  startedAt: number;
+  submittedAt?: number;
+  score?: number;
+  total?: number;
+  percentage?: number;
+  passed?: boolean;
+}
+interface Lock { studentId: string; score: number; percentage: number; createdAt: string }
+interface DemoState { sessions: Record<string, string>; attempts: Attempt[]; locks: Record<string, Lock> }
 
 const load = (): DemoState => {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '') as DemoState;
+    const state = JSON.parse(localStorage.getItem(STORAGE_KEY) || '');
+    if (Array.isArray(state.attempts)) return state;
   } catch {
-    return { sessions: {}, attempts: {}, locks: {} };
+    // fall through to a fresh state
   }
+  return { sessions: {}, attempts: [], locks: {} };
 };
 
 const save = (state: DemoState) => localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 
 const fail = (error: string): ApiResponse<never> => ({ ok: false, error });
 
-const resetLink = (studentId: string, token: string) =>
-  `${window.location.origin}${window.location.pathname}#/exam-reset?studentId=${encodeURIComponent(studentId)}&token=${encodeURIComponent(token)}`;
+export const demoAdminSignIn = (email: string, password: string) => {
+  if (email.trim().toLowerCase() !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
+    throw new Error('Invalid email or password.');
+  }
+  sessionStorage.setItem(ADMIN_SESSION_KEY, ADMIN_EMAIL);
+};
+
+export const demoAdminSignOut = () => sessionStorage.removeItem(ADMIN_SESSION_KEY);
+
+export const demoAdminEmail = () => sessionStorage.getItem(ADMIN_SESSION_KEY);
 
 export const handleDemoRequest = async (action: string, payload: Record<string, unknown>): Promise<ApiResponse<unknown>> => {
   const state = load();
-  const studentFromSession = () => {
+  const studentJson = (id: string) => ({ id, name: STUDENTS[id].name, email: STUDENTS[id].email });
+  const sessionStudentId = () => {
     const id = state.sessions[String(payload.sessionToken)];
-    return id && STUDENTS[id] ? { id, name: STUDENTS[id].name, email: STUDENTS[id].email } : null;
+    return id && STUDENTS[id] ? id : null;
   };
+  const latestAttempt = (studentId: string) => [...state.attempts].reverse().find((a) => a.studentId === studentId);
 
-  const grade = (student: { id: string; name: string; email: string }, answers: Record<string, number>) => {
+  const grade = (studentId: string, attempt: Attempt, answers: Record<string, number>) => {
     const review = QUESTIONS.map((q) => {
       const chosenOption = Number(answers[q.id]) || null;
       return { questionId: q.id, chosenOption, isCorrect: chosenOption === q.correctOption };
@@ -59,9 +83,9 @@ export const handleDemoRequest = async (action: string, payload: Record<string, 
     const total = QUESTIONS.length;
     const percentage = Math.round((score / total) * 100);
     const passed = percentage >= PASSING_PERCENTAGE;
-    state.attempts[student.id] = { ...state.attempts[student.id], submittedAt: Date.now(), score, total, percentage, passed };
+    Object.assign(attempt, { submittedAt: Date.now(), score, total, percentage, passed });
     if (!passed) {
-      state.locks[student.id] = { studentId: student.id, studentName: student.name, email: student.email, score, percentage, resetToken: crypto.randomUUID(), createdAt: new Date().toISOString() };
+      state.locks[studentId] = { studentId, score, percentage, createdAt: new Date().toISOString() };
     }
     save(state);
     return {
@@ -80,28 +104,29 @@ export const handleDemoRequest = async (action: string, payload: Record<string, 
       const sessionToken = crypto.randomUUID();
       state.sessions[sessionToken] = id;
       save(state);
-      return { ok: true, data: { sessionToken, student: { id, name: student.name, email: student.email } } };
+      return { ok: true, data: { sessionToken, student: studentJson(id) } };
     }
 
     case 'getExam': {
-      const student = studentFromSession();
-      if (!student) return fail('Your session has expired. Please log in again.');
-      const lock = state.locks[student.id];
+      const studentId = sessionStudentId();
+      if (!studentId) return fail('Your session has expired. Please log in again.');
+      const student = studentJson(studentId);
+      const lock = state.locks[studentId];
       if (lock) return { ok: true, data: { status: 'locked', student, result: { score: lock.score, percentage: lock.percentage, passed: false } } };
 
-      let attempt = state.attempts[student.id];
+      let attempt = latestAttempt(studentId);
       if (attempt?.submittedAt && attempt.passed) {
         return { ok: true, data: { status: 'passed', student, result: { score: attempt.score, total: attempt.total, percentage: attempt.percentage, passed: true } } };
       }
       if (!attempt || attempt.submittedAt) {
-        attempt = { startedAt: Date.now() };
-        state.attempts[student.id] = attempt;
+        attempt = { id: state.attempts.length + 1, studentId, startedAt: Date.now() };
+        state.attempts.push(attempt);
         save(state);
       }
 
       const elapsed = (Date.now() - attempt.startedAt) / 1000;
       if (elapsed > EXAM_DURATION_SECONDS + SUBMIT_GRACE_SECONDS) {
-        const graded = grade(student, {});
+        const graded = grade(studentId, attempt, {});
         return { ok: true, data: { status: graded.status, student, result: graded.result } };
       }
 
@@ -117,37 +142,46 @@ export const handleDemoRequest = async (action: string, payload: Record<string, 
     }
 
     case 'submitExam': {
-      const student = studentFromSession();
-      if (!student) return fail('Your session has expired. Please log in again.');
-      const attempt = state.attempts[student.id];
+      const studentId = sessionStudentId();
+      if (!studentId) return fail('Your session has expired. Please log in again.');
+      const attempt = latestAttempt(studentId);
       if (!attempt || attempt.submittedAt) return fail('There is no exam in progress. Please reload the page.');
       const isLate = (Date.now() - attempt.startedAt) / 1000 > EXAM_DURATION_SECONDS + SUBMIT_GRACE_SECONDS;
-      return { ok: true, data: grade(student, isLate ? {} : (payload.answers as Record<string, number>) || {}) };
+      return { ok: true, data: grade(studentId, attempt, isLate ? {} : (payload.answers as Record<string, number>) || {}) };
     }
 
-    case 'checkResetToken':
-    case 'resetExamLock': {
-      const lock = state.locks[String(payload.studentId || '').toUpperCase()];
-      if (!lock || lock.resetToken !== payload.token) return fail('Invalid or expired reset link.');
-      if (action === 'checkResetToken') {
-        return { ok: true, data: { studentId: lock.studentId, studentName: lock.studentName, score: lock.score, percentage: lock.percentage } };
-      }
-      delete state.locks[lock.studentId];
-      save(state);
-      return { ok: true, data: { cleared: true } };
-    }
+    case 'adminListLocks':
+    case 'adminUnlock':
+    case 'adminRecentAttempts': {
+      if (!demoAdminEmail()) return fail('This account is not an exam administrator.');
 
-    case 'adminGetLock':
-    case 'adminResetLock': {
-      if (payload.adminKey !== ADMIN_KEY) return fail('Invalid admin key.');
-      const lock = state.locks[String(payload.studentId || '').trim().toUpperCase()];
-      if (!lock) return fail('No locked exam was found for that student ID.');
-      if (action === 'adminGetLock') {
-        return { ok: true, data: { ...lock, resetToken: undefined, resetLink: resetLink(lock.studentId, lock.resetToken) } };
+      if (action === 'adminListLocks') {
+        return {
+          ok: true,
+          data: Object.values(state.locks).map((l) => ({ ...l, studentName: STUDENTS[l.studentId]?.name, email: STUDENTS[l.studentId]?.email })),
+        };
       }
-      delete state.locks[lock.studentId];
-      save(state);
-      return { ok: true, data: { cleared: true } };
+      if (action === 'adminUnlock') {
+        const id = String(payload.studentId || '').trim().toUpperCase();
+        if (!state.locks[id]) return fail('No locked exam was found for that student ID.');
+        delete state.locks[id];
+        save(state);
+        return { ok: true, data: { cleared: true } };
+      }
+      return {
+        ok: true,
+        data: [...state.attempts].reverse().map((a) => ({
+          id: a.id,
+          studentId: a.studentId,
+          studentName: STUDENTS[a.studentId]?.name,
+          startedAt: new Date(a.startedAt).toISOString(),
+          submittedAt: a.submittedAt ? new Date(a.submittedAt).toISOString() : null,
+          score: a.score ?? null,
+          total: a.total ?? null,
+          percentage: a.percentage ?? null,
+          passed: a.passed ?? null,
+        })),
+      };
     }
 
     default:

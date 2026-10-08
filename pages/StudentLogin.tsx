@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { saveStudentSession } from '../src/students';
-import { loginStudent, getErrorMessage } from '../src/examApi';
+import { loginStudent, getErrorMessage, isExamBackendConfigured } from '../src/examApi';
 
 const StudentLogin: React.FC = () => {
   const navigate = useNavigate();
@@ -183,9 +183,9 @@ const StudentLogin: React.FC = () => {
 
         </form>
 
-        {import.meta.env.DEV && !import.meta.env.VITE_GOOGLE_APPS_SCRIPT_URL && (
+        {import.meta.env.DEV && !isExamBackendConfigured && (
           <div style={styles.devHint}>
-            Local demo mode: use AAP-001 / 1234 (admin key: demo-admin)
+            Local demo mode: use AAP-001 / 1234 (admin page: admin@example.com / demo-admin)
           </div>
         )}
 

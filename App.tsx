@@ -1,6 +1,6 @@
 
 import React, { useEffect } from 'react';
-import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import WhatsAppWidget from './components/WhatsAppWidget';
@@ -15,8 +15,7 @@ import TermsOfService from './pages/TermsOfService';
 import QRGenerator from './pages/QRGenerator';
 import DroneExam from './pages/DroneExam';
 import StudentLogin from './pages/StudentLogin';
-import ExamReset from './pages/ExamReset';
-import AdminReset from './pages/AdminReset';
+import AdminDashboard from './pages/AdminDashboard';
 import Verify from './pages/Verify';
 
 const SITE_NAME = 'Agro Aerial Precision';
@@ -30,6 +29,7 @@ const PAGE_TITLES: Record<string, string> = {
   '/terms-of-service': `Terms of Service | ${SITE_NAME}`,
   '/student-login': `Exam Portal | ${SITE_NAME}`,
   '/drone-exam': `Certification Exam | ${SITE_NAME}`,
+  '/admin': `Exam Admin | ${SITE_NAME}`,
 };
 
 const getPageTitle = (pathname: string) => {
@@ -77,8 +77,10 @@ const App: React.FC = () => {
             <Route path="/verify/:id" element={<Verify />} />
             <Route path="/student-login" element={<StudentLogin />} />
             <Route path="/drone-exam" element={<DroneExam />} />
-            <Route path="/exam-reset" element={<ExamReset />} />
-            <Route path="/admin-reset" element={<AdminReset />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            {/* Old admin links from the Google Apps Script version */}
+            <Route path="/admin-reset" element={<Navigate to="/admin" replace />} />
+            <Route path="/exam-reset" element={<Navigate to="/admin" replace />} />
           </Routes>
         </main>
         

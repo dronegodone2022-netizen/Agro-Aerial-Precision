@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import AnimatedSection from "../components/AnimatedSection";
-import { fetchCertificates } from "../src/data/useCertificates";
+import { verifyCertificate, type Certificate } from "../src/data/certificates";
 
 const asset = (file: string) => new URL(`../src/assets/${file}`, import.meta.url).href;
 
@@ -86,7 +86,8 @@ const Academy: React.FC = () => {
   const [verifyOpen, setVerifyOpen] = useState(false);
   const [certId, setCertId] = useState('');
   const [loading, setLoading] = useState(false);
-  const [certificate, setCertificate] = useState<any>(null);
+  const [certificate, setCertificate] = useState<Certificate | null>(null);
+  const [lookupError, setLookupError] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
   const faqItems = [
@@ -138,16 +139,13 @@ Please contact me with enrollment details.
   const searchCertificate = async (query: string) => {
     if (!query.trim()) return;
     setLoading(true);
-    const normalized = query.toUpperCase();
+    setLookupError(false);
     try {
-      const data: any = await fetchCertificates();
-      const match = (data || []).find(
-        (c: any) => c.id?.toUpperCase() === normalized
-      );
-      setCertificate(match || null);
+      setCertificate(await verifyCertificate(query));
     } catch (error) {
       console.error("Certificate verification failed", error);
       setCertificate(null);
+      setLookupError(true);
     } finally {
       setLoading(false);
       setHasSearched(true);
@@ -470,13 +468,17 @@ Please contact me with enrollment details.
                     View Certificate
                   </a>
 
-                  {certificate.qr && (
-                    <img src={certificate.qr} alt="QR Code" className="mt-4 w-32 h-32 mx-auto" />
-                  )}
                 </div>
               )}
 
-              {certificate === null && !loading && hasSearched && (
+              {lookupError && !loading && (
+                <div className="border border-amber-500 bg-amber-50 p-4 rounded">
+                  <p className="text-amber-800 font-semibold">We couldn't check this certificate right now.</p>
+                  <p className="text-sm text-slate-600 mt-1">Please check your connection and try again.</p>
+                </div>
+              )}
+
+              {certificate === null && !loading && hasSearched && !lookupError && (
                 <div className="border border-red-500 bg-red-50 p-4 rounded">
                   <p className="text-red-700 font-semibold">Certificate Not Found ❌</p>
                   <p className="text-sm text-slate-600 mt-1">Please check the certificate ID and try again.</p>

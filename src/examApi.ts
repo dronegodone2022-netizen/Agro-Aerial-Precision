@@ -1,5 +1,6 @@
-// Client for the exam backend (google-apps-script.gs).
-// All grading happens on the server: this file never sees the answer key.
+// Client for the exam backend: Postgres functions in supabase/migrations.
+// All grading happens in the database, so this file never sees the answer key.
+import { getSupabase, isSupabaseConfigured } from './supabase';
 
 export interface StudentProfile {
   id: string;
@@ -31,17 +32,25 @@ export interface SubmitResponse {
   explanations?: { questionId: string; correctOption: number; rationale: string }[];
 }
 
-export interface LockSummary {
+export interface LockedStudent {
   studentId: string;
   studentName: string;
+  email: string;
   score: number;
   percentage: number;
+  createdAt: string;
 }
 
-export interface AdminLock extends LockSummary {
-  email: string;
-  createdAt: string;
-  resetLink: string;
+export interface AttemptSummary {
+  id: number;
+  studentId: string;
+  studentName: string;
+  startedAt: string;
+  submittedAt: string | null;
+  score: number | null;
+  total: number | null;
+  percentage: number | null;
+  passed: boolean | null;
 }
 
 export interface ApiResponse<T> {
@@ -52,26 +61,38 @@ export interface ApiResponse<T> {
 
 export class ExamApiError extends Error {}
 
-const scriptUrl = import.meta.env.VITE_GOOGLE_APPS_SCRIPT_URL?.trim() || '';
+export const isExamBackendConfigured = isSupabaseConfigured;
 
-const callRemote = async (action: string, payload: Record<string, unknown>): Promise<ApiResponse<unknown>> => {
-  // text/plain avoids a CORS preflight request, which Apps Script web apps can't answer.
-  const response = await fetch(scriptUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify({ action, ...payload }),
-  });
-  return response.json();
-};
+// Frontend action name -> database function name
+const RPC_FUNCTIONS = {
+  loginStudent: 'exam_login',
+  getExam: 'exam_get',
+  submitExam: 'exam_submit',
+  adminListLocks: 'admin_list_locks',
+  adminUnlock: 'admin_unlock',
+  adminRecentAttempts: 'admin_recent_attempts',
+} as const;
 
-const call = async <T,>(action: string, payload: Record<string, unknown>): Promise<T> => {
+type Action = keyof typeof RPC_FUNCTIONS;
+
+// { studentId: 'x' } -> { p_student_id: 'x' }
+const toRpcParams = (payload: Record<string, unknown>) =>
+  Object.fromEntries(
+    Object.entries(payload).map(([key, value]) => [`p_${key.replace(/[A-Z]/g, (c) => `_${c.toLowerCase()}`)}`, value])
+  );
+
+const call = async <T,>(action: Action, payload: Record<string, unknown> = {}): Promise<T> => {
   let response: ApiResponse<unknown>;
 
   try {
-    if (scriptUrl) {
-      response = await callRemote(action, payload);
+    if (isSupabaseConfigured) {
+      const supabase = await getSupabase();
+      const { data, error } = await supabase.rpc(RPC_FUNCTIONS[action], toRpcParams(payload));
+      if (error) throw error;
+      response = data as ApiResponse<unknown>;
     } else if (import.meta.env.DEV) {
-      // Local development only - this branch (and the demo data) is removed from production builds.
+      // Local development only. `import.meta.env.DEV` is a literal `false` in production builds,
+      // so this branch and the demo data are removed from the live site.
       const { handleDemoRequest } = await import('./demoExamBackend');
       response = await handleDemoRequest(action, payload);
     } else {
@@ -82,14 +103,16 @@ const call = async <T,>(action: string, payload: Record<string, unknown>): Promi
     throw new ExamApiError('Could not reach the exam server. Check your internet connection and try again.');
   }
 
-  if (!response.ok || response.data === undefined) {
-    throw new ExamApiError(response.error || 'Request failed. Please try again.');
+  if (!response?.ok || response.data === undefined) {
+    throw new ExamApiError(response?.error || 'Request failed. Please try again.');
   }
   return response.data as T;
 };
 
 export const getErrorMessage = (err: unknown) =>
   err instanceof ExamApiError ? err.message : 'Something went wrong. Please try again.';
+
+// --- Students -------------------------------------------------------------
 
 export const loginStudent = (studentId: string, pin: string) =>
   call<{ sessionToken: string; student: StudentProfile }>('loginStudent', { studentId, pin });
@@ -100,14 +123,49 @@ export const getExam = (sessionToken: string) =>
 export const submitExam = (sessionToken: string, answers: Record<string, number>) =>
   call<SubmitResponse>('submitExam', { sessionToken, answers });
 
-export const checkResetToken = (studentId: string, token: string) =>
-  call<LockSummary>('checkResetToken', { studentId, token });
+// --- Admins (Supabase Auth users listed in the public.admins table) ------
 
-export const resetExamLock = (studentId: string, token: string) =>
-  call<{ cleared: boolean }>('resetExamLock', { studentId, token });
+export const adminListLocks = () => call<LockedStudent[]>('adminListLocks');
 
-export const adminGetLock = (adminKey: string, studentId: string) =>
-  call<AdminLock>('adminGetLock', { adminKey, studentId });
+export const adminUnlock = (studentId: string) => call<{ cleared: boolean }>('adminUnlock', { studentId });
 
-export const adminResetLock = (adminKey: string, studentId: string) =>
-  call<{ cleared: boolean }>('adminResetLock', { adminKey, studentId });
+export const adminRecentAttempts = (limit = 50) => call<AttemptSummary[]>('adminRecentAttempts', { limit });
+
+export const adminSignIn = async (email: string, password: string) => {
+  if (import.meta.env.DEV && !isSupabaseConfigured) {
+    try {
+      (await import('./demoExamBackend')).demoAdminSignIn(email, password);
+    } catch (err) {
+      throw new ExamApiError((err as Error).message);
+    }
+    return;
+  }
+  if (!isSupabaseConfigured) {
+    throw new ExamApiError('The exam portal is not configured yet.');
+  }
+
+  const supabase = await getSupabase();
+  const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+  if (error) {
+    throw new ExamApiError(error.message === 'Invalid login credentials' ? 'Invalid email or password.' : error.message);
+  }
+};
+
+export const adminSignOut = async () => {
+  if (import.meta.env.DEV && !isSupabaseConfigured) {
+    (await import('./demoExamBackend')).demoAdminSignOut();
+  } else if (isSupabaseConfigured) {
+    await (await getSupabase()).auth.signOut();
+  }
+};
+
+/** Email of the signed-in admin, or null. */
+export const adminCurrentEmail = async (): Promise<string | null> => {
+  if (import.meta.env.DEV && !isSupabaseConfigured) {
+    return (await import('./demoExamBackend')).demoAdminEmail();
+  }
+  if (!isSupabaseConfigured) return null;
+
+  const { data } = await (await getSupabase()).auth.getSession();
+  return data.session?.user.email ?? null;
+};
