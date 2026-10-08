@@ -60,16 +60,16 @@ const Home: React.FC = () => {
           <h2 className="text-center text-slate-400 font-semibold uppercase tracking-widest text-sm mb-10">Trusted By Industry Leaders</h2>
           <div className="flex justify-center items-center gap-6 sm:gap-8 md:gap-10 lg:gap-12 opacity-90 flex-wrap">
             <div className="w-12 sm:w-12 md:w-14 lg:w-16 hover:scale-110 transition-transform duration-300">
-              <img src={aiphLogo} alt="AIPH industry partner logo displayed as trusted brand endorsement" />
+              <img loading="lazy" src={aiphLogo} alt="AIPH industry partner logo displayed as trusted brand endorsement" />
             </div>
             <div className="w-16 sm:w-20 md:w-24 lg:w-28 hover:scale-110 transition-transform duration-300">
-              <img src={brand2Logo} alt="trust logos" />
+              <img loading="lazy" src={brand2Logo} alt="trust logos" />
             </div>
             <div className="w-12 sm:w-12 md:w-14 lg:w-16 hover:scale-110 transition-transform duration-300">
-              <img src={brand3Logo} alt="trust logos" />
+              <img loading="lazy" src={brand3Logo} alt="trust logos" />
             </div>
             <div className="w-20 sm:w-20 md:w-24 lg:w-28 hover:scale-110 transition-transform duration-300">
-              <img src={bayerLogo} alt="trust logos" />
+              <img loading="lazy" src={bayerLogo} alt="trust logos" />
             </div>
           </div>
         </AnimatedSection>
@@ -93,7 +93,7 @@ const Home: React.FC = () => {
                 delay={index * 0.1}
               >
                 <div className="relative h-64 overflow-hidden">
-                  <img src={service.image} alt={service.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <img loading="lazy" src={service.image} alt={service.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                   <div className="absolute top-4 left-4 bg-lime-600 text-white text-xs font-bold px-3 py-1 rounded-full">
                     {service.category}
                   </div>
@@ -182,7 +182,7 @@ const Home: React.FC = () => {
               >
                 <i className="ri-double-quotes-l text-3xl sm:text-4xl text-lime-400 absolute top-4 sm:top-6 right-4 sm:right-6"></i>
                 <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-                  <img src={t.avatar} alt={t.name} className="w-12 sm:w-14 h-12 sm:h-14 rounded-full border-2 border-lime-500 p-0.5 shrink-0" />
+                  <img loading="lazy" src={t.avatar} alt={t.name} className="w-12 sm:w-14 h-12 sm:h-14 rounded-full border-2 border-lime-500 p-0.5 shrink-0" />
                   <div className="min-w-0">
                     <h5 className="font-bold text-slate-900 text-sm sm:text-base truncate">{t.name}</h5>
                     <p className="text-xs sm:text-sm text-slate-500 truncate">{t.company}</p>

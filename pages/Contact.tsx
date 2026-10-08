@@ -78,7 +78,7 @@ const Contact: React.FC = () => {
                   </div>
                   <div>
                     <h5 className="font-bold mb-1">Location</h5>
-                    <p className="text-slate-400">Koidu City, Sierra Leone</p>
+                    <p className="text-slate-400">Bo City, Sierra Leone</p>
                   </div>
                 </div>
                 
@@ -88,7 +88,7 @@ const Contact: React.FC = () => {
                   </div>
                   <div>
                     <h5 className="font-bold mb-1">Phone</h5>
-                    <p className="text-slate-400">+232 75 510 770</p>
+                    <p className="text-slate-400">+232 77 840 105</p>
                   </div>
                 </div>
 
@@ -121,10 +121,11 @@ const Contact: React.FC = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="flex flex-col gap-2">
-                    <label className="text-sm font-bold text-green-700">First Name</label>
+                    <label htmlFor="contact-first-name" className="text-sm font-bold text-green-700">First Name</label>
                     <input
                       type="text"
-                      value={firstName}
+                      id="contact-first-name"
+                    value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                       placeholder="John"
                       required
@@ -132,10 +133,11 @@ const Contact: React.FC = () => {
                     />
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="text-sm font-bold text-green-700">Last Name</label>
+                    <label htmlFor="contact-last-name" className="text-sm font-bold text-green-700">Last Name</label>
                     <input
                       type="text"
-                      value={lastName}
+                      id="contact-last-name"
+                    value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                       placeholder="Doe"
                       required
@@ -145,9 +147,10 @@ const Contact: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-bold text-green-700">Email Address</label>
+                  <label htmlFor="contact-email" className="text-sm font-bold text-green-700">Email Address</label>
                   <input
                     type="email"
+                    id="contact-email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="john@example.com"
@@ -174,8 +177,9 @@ const Contact: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-bold text-green-700">Message</label>
+                  <label htmlFor="contact-message" className="text-sm font-bold text-green-700">Message</label>
                   <textarea
+                    id="contact-message"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     rows={5}
@@ -203,7 +207,7 @@ const Contact: React.FC = () => {
         <AnimatedSection className="h-full" animationType="unveil-right" delay={0.1}>
           <iframe 
             title="Bo City location map"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15758.852720275817!2d-10.983!3d8.64!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xf09f09f09f09f09%3A0xf09f09f09f09f09!2sKoidu%2C%20Sierra%20Leone!5e0!3m2!1sen!2sus!4v1700000000000!5m2!1sen!2sus" 
+            src="https://maps.google.com/maps?q=Bo%2C%20Sierra%20Leone&z=13&output=embed" 
             width="100%" 
             height="100%" 
             style={{ border: 0 }} 

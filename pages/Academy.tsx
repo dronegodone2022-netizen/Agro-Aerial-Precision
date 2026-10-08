@@ -58,7 +58,7 @@ const courses = [
   {
     id: "data-processing",
     title: "Drone Data Processing & Analysis Certification",
-    image: asset('proce.png'),
+    image: asset('proce.jpg'),
     summary:
       "Transform raw aerial capture into actionable farm intelligence with mapping, analytics, and report-driven decision support.",
     outline: [
@@ -214,7 +214,7 @@ Please contact me with enrollment details.
               key={course.id}
               className="bg-white rounded-3xl border border-lime-100 overflow-hidden shadow-xl transition-all duration-500 ease-out transform hover:shadow-2xl hover:-translate-y-1"
             >
-              <img
+              <img loading="lazy"
                 src={course.image}
                 alt={course.title}
                 className="w-full h-44 object-cover"

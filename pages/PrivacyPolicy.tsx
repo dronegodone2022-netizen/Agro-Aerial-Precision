@@ -119,7 +119,7 @@ export default function PrivacyPolicy() {
         Agro Aerial Precision SL Ltd<br />
         Email: info@aaprecision.llc<br />
         Phone: +232 77 840 105<br />
-        Address: Koidu City, Kono District, Sierra Leone
+        Address: Bo City, Bo District, Sierra Leone
       </p>
     </AnimatedSection>
   );

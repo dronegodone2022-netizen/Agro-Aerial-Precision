@@ -56,7 +56,7 @@ const Footer: React.FC = () => {
         {/* About */}
         <div>
           <div className="flex items-center flex-col gap-2 mb-6">
-            <img src={footerLogo} alt="Agro Aerial Precision Logo" className="w-12 " />
+            <img loading="lazy" src={footerLogo} alt="Agro Aerial Precision Logo" className="w-12 " />
             <span className="font-bold text-white text-xl">Agro Aerial Precision</span>
           </div>
           <p className="text-slate-400 mb-6">

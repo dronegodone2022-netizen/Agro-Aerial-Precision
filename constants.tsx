@@ -10,7 +10,7 @@ export const SERVICES: Service[] = [
     title: 'Precision Crop Spraying',
     description: 'Advanced drone technology delivering accurate and targeted application of crop protection products and fertilizers.',
     image: asset('SWIP2.jpg'),
-    longDescription: 'We specialize in providing precise aerial spraying solutions for various agricultural needs. Our drones use GPS-guided technology and advanced sensors to deliver accurate and targeted application of crop protection products, fertilizers, and other inputs. This ensures minimal waste, reduced environmental impact, and maximum effectiveness.\n\n• Reduces chemical usage by up to 90% compared to traditional methods\n• Covers large areas in minimal time\n• Precise targeting minimizes drift and runoff\n• Access to difficult terrain and flooded fields\n• Real-time monitoring and reporting capabilities'
+    longDescription: 'We specialize in providing precise aerial spraying solutions for various agricultural needs. Our drones use GPS-guided technology and advanced sensors to deliver accurate and targeted application of crop protection products, fertilizers, and other inputs. This ensures minimal waste, reduced environmental impact, and maximum effectiveness.\n\n• Reduces chemical usage by up to 30% compared to traditional methods\n• Covers large areas in minimal time\n• Precise targeting minimizes drift and runoff\n• Access to difficult terrain and flooded fields\n• Real-time monitoring and reporting capabilities'
   },
   {
     id: 'mapping-survey',
@@ -82,8 +82,7 @@ export const TEAM: Team []=[
     name: 'Alimu Bah',
     role: 'CEO & Managing Partner',
     image: asset('johnDoe.jpg'),
-    socials: { facebook: 'https://www.facebook.com', instagram: 'https://www.instagram.com/', linkedin: 'https://www.linkedin.com/company/agro-aerial-precision/' }
-    
+    socials: { linkedin: 'https://www.linkedin.com/company/agro-aerial-precision/' }
   },
   {
     id: 4,
@@ -94,17 +93,10 @@ export const TEAM: Team []=[
   },
   {
     id: 5,
-   name: 'Bintu Gbamoi',
+    name: 'Bintu Gbamoi',
     role: 'Admin Finance & Sales',
     image: asset('bint.jpg'),
-    socials: { facebook: 'https://www.facebook.com/bintu.gbamoi.9/ ', instagram: 'https://www.instagram.com/bintu_gbamoi/ ', tiktok: 'https://www.tiktok.com/@missgbamoi/' }
-  },
-  {
-    id: 6,
-    name: 'Jon Doe 2',
-    role: 'Managing Partner',
-    image: asset('johnDoe.jpg'),
-    socials: { facebook: 'https://www.facebook.com', instagram: 'https://www.instagram.com/' }
+    socials: { facebook: 'https://www.facebook.com/bintu.gbamoi.9/', instagram: 'https://www.instagram.com/bintu_gbamoi/', tiktok: 'https://www.tiktok.com/@missgbamoi/' }
   },
 ];
 

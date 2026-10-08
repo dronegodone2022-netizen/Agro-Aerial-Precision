@@ -138,9 +138,18 @@ const ServiceDetail: React.FC = () => {
 
   const categoryFAQs = FAQData[displayCategory] || [];
   
-  const filteredServices = SERVICES.filter(
+  // Industries without their own service entries show the services that apply to them
+  const relatedServiceIds: Record<string, string[]> = {
+    Construction: ['mapping-survey', 'asset-inspection'],
+    Mining: ['mapping-survey', 'asset-inspection'],
+  };
+
+  const categoryServices = SERVICES.filter(
     s => s.category.toLowerCase() === displayCategory.toLowerCase()
   );
+  const filteredServices = categoryServices.length > 0
+    ? categoryServices
+    : SERVICES.filter(s => relatedServiceIds[displayCategory]?.includes(s.id));
 
   return (
     <div className="pt-16 sm:pt-20 min-h-screen bg-slate-50 pb-16 sm:pb-20">
@@ -179,7 +188,7 @@ const ServiceDetail: React.FC = () => {
             {filteredServices.map((service, idx) => (
               <div key={service.id} className={`flex flex-col lg:flex-row gap-6 sm:gap-8 lg:gap-12 items-start ${idx % 2 !== 0 ? 'lg:flex-row-reverse' : ''}`}>
                 <div className="w-full lg:w-1/2">
-                  <img src={service.image} alt={service.title} className="rounded-2xl sm:rounded-3xl shadow-md sm:shadow-lg lg:shadow-xl w-full h-64 sm:h-72 md:h-80 lg:h-96 object-cover" />
+                  <img loading="lazy" src={service.image} alt={service.title} className="rounded-2xl sm:rounded-3xl shadow-md sm:shadow-lg lg:shadow-xl w-full h-64 sm:h-72 md:h-80 lg:h-96 object-cover" />
                 </div>
                 <div className="w-full lg:w-1/2 space-y-4 sm:space-y-6">
                   <span className="text-green-800 font-bold uppercase tracking-widest text-xs sm:text-sm">{service.category}</span>
@@ -326,9 +335,10 @@ const ServiceDetail: React.FC = () => {
 
                 <form onSubmit={handleFormSubmit} className="p-6 space-y-4">
                   <div>
-                    <label className="block text-sm border-lime-600 font-medium text-slate-700 mb-1">Full Name *</label>
+                    <label htmlFor="inquiry-name" className="block text-sm border-lime-600 font-medium text-slate-700 mb-1">Full Name *</label>
                     <input
                       type="text"
+                      id="inquiry-name"
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
@@ -339,9 +349,10 @@ const ServiceDetail: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm border-lime-600 font-medium text-slate-700 mb-1">Email Address *</label>
+                    <label htmlFor="inquiry-email" className="block text-sm border-lime-600 font-medium text-slate-700 mb-1">Email Address *</label>
                     <input
                       type="email"
+                      id="inquiry-email"
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
@@ -352,9 +363,10 @@ const ServiceDetail: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm border-lime-600 font-medium text-slate-700 mb-1">Phone Number</label>
+                    <label htmlFor="inquiry-phone" className="block text-sm border-lime-600 font-medium text-slate-700 mb-1">Phone Number</label>
                     <input
                       type="tel"
+                      id="inquiry-phone"
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
@@ -364,8 +376,9 @@ const ServiceDetail: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm border-lime-600 font-medium text-slate-700 mb-1">Message *</label>
+                    <label htmlFor="inquiry-message" className="block text-sm border-lime-600 font-medium text-slate-700 mb-1">Message *</label>
                     <textarea
+                      id="inquiry-message"
                       name="message"
                       value={formData.message}
                       onChange={handleInputChange}

@@ -6,7 +6,7 @@ const WhatsAppWidget: React.FC = () => {
   const [message, setMessage] = useState('');
 
   const handleSend = () => {
-    const phone = '23275510770';
+    const phone = '23277840105';
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(message || 'Hello! I am interested in your services.')}`;
     window.open(url, '_blank');
   };
@@ -25,7 +25,7 @@ const WhatsAppWidget: React.FC = () => {
                 <p className="text-xs opacity-80">Online</p>
               </div>
             </div>
-            <button onClick={() => setIsOpen(false)}>
+            <button onClick={() => setIsOpen(false)} aria-label="Close chat">
               <i className="ri-close-line text-xl"></i>
             </button>
           </div>
@@ -36,10 +36,11 @@ const WhatsAppWidget: React.FC = () => {
             <input 
               type="text" 
               placeholder="Type your message..."
+              aria-label="Your message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-green-700"
-              onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             />
           </div>
           <button 
@@ -52,6 +53,7 @@ const WhatsAppWidget: React.FC = () => {
       )}
       <button 
         onClick={() => setIsOpen(!isOpen)}
+        aria-label={isOpen ? 'Close WhatsApp chat' : 'Chat with us on WhatsApp'}
         className="w-14 h-14 bg-lime-600 text-white rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform active:scale-95 text-3xl infinity-animate"
       >
         <i className={isOpen ? 'ri-close-line' : 'ri-whatsapp-line'}></i>

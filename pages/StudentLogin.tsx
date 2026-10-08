@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { saveStudentSession, getAvailableStudentIds } from '../src/students';
-import { loginStudent } from '../src/appsScriptApi';
+import { saveStudentSession } from '../src/students';
+import { loginStudent, getErrorMessage } from '../src/examApi';
 
 const StudentLogin: React.FC = () => {
   const navigate = useNavigate();
@@ -9,7 +9,6 @@ const StudentLogin: React.FC = () => {
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showQRList, setShowQRList] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,29 +16,15 @@ const StudentLogin: React.FC = () => {
     setLoading(true);
 
     try {
-      const studentData = await loginStudent(studentId, pin);
-      
-      if (!studentData) {
-        setError('Invalid Student ID or PIN. Please try again.');
-        setLoading(false);
-        return;
-      }
-
-      saveStudentSession(studentData);
-      setLoading(false);
+      const session = await loginStudent(studentId, pin);
+      saveStudentSession(session);
       navigate('/drone-exam');
     } catch (err) {
-      setError('Login failed. Please try again.');
+      setError(getErrorMessage(err));
+    } finally {
       setLoading(false);
     }
   };
-
-  const handleQuickSelect = (id: string) => {
-    setStudentId(id);
-    setShowQRList(false);
-  };
-
-  const availableIds = getAvailableStudentIds();
 
   const styles = {
     container: {
@@ -110,17 +95,6 @@ const StudentLogin: React.FC = () => {
       transition: 'background 0.3s',
       marginTop: '10px',
     } as React.CSSProperties,
-    buttonSecondary: {
-      padding: '10px 15px',
-      background: '#f5f5f5',
-      color: '#2e7d32',
-      border: '2px solid #2e7d32',
-      borderRadius: '6px',
-      fontSize: '14px',
-      fontWeight: '600',
-      cursor: 'pointer',
-      transition: 'all 0.3s',
-    } as React.CSSProperties,
     error: {
       color: '#c62828',
       fontSize: '14px',
@@ -129,42 +103,15 @@ const StudentLogin: React.FC = () => {
       borderRadius: '6px',
       border: '1px solid #ef5350',
     } as React.CSSProperties,
-    qrListContainer: {
+    devHint: {
       marginTop: '20px',
-      padding: '15px',
-      background: '#f9f9f9',
+      padding: '12px',
+      background: '#fff8e1',
+      border: '1px dashed #f9a825',
       borderRadius: '6px',
-      border: '1px solid #e0e0e0',
-    } as React.CSSProperties,
-    qrListTitle: {
-      fontSize: '12px',
-      fontWeight: '600',
-      color: '#666',
-      marginBottom: '10px',
-      textTransform: 'uppercase' as const,
-    } as React.CSSProperties,
-    qrListItems: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))',
-      gap: '8px',
-    } as React.CSSProperties,
-    qrItem: {
-      padding: '8px',
-      background: 'white',
-      border: '1px solid #2e7d32',
-      borderRadius: '4px',
-      fontSize: '12px',
-      cursor: 'pointer',
+      fontSize: '13px',
+      color: '#6d4c00',
       textAlign: 'center' as const,
-      color: '#2e7d32',
-      fontWeight: '600',
-      transition: 'all 0.2s',
-    } as React.CSSProperties,
-    loading: {
-      textAlign: 'center' as const,
-      color: '#2e7d32',
-      fontSize: '16px',
-      fontWeight: '600',
     } as React.CSSProperties,
     footer: {
       marginTop: '30px',
@@ -234,38 +181,11 @@ const StudentLogin: React.FC = () => {
             {loading ? 'Logging in...' : 'Start Exam'}
           </button>
 
-          <button
-            type="button"
-            onClick={() => setShowQRList(!showQRList)}
-            style={styles.buttonSecondary}
-            disabled={loading}
-          >
-            {showQRList ? '✕ Hide Demo IDs' : '📱 Show Demo IDs'}
-          </button>
         </form>
 
-        {showQRList && (
-          <div style={styles.qrListContainer}>
-            <div style={styles.qrListTitle}>Demo Student IDs (PIN: last 4 digits)</div>
-            <div style={styles.qrListItems}>
-              {availableIds.map((id) => (
-                <div
-                  key={id}
-                  style={styles.qrItem}
-                  onClick={() => handleQuickSelect(id)}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.background = '#2e7d32';
-                    (e.currentTarget as HTMLElement).style.color = 'white';
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.background = 'white';
-                    (e.currentTarget as HTMLElement).style.color = '#2e7d32';
-                  }}
-                >
-                  {id}
-                </div>
-              ))}
-            </div>
+        {import.meta.env.DEV && !import.meta.env.VITE_GOOGLE_APPS_SCRIPT_URL && (
+          <div style={styles.devHint}>
+            Local demo mode: use AAP-001 / 1234 (admin key: demo-admin)
           </div>
         )}
 

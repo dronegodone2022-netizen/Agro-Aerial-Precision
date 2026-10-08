@@ -208,18 +208,18 @@ const About: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <img
+            <img loading="lazy"
               src={aboutImage2}
               alt="Field Work"
               className="rounded-3xl h-full object-cover"
             />
             <div className="flex flex-col gap-4">
-              <img
+              <img loading="lazy"
                 src={aboutImage3}
                 alt="Drone Prep"
                 className="rounded-3xl aspect-square object-cover"
               />
-              <img
+              <img loading="lazy"
                 src={aboutImage4}
                 alt="Data Analysis"
                 className="rounded-3xl aspect-square object-cover"
@@ -283,7 +283,7 @@ const About: React.FC = () => {
                   </div>
                 </div>
                 <div className="flip-card-back bg-white p-8 rounded-3xl shadow-lg border border-green-100">
-                  <img
+                  <img loading="lazy"
                     src={new URL('../src/assets/AAP-R CERT.jpg', import.meta.url).href}
                     alt="Corporate Registration Certificate"
                     className="w-full h-full object-contain shadow-sm border-lime-200 border-2 rounded-lg"
@@ -308,7 +308,7 @@ const About: React.FC = () => {
                   </div>
                 </div>
                 <div className="flip-card-back bg-white p-8 rounded-3xl shadow-lg border border-blue-100">
-                  <img
+                  <img loading="lazy"
                     src={new URL('../src/assets/AAP-CERT.jpg', import.meta.url).href}
                     alt="Certificate of Incorporation"
                     className="w-full h-full object-contain shadow-sm border-lime-200 border-2 rounded-lg"
@@ -334,7 +334,7 @@ const About: React.FC = () => {
                   </div>
                 </div>
                 <div className="flip-card-back bg-white p-8 rounded-3xl shadow-lg border border-purple-100">
-                  <img
+                  <img loading="lazy"
                     src={new URL('../src/assets/aiph.jpeg', import.meta.url).href}
                     alt="GIS Certificate"
                     className="w-full h-full object-contain shadow-sm border-lime-200 border-2 rounded-lg"
@@ -367,7 +367,7 @@ const About: React.FC = () => {
               >
                 {/* Image Container */}
                 <div className="relative w-full aspect-square overflow-hidden bg-linear-to-br from-green-50 to-lime-50">
-                  <img
+                  <img loading="lazy"
                     src={member.image}
                     alt={member.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"

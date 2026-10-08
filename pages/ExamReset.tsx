@@ -1,45 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { fetchExamLock, resetExamLock } from '../src/appsScriptApi';
-import type { ExamLockData } from '../src/students';
+import { checkResetToken, resetExamLock, getErrorMessage, type LockSummary } from '../src/examApi';
 
+// Opened from the reset link in the exam results email that only the admin receives.
 const ExamReset: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [status, setStatus] = useState<'checking' | 'invalid' | 'ready' | 'reset'>('checking');
+  const [status, setStatus] = useState<'checking' | 'invalid' | 'ready' | 'resetting' | 'reset'>('checking');
+  const [message, setMessage] = useState('');
+  const [lockData, setLockData] = useState<LockSummary | null>(null);
 
   const studentId = searchParams.get('studentId') || '';
   const token = searchParams.get('token') || '';
-  const [lockData, setLockData] = useState<ExamLockData | null>(null);
 
   useEffect(() => {
     if (!studentId || !token) {
+      setMessage('This reset link is incomplete.');
       setStatus('invalid');
       return;
     }
 
-    fetchExamLock(studentId).then((lock) => {
-      setLockData(lock);
-
-      if (!lock || lock.studentId !== studentId || lock.resetToken !== token) {
+    checkResetToken(studentId, token)
+      .then((lock) => {
+        setLockData(lock);
+        setStatus('ready');
+      })
+      .catch((err) => {
+        setMessage(getErrorMessage(err));
         setStatus('invalid');
-        return;
-      }
-
-      setStatus('ready');
-    });
+      });
   }, [studentId, token]);
 
-  const handleReset = () => {
-    if (!lockData) return;
-
-    resetExamLock(lockData.studentId, lockData.resetToken).then((cleared) => {
-      if (cleared) {
-        setStatus('reset');
-      } else {
-        setStatus('invalid');
-      }
-    });
+  const handleReset = async () => {
+    setStatus('resetting');
+    try {
+      await resetExamLock(studentId, token);
+      setStatus('reset');
+    } catch (err) {
+      setMessage(getErrorMessage(err));
+      setStatus('invalid');
+    }
   };
 
   return (
@@ -47,33 +47,33 @@ const ExamReset: React.FC = () => {
       <div style={{ width: '100%', maxWidth: '560px', background: '#fff', borderRadius: '16px', boxShadow: '0 20px 60px rgba(0,0,0,0.18)', padding: '32px' }}>
         <h1 style={{ margin: '0 0 12px 0', color: '#1b5e20', fontSize: '28px' }}>Exam Reset Console</h1>
         <p style={{ margin: '0 0 20px 0', color: '#4b5563', lineHeight: 1.6 }}>
-          This page is intended for the admin reset link sent through WhatsApp. It clears the locked exam state only when the token matches.
+          This page unlocks a student's exam using the reset link from the exam results email.
         </p>
 
         {status === 'checking' && <p style={{ color: '#6b7280' }}>Checking reset link...</p>}
 
         {status === 'invalid' && (
           <div style={{ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '10px', padding: '14px', marginBottom: '20px' }}>
-            Invalid or expired reset link.
+            {message || 'Invalid or expired reset link.'}
           </div>
         )}
 
-        {status === 'ready' && lockData && (
-          <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '10px', padding: '16px', marginBottom: '20px' }}>
-            <p style={{ margin: '0 0 8px 0', color: '#166534', fontWeight: 700 }}>Locked student</p>
-            <p style={{ margin: 0, color: '#166534' }}>{lockData.studentName} ({lockData.studentId})</p>
-            <p style={{ margin: '8px 0 0 0', color: '#166534' }}>Score: {lockData.score} ({lockData.percentage}%)</p>
-          </div>
-        )}
-
-        {status === 'ready' && (
-          <button
-            type="button"
-            onClick={handleReset}
-            style={{ width: '100%', background: '#16a34a', color: '#fff', border: 'none', padding: '14px 18px', borderRadius: '10px', fontSize: '16px', fontWeight: 700, cursor: 'pointer' }}
-          >
-            Reset Exam Lock
-          </button>
+        {(status === 'ready' || status === 'resetting') && lockData && (
+          <>
+            <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '10px', padding: '16px', marginBottom: '20px' }}>
+              <p style={{ margin: '0 0 8px 0', color: '#166534', fontWeight: 700 }}>Locked student</p>
+              <p style={{ margin: 0, color: '#166534' }}>{lockData.studentName} ({lockData.studentId})</p>
+              <p style={{ margin: '8px 0 0 0', color: '#166534' }}>Score: {lockData.score} ({lockData.percentage}%)</p>
+            </div>
+            <button
+              type="button"
+              onClick={handleReset}
+              disabled={status === 'resetting'}
+              style={{ width: '100%', background: '#16a34a', color: '#fff', border: 'none', padding: '14px 18px', borderRadius: '10px', fontSize: '16px', fontWeight: 700, cursor: status === 'resetting' ? 'not-allowed' : 'pointer', opacity: status === 'resetting' ? 0.7 : 1 }}
+            >
+              {status === 'resetting' ? 'Resetting...' : 'Reset Exam Lock'}
+            </button>
+          </>
         )}
 
         {status === 'reset' && (
