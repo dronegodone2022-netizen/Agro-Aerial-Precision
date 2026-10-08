@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { SERVICES, findIndustry } from '../constants';
 import AnimatedSection from '../components/AnimatedSection';
+import { companyWhatsAppUrl, getErrorMessage, submitContactMessage } from '../src/examApi';
 
 const serviceDetailVideo = new URL('../src/assets/home-videoBG1.mp4', import.meta.url).href;
 
@@ -18,20 +19,47 @@ const ServiceDetail: React.FC = () => {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [inquiryService, setInquiryService] = useState<string | null>(null);
+  const [inquiryError, setInquiryError] = useState('');
+  const [sentWhatsAppText, setSentWhatsAppText] = useState('');
+  const [website, setWebsite] = useState(''); // hidden spam trap
+
+  const openInquiry = (serviceTitle: string | null = null) => {
+    setInquiryService(serviceTitle);
+    setInquiryError('');
+    setIsSubmitted(false);
+    setIsPopupOpen(true);
+  };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setInquiryError('');
+
+    const about = inquiryService || pageTitle;
+    const whatsappText = `Hello Agro Aerial Precision team,\n\nName: ${formData.name}\nEmail: ${formData.email}${formData.phone ? `\nPhone: ${formData.phone}` : ''}\nService: ${about}\nMessage: ${formData.message}`;
+
+    // Bots fill every field; pretend it worked and send nothing
+    if (website) {
+      setSentWhatsAppText(whatsappText);
+      setIsSubmitted(true);
+      return;
+    }
+
     setIsSubmitting(true);
-
     try {
-      const whatsappText = `Hello Agro Aerial Precision team,\n\nName: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nService Category: ${displayCategory}\nMessage: ${formData.message}\n\nPlease contact me with more details.`;
-      const whatsappUrl = `https://api.whatsapp.com/send?phone=+23277840105&text=${encodeURIComponent(whatsappText)}`;
-      window.open(whatsappUrl, '_blank');
-
+      await submitContactMessage({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        subject: `${about} inquiry`,
+        message: formData.message,
+        source: `service:${displayCategory}`,
+      });
+      setSentWhatsAppText(whatsappText);
       setIsSubmitted(true);
       setFormData({ name: '', email: '', phone: '', message: '' });
-    } catch (error) {
-      alert('Unable to send inquiry. Please try again.');
+    } catch (err) {
+      setInquiryError(getErrorMessage(err));
     } finally {
       setIsSubmitting(false);
     }
@@ -201,7 +229,7 @@ const ServiceDetail: React.FC = () => {
           </p>
           <div className="flex justify-center mt-8">
             <button
-              onClick={() => setIsPopupOpen(true)}
+              onClick={() => openInquiry()}
               className="bg-lime-500 hover:bg-lime-200 text-white font-bold px-6 xs:px-8 tablet:px-10 py-3 rounded-full transition-colors text-sm xs:text-base tablet:text-lg"
             >
               Inquire for Free
@@ -242,23 +270,21 @@ const ServiceDetail: React.FC = () => {
                     ))}
                   </div>
                   <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-6">
-                    <Link
-                      to="/contact"
-                      className="bg-green-800 text-white px-4 sm:px-12 py-3 rounded-full font-bold hover:bg-lime-600 transition-colors text-sm sm:text-lg text-center flex-1 sm:flex-initial"
-                    >
-                      Book Service
-                    </Link>
                     <button
                       type="button"
-                      onClick={() => {
-                        const message = `Hi, I'm inquiring about the ${service.title} service for ${displayCategory}. Please provide me with more details and pricing information.`;
-                        const whatsappUrl = `https://api.whatsapp.com/send?phone=+23277840105&text=${encodeURIComponent(message)}`;
-                        window.open(whatsappUrl, '_blank');
-                      }}
-                      className="bg-white border border-lime-200 text-slate-700 px-4 sm:px-12 py-3 rounded-full font-bold hover:bg-lime-200 transition-colors text-sm sm:text-lg flex-1 sm:flex-initial"
+                      onClick={() => openInquiry(service.title)}
+                      className="bg-green-800 text-white px-4 sm:px-12 py-3 rounded-full font-bold hover:bg-lime-600 transition-colors text-sm sm:text-lg text-center flex-1 sm:flex-initial"
                     >
-                      Inquire Now
+                      Request a Quote
                     </button>
+                    <a
+                      href={companyWhatsAppUrl(`Hi, I'm interested in your ${service.title} service. Please send me more details and pricing.`)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 bg-white border border-lime-200 text-slate-700 px-4 sm:px-12 py-3 rounded-full font-bold hover:bg-lime-200 transition-colors text-sm sm:text-lg flex-1 sm:flex-initial"
+                    >
+                      <i className="ri-whatsapp-line" aria-hidden="true"></i> WhatsApp
+                    </a>
                   </div>
                 </div>
               </div>
@@ -358,7 +384,7 @@ const ServiceDetail: React.FC = () => {
                       <i className="ri-close-line text-2xl"></i>
                     </button>
                   </div>
-                  <p className="text-lime-100 mt-2">Get a free consultation for {displayCategory} services</p>
+                  <p className="text-lime-100 mt-2">Get a free consultation for {inquiryService || pageTitle}</p>
                 </div>
 
                 <form onSubmit={handleFormSubmit} className="p-6 space-y-4">
@@ -417,6 +443,16 @@ const ServiceDetail: React.FC = () => {
                     />
                   </div>
 
+                  {/* Spam trap: hidden from people, filled in by bots */}
+                  <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
+                    <label htmlFor="inquiry-website">Website</label>
+                    <input id="inquiry-website" type="text" tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} />
+                  </div>
+
+                  {inquiryError && (
+                    <div role="alert" className="rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-700">{inquiryError}</div>
+                  )}
+
                   <button
                     type="submit"
                     disabled={isSubmitting}
@@ -433,8 +469,16 @@ const ServiceDetail: React.FC = () => {
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 mb-2">Inquiry Sent Successfully!</h3>
                 <p className="text-slate-600 mb-6">
-                  Thank you for your interest. Our team will contact you within 24 hours with more details about our {displayCategory} services.
+                  Thank you for your interest. Our team has received your inquiry and will reply by email, usually within one working day.
                 </p>
+                <a
+                  href={companyWhatsAppUrl(sentWhatsAppText)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mb-3 flex items-center justify-center gap-2 rounded-lg border-2 border-lime-600 px-6 py-2 font-semibold text-green-800 hover:bg-lime-50"
+                >
+                  <i className="ri-whatsapp-line" aria-hidden="true"></i> Also chat with us on WhatsApp
+                </a>
                 <button
                   onClick={() => {
                     setIsPopupOpen(false);

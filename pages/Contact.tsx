@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import AnimatedSection from '../components/AnimatedSection';
+import { companyWhatsAppUrl, getErrorMessage, submitContactMessage } from '../src/examApi';
 
 const getInTouch = new URL('../src/assets/getIn Touch.jpg', import.meta.url).href;
 
@@ -8,32 +9,39 @@ const Contact: React.FC = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [subject, setSubject] = useState('General Inquiry');
   const [message, setMessage] = useState('');
+  const [website, setWebsite] = useState(''); // hidden spam trap - real visitors never see or fill it
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [error, setError] = useState('');
+  const [sentWhatsAppText, setSentWhatsAppText] = useState<string | null>(null);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setError('');
+
+    const name = `${firstName} ${lastName}`.trim();
+    const whatsappText = `Hello Agro Aerial Precision team,\n\nName: ${name}\nEmail: ${email}${phone ? `\nPhone: ${phone}` : ''}\nSubject: ${subject}\nMessage: ${message}`;
+
+    // Bots fill every field; pretend it worked and send nothing
+    if (website) {
+      setSentWhatsAppText(whatsappText);
+      return;
+    }
+
     setIsSubmitting(true);
-
     try {
-      const whatsappText = `Hello Agro Aerial Precision team,\n\nName: ${firstName} ${lastName}\nEmail: ${email}\nSubject: ${subject}\nMessage: ${message}\n\nPlease contact me with details.`;
-      const whatsappUrl = `https://api.whatsapp.com/send?phone=+23277840105&text=${encodeURIComponent(whatsappText)}`;
-      window.open(whatsappUrl, '_blank');
-
-      setShowSuccess(true);
+      await submitContactMessage({ name, email, phone, subject, message, source: 'contact' });
+      setSentWhatsAppText(whatsappText);
       setFirstName('');
       setLastName('');
       setEmail('');
+      setPhone('');
       setSubject('General Inquiry');
       setMessage('');
-
-      setTimeout(() => {
-        setShowSuccess(false);
-      }, 3000);
-    } catch (error) {
-      alert('Unable to send message. Please try again.');
+    } catch (err) {
+      setError(getErrorMessage(err));
     } finally {
       setIsSubmitting(false);
     }
@@ -160,6 +168,27 @@ const Contact: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col gap-2">
+                  <label htmlFor="contact-phone" className="text-sm font-bold text-green-700">
+                    Phone / WhatsApp <span className="font-normal text-slate-500">(optional)</span>
+                  </label>
+                  <input
+                    type="tel"
+                    id="contact-phone"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+232 ..."
+                    maxLength={40}
+                    className="w-full px-4 py-3 bg-slate-50 border rounded-xl focus:outline-none focus:border-green-600"
+                  />
+                </div>
+
+                {/* Spam trap: hidden from people, filled in by bots */}
+                <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
+                  <label htmlFor="contact-website">Website</label>
+                  <input id="contact-website" type="text" tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} />
+                </div>
+
+                <div className="flex flex-col gap-2">
                   <label htmlFor="subject" className="text-sm font-bold text-green-700">Subject</label>
                   <select
                     id="subject"
@@ -193,6 +222,15 @@ const Contact: React.FC = () => {
                   />
                 </div>
 
+                {error && (
+                  <div role="alert" className="rounded-xl border border-red-300 bg-red-50 p-3 text-sm text-red-700">
+                    {error}{' '}
+                    <a href={companyWhatsAppUrl(`Hello Agro Aerial Precision team, ${message}`)} target="_blank" rel="noopener noreferrer" className="font-semibold underline">
+                      Message us on WhatsApp instead
+                    </a>
+                  </div>
+                )}
+
                 <button
                   type="submit"
                   disabled={isSubmitting}
@@ -220,14 +258,25 @@ const Contact: React.FC = () => {
           ></iframe>
         </AnimatedSection>
       </section>
-      {showSuccess && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      {sentWhatsAppText !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true">
           <div className="rounded-xl bg-white p-6 text-center shadow-2xl max-w-sm w-full">
-            <h3 className="text-xl font-bold mb-2">Application Sent</h3>
-            <p className="text-slate-600 mb-4">WhatsApp has opened with your message. Please press send in WhatsApp to deliver it to our team.</p>
+            <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <i className="ri-check-line text-3xl text-green-600" aria-hidden="true"></i>
+            </div>
+            <h3 className="text-xl font-bold mb-2">Message Sent</h3>
+            <p className="text-slate-600 mb-5">Thank you - our team has received your message and will reply by email, usually within one working day.</p>
+            <a
+              href={companyWhatsAppUrl(sentWhatsAppText)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mb-3 flex items-center justify-center gap-2 rounded-lg border-2 border-green-700 px-6 py-2 font-semibold text-green-800 hover:bg-green-50"
+            >
+              <i className="ri-whatsapp-line" aria-hidden="true"></i> Also chat with us on WhatsApp
+            </a>
             <button
-              onClick={() => setShowSuccess(false)}
-              className="px-6 py-2 rounded-lg bg-green-800 text-white hover:bg-lime-700"
+              onClick={() => setSentWhatsAppText(null)}
+              className="w-full px-6 py-2 rounded-lg bg-green-800 text-white hover:bg-lime-700"
             >
               Close
             </button>

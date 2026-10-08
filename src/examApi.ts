@@ -279,3 +279,46 @@ export const deleteCertificateFile = async (link: string) => {
   const supabase = await client('admin');
   await supabase.storage.from(CERTIFICATE_BUCKET).remove([decodeURIComponent(link.slice(index + marker.length))]);
 };
+
+// --- Contact form & service inquiries -----------------------------------
+
+export type MessageStatus = 'new' | 'replied' | 'archived';
+
+export interface ContactMessage {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  subject: string;
+  message: string;
+  source: string;
+  status: MessageStatus;
+  createdAt: string;
+}
+
+/** Saves a contact form / inquiry message; the database emails it to the admin. */
+export const submitContactMessage = (message: {
+  name: string;
+  email: string;
+  phone: string;
+  subject: string;
+  message: string;
+  source: string;
+}) =>
+  rpc<{ id: number }>('submit_contact_message', {
+    p_name: message.name,
+    p_email: message.email,
+    p_phone: message.phone,
+    p_subject: message.subject,
+    p_message: message.message,
+    p_source: message.source,
+  });
+
+export const adminListMessages = () => rpc<ContactMessage[]>('admin_list_messages', {}, 'admin');
+
+export const adminSetMessageStatus = (messageId: number, status: MessageStatus) =>
+  rpc<{ id: number; status: MessageStatus }>('admin_set_message_status', { p_message_id: messageId, p_status: status }, 'admin');
+
+/** WhatsApp chat link to the company number, with optional pre-filled text. */
+export const companyWhatsAppUrl = (text: string) =>
+  `https://api.whatsapp.com/send?phone=23277840105&text=${encodeURIComponent(text)}`;

@@ -15,6 +15,7 @@ import {
   type LockedStudent,
 } from '../src/examApi';
 import CertificatesPanel from '../components/CertificatesPanel';
+import MessagesPanel from '../components/MessagesPanel';
 import { ADMIN_HEARTBEAT_MS, adminAwayTooLong, clearAdminSeen, markAdminSeen } from '../src/adminSession';
 
 // Admins are Supabase Auth users whose ID is listed in the public.admins table.
@@ -33,7 +34,8 @@ const AdminDashboard: React.FC = () => {
   const [locks, setLocks] = useState<LockedStudent[]>([]);
   const [attempts, setAttempts] = useState<AttemptSummary[]>([]);
   const [enrollments, setEnrollments] = useState<AdminEnrollment[]>([]);
-  const [tab, setTab] = useState<'students' | 'certificates'>('students');
+  const [tab, setTab] = useState<'students' | 'messages' | 'certificates'>('students');
+  const [newMessageCount, setNewMessageCount] = useState(0);
 
   const loadData = async () => {
     setError('');
@@ -231,7 +233,7 @@ const AdminDashboard: React.FC = () => {
 
         {adminEmail && (
           <div role="tablist" style={{ display: 'flex', gap: '8px', borderBottom: '2px solid #e2e8f0', marginBottom: '20px' }}>
-            {([['students', 'Students & Exams'], ['certificates', 'Certificates']] as const).map(([key, label]) => (
+            {([['students', 'Students & Exams'], ['messages', newMessageCount ? `Messages (${newMessageCount} new)` : 'Messages'], ['certificates', 'Certificates']] as const).map(([key, label]) => (
               <button
                 key={key}
                 type="button"
@@ -257,6 +259,13 @@ const AdminDashboard: React.FC = () => {
         )}
 
         {adminEmail && tab === 'certificates' && <CertificatesPanel />}
+
+        {/* Kept mounted (hidden) so the new-message count shows on the tab straight away */}
+        {adminEmail && (
+          <div hidden={tab !== 'messages'}>
+            <MessagesPanel onNewCount={setNewMessageCount} />
+          </div>
+        )}
 
         {adminEmail && tab === 'students' && (
           <>
