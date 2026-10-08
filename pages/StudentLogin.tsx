@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { verifyStudentLogin, saveStudentSession, getAvailableStudentIds } from '../src/students';
+import { saveStudentSession, getAvailableStudentIds } from '../src/students';
+import { loginStudent } from '../src/appsScriptApi';
 
 const StudentLogin: React.FC = () => {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ const StudentLogin: React.FC = () => {
     setLoading(true);
 
     try {
-      const studentData = verifyStudentLogin(studentId, pin);
+      const studentData = await loginStudent(studentId, pin);
       
       if (!studentData) {
         setError('Invalid Student ID or PIN. Please try again.');

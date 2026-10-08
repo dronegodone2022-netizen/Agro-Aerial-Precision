@@ -17,6 +17,7 @@ import DroneExam from './pages/DroneExam';
 import StudentLogin from './pages/StudentLogin';
 import ExamReset from './pages/ExamReset';
 import AdminReset from './pages/AdminReset';
+import Verify from './pages/Verify';
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -46,6 +47,8 @@ const App: React.FC = () => {
             <Route path="/services/:category" element={<ServiceDetail />} />
             <Route path="/services" element={<Home />} /> {/* Fallback or Services overview */}
             <Route path="/qr" element={<QRGenerator />} />
+            <Route path="/verify" element={<Verify />} />
+            <Route path="/verify/:id" element={<Verify />} />
             <Route path="/student-login" element={<StudentLogin />} />
             <Route path="/drone-exam" element={<DroneExam />} />
             <Route path="/exam-reset" element={<ExamReset />} />

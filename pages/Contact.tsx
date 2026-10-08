@@ -202,7 +202,7 @@ const Contact: React.FC = () => {
       <section className="h-96 bg-lime-200 border-t-4 border-lime-500">
         <AnimatedSection className="h-full" animationType="unveil-right" delay={0.1}>
           <iframe 
-            title="Koidu City location map"
+            title="Bo City location map"
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15758.852720275817!2d-10.983!3d8.64!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xf09f09f09f09f09%3A0xf09f09f09f09f09!2sKoidu%2C%20Sierra%20Leone!5e0!3m2!1sen!2sus!4v1700000000000!5m2!1sen!2sus" 
             width="100%" 
             height="100%" 
@@ -216,7 +216,7 @@ const Contact: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="rounded-xl bg-white p-6 text-center shadow-2xl max-w-sm w-full">
             <h3 className="text-xl font-bold mb-2">Application Sent</h3>
-            <p className="text-slate-600 mb-4">Your message was sent via WhatsApp and email. The page will refresh shortly.</p>
+            <p className="text-slate-600 mb-4">WhatsApp has opened with your message. Please press send in WhatsApp to deliver it to our team.</p>
             <button
               onClick={() => setShowSuccess(false)}
               className="px-6 py-2 rounded-lg bg-green-800 text-white hover:bg-lime-700"

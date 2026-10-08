@@ -7,7 +7,8 @@ export default function QRGenerator() {
 
   const generate = async () => {
     if (!id.trim()) return;
-    const verificationUrl = `${window.location.origin}/#/verify/${encodeURIComponent(
+    // origin + pathname keeps the GitHub Pages base path (/Agro-Aerial-Precision/)
+    const verificationUrl = `${window.location.origin}${window.location.pathname}#/verify/${encodeURIComponent(
       id.trim().toUpperCase()
     )}`;
     const qrCode = await QRCode.toDataURL(verificationUrl);

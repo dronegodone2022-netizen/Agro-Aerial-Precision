@@ -58,7 +58,7 @@ export const SERVICES: Service[] = [
     title: 'Mosquito Control',
     description: 'Revolutionizing mosquito control to combat disease outbreaks with eco-friendly solutions.',
     image: asset('mosq1.jpg'),
-    longDescription: 'We harness cutting-edge drone technology to revolutionize mosquito control, helping communities combat disease outbreaks such as malaria, dengue fever, and Zika virus. Our innovative approach delivers effective and eco-friendly foggling solutions tailored to your community needs.\n\n• Targeted fogging in hard-to-reach areas\n• Reduced chemical exposure to population\n• Rapid response to outbreak situations\n• Large area coverage in short timeframes\n• Environment-conscious and sustainable methods\n• Community health partnership approach'
+    longDescription: 'We harness cutting-edge drone technology to revolutionize mosquito control, helping communities combat disease outbreaks such as malaria, dengue fever, and Zika virus. Our innovative approach delivers effective and eco-friendly fogging solutions tailored to your community needs.\n\n• Targeted fogging in hard-to-reach areas\n• Reduced chemical exposure to population\n• Rapid response to outbreak situations\n• Large area coverage in short timeframes\n• Environment-conscious and sustainable methods\n• Community health partnership approach'
   }
 ];
 
@@ -112,7 +112,7 @@ export const TESTIMONIALS: Testimonial[] = [
   {
     id: 1,
     name: 'Samba  Koroma',
-    company: 'Firsh Vegetables Farm',
+    company: 'Fresh Vegetables Farm',
     avatar: asset('avata7.jpg'),
     content: '"Implementing Agro Aerial Precision\'s precision agriculture technology has completely transformed our farm\'s productivity. The detailed data and insights we receive have helped us make better decisions, resulting in a 20% increase in our crop yields."'
   },
@@ -147,5 +147,5 @@ export const NAV_LINKS: NavLink[] = [
     ]
   },
   { label: 'About Us', path: '/about' },
-  { label: 'OUR ACODEMY', path: '/academy' }
+  { label: 'OUR ACADEMY', path: '/academy' }
 ];

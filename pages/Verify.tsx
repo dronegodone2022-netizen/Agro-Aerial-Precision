@@ -7,6 +7,7 @@ export default function Verify() {
   const [id, setId] = useState(routeId || "");
   const [loading, setLoading] = useState(false);
   const [certificate, setCertificate] = useState<any>(null);
+  const [hasSearched, setHasSearched] = useState(false);
 
   const searchCertificate = async (query: string) => {
     if (!query.trim()) return;
@@ -23,6 +24,7 @@ export default function Verify() {
       setCertificate(null);
     } finally {
       setLoading(false);
+      setHasSearched(true);
     }
   };
 
@@ -47,7 +49,10 @@ export default function Verify() {
         className="border p-2 rounded w-80"
         placeholder="Enter Certificate ID (e.g. AAP-001)"
         value={id}
-        onChange={(e) => setId(e.target.value)}
+        onChange={(e) => {
+          setId(e.target.value);
+          setHasSearched(false);
+        }}
       />
 
       <button
@@ -70,6 +75,7 @@ export default function Verify() {
           <a
             href={certificate.drive_link}
             target="_blank"
+            rel="noopener noreferrer"
             className="block mt-3 text-green-700 underline"
           >
             View Certificate
@@ -81,7 +87,7 @@ export default function Verify() {
         </div>
       )}
 
-      {certificate === null && !loading && id && (
+      {certificate === null && !loading && hasSearched && (
         <p className="mt-6 text-red-600">Certificate Not Found ❌ </p>
       )}
     </div>

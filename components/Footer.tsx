@@ -4,6 +4,11 @@ import { Link } from 'react-router-dom';
 
 const footerLogo = new URL('../src/assets/AAP LOGO w.png', import.meta.url).href;
 
+// Account ID matches the MailerLite Universal script in index.html.
+// Form ID comes from MailerLite > Forms > Embedded forms > (your form) > HTML code.
+const MAILERLITE_ACCOUNT_ID = '2239723';
+const MAILERLITE_FORM_ID = import.meta.env.VITE_MAILERLITE_FORM_ID?.trim() || '';
+
 const Footer: React.FC = () => {
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [isSubscribing, setIsSubscribing] = useState(false);
@@ -15,29 +20,29 @@ const Footer: React.FC = () => {
     setSubscribeMessage('');
 
     try {
-      // MailerLite API configuration
-      const API_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI0IiwianRpIjoiNWUwMjhjMDVlODhlZjBlZjhjYzRhNWZiNWU3ZTRhNjE5ZjM4NjE4YzZhNTZjYjEzZmI2N2EwNTEzMDMwOGVkZjVmZDliNDE0OTcwZTVhYjUiLCJpYXQiOjE3NzU5MjExMjguMjk3MTQ3LCJuYmYiOjE3NzU5MjExMjguMjk3MTUsImV4cCI6NDkzMTU5NDcyOC4yODk1MDEsInN1YiI6IjIyNTk3NzAiLCJzY29wZXMiOltdfQ.m_Uofcvm2HPxpO9iB3c_JscROpYBsvXTxgOdnPhJGh34gfrBQj92OG1CUdDDlAulEjbV6kjke6LkD-S7v8Ya-EeoYLk2wPzfPg4QGWcE0AY8Oy6ijuFFeczLO15mtjd2jUpp6ZZLuSoN-k_jvOKyJF6peZ2czoV6RPG0Kqkw8lEBIaGpSiMe7uys9hfoafZDay0uvqIZWjE-c43syG7fO-EhcRxu6S6lGe0L69Zt2-uwTWvZHKPHXi77f3eepiKzw2Xq_NWqVjS--C4MbBmHru4uEZVOrEFzRGZGTl9pJc4TIpA5CTnknsCZIBT7iW3BuVuh1uZVe-sol9q92vh-88YZrWEy2gN3BhKyM9g6z6NecOdk7a5naJXbW4g-5V2GMlSvZpDPf-lYzLLVZ0ihAs1Cisl6nVM80NObHLWvHdJKtYTDaXJeBkui5RP6k_U7fpUGiIlhw9ccX0gY30UeGLVedX0nbmOtblv527SHZHoUGCXHKLxRLQqUwE0IFue0DbAEZEpaDTv6EanrxuZc6zGa899HRmAKRwyiGyvm3LlffiyE5_fhvdWkRMkGqLX35fhjUe6MlsTrQ7gwlXvcmGOoMZQQNdZo5WP_yWjGa1h7crDxYffbIL8Pm2JZ89yCa4l6V9KoW2JaHDcCZfM--dPRficnpyQLNtmtWBoZQzI'; // Replace with your MailerLite API key
-      const GROUP_ID = '184458818206303987'; // Replace with your MailerLite group ID
+      // Public MailerLite embedded-form endpoint. Never put a MailerLite API key in frontend code:
+      // everything in this bundle is visible to every visitor.
+      if (!MAILERLITE_FORM_ID) {
+        setSubscribeMessage('Newsletter sign-up is not available right now. Please try again later.');
+        return;
+      }
 
-      const response = await fetch('https://connect.mailerlite.com/api/subscribers', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${API_KEY}`
-        },
-        body: JSON.stringify({
-          email: newsletterEmail,
-          groups: [GROUP_ID]
-        })
-      });
+      const formData = new FormData();
+      formData.append('fields[email]', newsletterEmail);
+      formData.append('ml-submit', '1');
+      formData.append('anticsrf', 'true');
 
-      if (response.ok) {
+      const response = await fetch(
+        `https://assets.mailerlite.com/jsonp/${MAILERLITE_ACCOUNT_ID}/forms/${MAILERLITE_FORM_ID}/subscribe`,
+        { method: 'POST', body: formData }
+      );
+      const result = await response.json().catch(() => ({}));
+
+      if (response.ok && result.success !== false) {
         setSubscribeMessage('Successfully subscribed! Welcome to our newsletter.');
         setNewsletterEmail('');
       } else {
-        const errorData = await response.json();
-        setSubscribeMessage(errorData.message || 'Failed to subscribe. Please try again.');
+        setSubscribeMessage('Failed to subscribe. Please try again.');
       }
     } catch (error) {
       setSubscribeMessage('Network error. Please try again later.');
@@ -77,7 +82,7 @@ const Footer: React.FC = () => {
           <ul className="flex flex-col gap-4">
             <li><Link to="/" className="hover:text-lime-500 transition-colors">Home</Link></li>
             <li><Link to="/about" className="hover:text-lime-500 transition-colors">About Us</Link></li>
-            <li><Link to="/academy" className="hover:text-lime-500 transition-colors">OUR ACODEMY</Link></li>
+            <li><Link to="/academy" className="hover:text-lime-500 transition-colors">Our Academy</Link></li>
             <li><Link to="/services" className="hover:text-lime-500 transition-colors">Our Services</Link></li>
             <li><Link to="/contact" className="hover:text-lime-500 transition-colors">Contact</Link></li>
           </ul>

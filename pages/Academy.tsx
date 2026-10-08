@@ -87,6 +87,7 @@ const Academy: React.FC = () => {
   const [certId, setCertId] = useState('');
   const [loading, setLoading] = useState(false);
   const [certificate, setCertificate] = useState<any>(null);
+  const [hasSearched, setHasSearched] = useState(false);
 
   const faqItems = [
     {
@@ -149,6 +150,7 @@ Please contact me with enrollment details.
       setCertificate(null);
     } finally {
       setLoading(false);
+      setHasSearched(true);
     }
   };
 
@@ -423,6 +425,7 @@ Please contact me with enrollment details.
                 setVerifyOpen(false);
                 setCertificate(null);
                 setCertId('');
+                setHasSearched(false);
               }} className="text-slate-500 hover:text-slate-900">
                 ✕
               </button>
@@ -435,7 +438,10 @@ Please contact me with enrollment details.
                 className="border p-3 rounded w-full"
                 placeholder="Enter Certificate ID (e.g. AAP-001)"
                 value={certId}
-                onChange={(e) => setCertId(e.target.value)}
+                onChange={(e) => {
+                  setCertId(e.target.value);
+                  setHasSearched(false);
+                }}
               />
 
               <button
@@ -458,6 +464,7 @@ Please contact me with enrollment details.
                   <a
                     href={certificate.drive_link}
                     target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-block mt-3 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
                   >
                     View Certificate
@@ -469,7 +476,7 @@ Please contact me with enrollment details.
                 </div>
               )}
 
-              {certificate === null && !loading && certId && (
+              {certificate === null && !loading && hasSearched && (
                 <div className="border border-red-500 bg-red-50 p-4 rounded">
                   <p className="text-red-700 font-semibold">Certificate Not Found ❌</p>
                   <p className="text-sm text-slate-600 mt-1">Please check the certificate ID and try again.</p>

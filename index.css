@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/* Custom breakpoints (Tailwind v4 reads these here; tailwind.config.js is not used) */
+@theme {
+  --breakpoint-xs: 480px;
+  --breakpoint-tablet: 900px;
+  --breakpoint-laptop: 1200px;
+  --breakpoint-desktop: 1440px;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;

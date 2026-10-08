@@ -44,7 +44,7 @@ const Home: React.FC = () => {
                 Consult for Free
               </Link>
               <Link
-                to="/Academy"
+                to="/academy"
                 className="w-full sm:w-auto px-6 sm:px-8 py-4 lg:py-2 sm:py-3 md:py-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-full font-bold text-lg sm:text-base md:text-lg hover:bg-lime-500/20 transition-all"
               >
                 Training Academy

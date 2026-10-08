@@ -7,6 +7,67 @@ export interface StudentData {
   loginTime: string;
 }
 
+export interface ExamLockData {
+  studentId: string;
+  studentName: string;
+  score: number;
+  percentage: number;
+  resetToken: string;
+  resetLink: string;
+  createdAt: string;
+}
+
+const EXAM_LOCK_KEY = 'exam_lock_state';
+
+const createResetToken = () => {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
+    return crypto.randomUUID();
+  }
+
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+};
+
+export const buildExamResetLink = (studentId: string, resetToken: string) => {
+  if (typeof window === 'undefined') {
+    return '';
+  }
+
+  const baseUrl = `${window.location.origin}${window.location.pathname}`;
+  return `${baseUrl}#/exam-reset?studentId=${encodeURIComponent(studentId)}&token=${encodeURIComponent(resetToken)}`;
+};
+
+export const saveExamLock = (studentData: StudentData, score: number, percentage: number): ExamLockData => {
+  const resetToken = createResetToken();
+  const lockData: ExamLockData = {
+    studentId: studentData.id,
+    studentName: studentData.name,
+    score,
+    percentage,
+    resetToken,
+    resetLink: buildExamResetLink(studentData.id, resetToken),
+    createdAt: new Date().toISOString(),
+  };
+
+  localStorage.setItem(EXAM_LOCK_KEY, JSON.stringify(lockData));
+  return lockData;
+};
+
+export const getExamLock = (): ExamLockData | null => {
+  const raw = localStorage.getItem(EXAM_LOCK_KEY);
+
+  if (!raw) return null;
+
+  try {
+    return JSON.parse(raw) as ExamLockData;
+  } catch {
+    return null;
+  }
+};
+
+export const clearExamLock = () => {
+  localStorage.removeItem(EXAM_LOCK_KEY);
+};
+
 // Demo student database - Replace with API call in production
 const DEMO_STUDENTS: Record<string, { name: string; email: string; pin: string }> = {
   "AAP-001": { name: "Ahmed Conteh", email: "ahmed@example.com", pin: "1234" },

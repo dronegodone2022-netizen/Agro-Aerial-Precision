@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getStudentSession, clearStudentSession } from '../src/students';
+import { createExamLock, fetchExamLock } from '../src/appsScriptApi';
 
 interface QuizOption {
   text: string;
@@ -22,6 +23,9 @@ const shuffleArray = <T,>(items: T[]) => {
   }
   return copy;
 };
+
+const EXAM_DURATION_SECONDS = 5 * 60; // 5 minutes
+const LOW_TIME_WARNING_SECONDS = 60;
 
 const DroneExam = () => {
   // Complete structured quiz database mapping directly to manual protocols
@@ -138,20 +142,21 @@ const DroneExam = () => {
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(10 * 60); // 10 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(EXAM_DURATION_SECONDS);
   const [studentName, setStudentName] = useState('');
   const [studentEmail, setStudentEmail] = useState('');
   const [studentId, setStudentId] = useState('');
   const [showRetakePopup, setShowRetakePopup] = useState(false);
   const [shuffledQuizData, setShuffledQuizData] = useState<QuizItem[]>(() => shuffleQuizData(quizData));
   const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [examLockLink, setExamLockLink] = useState('');
 
   const passingScorePercentage = 80;
   const retakePrice = '250 SLL';
   const adminPhone = '+23277840105';
   const adminEmail = 'admin@agroaerialprecision.com';
 
-  // Check student session and setup timer
+  // Check student session and existing exam lock
   useEffect(() => {
     const student = getStudentSession();
     if (!student) {
@@ -162,40 +167,68 @@ const DroneExam = () => {
     setStudentEmail(student.email);
     setStudentId(student.id);
 
-    // Timer countdown
+    fetchExamLock(student.id).then((lockedExam) => {
+      if (lockedExam && lockedExam.studentId === student.id) {
+        setScore(lockedExam.score);
+        setShowRetakePopup(true);
+        setIsSubmitted(true);
+        setExamLockLink(lockedExam.resetLink);
+      }
+    });
+  }, []);
+
+  // Timer countdown - stops as soon as the exam is submitted
+  useEffect(() => {
+    if (isSubmitted) return;
+
     const interval = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          handleAutoSubmit();
-          return 0;
-        }
-        return prev - 1;
-      });
+      setTimeLeft((prev) => Math.max(prev - 1, 0));
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isSubmitted]);
 
-  const handleAutoSubmit = () => {
-    if (!isSubmitted) {
-      let correctCount = 0;
-      shuffledQuizData.forEach((q) => {
-        const selectedIdx = selectedAnswers[q.id];
-        if (selectedIdx !== undefined && q.options[selectedIdx].isCorrect) {
-          correctCount++;
-        }
-      });
-      const percentage = Math.round((correctCount / shuffledQuizData.length) * 100);
-      setScore(correctCount);
-      setIsSubmitted(true);
-      setShowRetakePopup(percentage < passingScorePercentage);
+  // Auto-submit when time runs out. Runs in a normal render cycle, so it sees the current answers.
+  useEffect(() => {
+    if (timeLeft === 0 && !isSubmitted) {
+      finishExam(true);
+    }
+  }, [timeLeft, isSubmitted]);
+
+  const finishExam = (isAutoSubmit: boolean) => {
+    if (isSubmitted) return;
+
+    let correctCount = 0;
+    shuffledQuizData.forEach((q) => {
+      const selectedIdx = selectedAnswers[q.id];
+      if (selectedIdx !== undefined && q.options[selectedIdx].isCorrect) {
+        correctCount++;
+      }
+    });
+
+    const percentage = Math.round((correctCount / shuffledQuizData.length) * 100);
+    setScore(correctCount);
+    setIsSubmitted(true);
+    if (percentage < passingScorePercentage) {
+      createExamLock({ id: studentId, name: studentName, email: studentEmail, loginTime: new Date().toISOString() }, correctCount, percentage)
+        .then((lockData) => {
+          setExamLockLink(lockData.resetLink);
+          setShowRetakePopup(true);
+        });
+    } else {
+      setShowRetakePopup(false);
+    }
+
+    // Send exam results to admin email
+    sendExamResultsEmail(correctCount, percentage);
+
+    if (isAutoSubmit) {
       alert('Time is up! Your exam has been auto-submitted.');
     }
   };
 
   const openWhatsAppForRetake = () => {
-    const message = `Hello Agro Aerial Precision admin, I failed the exam and would like to retake it. My name is ${studentName || 'Student'}, score: ${scorePercentage}%. Please share the retake details and payment instructions.`;
+    const message = `Hello Agro Aerial Precision admin, I failed the exam and would like to retake it. My name is ${studentName || 'Student'}, score: ${scorePercentage}%. Reset link: ${examLockLink || 'pending'}. Please share the retake details and payment instructions.`;
     const whatsappUrl = `https://api.whatsapp.com/send?phone=${encodeURIComponent(adminPhone)}&text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
@@ -267,7 +300,7 @@ End of Report
     }
   };
 
-  const isTimeRunningLow = timeLeft < 300; // 5 minutes warning
+  const isTimeRunningLow = timeLeft < LOW_TIME_WARNING_SECONDS;
 
   const handleOptionChange = (questionId: number, optionIndex: number) => {
     if (isSubmitted) return; // Lock inputs if submitted
@@ -286,21 +319,7 @@ End of Report
       return;
     }
 
-    let correctCount = 0;
-    shuffledQuizData.forEach((q) => {
-      const selectedIdx = selectedAnswers[q.id];
-      if (selectedIdx !== undefined && q.options[selectedIdx].isCorrect) {
-        correctCount++;
-      }
-    });
-
-    const percentage = Math.round((correctCount / shuffledQuizData.length) * 100);
-    setScore(correctCount);
-    setIsSubmitted(true);
-    setShowRetakePopup(percentage < passingScorePercentage);
-    
-    // Send exam results to admin email
-    sendExamResultsEmail(correctCount, percentage);
+    finishExam(false);
   };
 
   const scorePercentage = Math.round((score / shuffledQuizData.length) * 100);
@@ -377,7 +396,6 @@ End of Report
     modalTitle: { fontSize: '22px', fontWeight: '700', marginBottom: '18px', color: '#2e7d32' },
     modalText: { color: '#394047', fontSize: '16px', lineHeight: '1.7', marginBottom: '18px' },
     modalButton: { width: '100%', backgroundColor: '#25d366', color: '#fff', border: 'none', borderRadius: '8px', padding: '14px 18px', cursor: 'pointer', fontSize: '16px', fontWeight: '700', marginBottom: '10px' },
-    modalCloseBtn: { position: 'absolute' as const, top: '18px', right: '18px', background: 'transparent', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#4b5563' },
 
     timerText: { 
       fontSize: '18px', 
@@ -393,6 +411,18 @@ End of Report
     clearStudentSession();
     navigate('/student-login');
   };
+
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (showRetakePopup && !isPassed) {
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [showRetakePopup, isPassed]);
 
   return (
     <div style={styles.container}>
@@ -478,13 +508,6 @@ End of Report
       {showRetakePopup && !isPassed && (
         <div style={styles.modalOverlay}>
           <div style={styles.modalContent}>
-            <button
-              onClick={() => setShowRetakePopup(false)}
-              style={styles.modalCloseBtn}
-              aria-label="Close retake popup"
-            >
-              ×
-            </button>
             <h3 style={styles.modalTitle}>Exam Retake Required</h3>
             <p style={styles.modalText}>
               You scored {score} out of {shuffledQuizData.length} ({scorePercentage}%).
@@ -494,19 +517,11 @@ End of Report
             <p style={styles.modalText}>
               Retake fee: <strong>{retakePrice}</strong>
             </p>
+            <p style={styles.modalText}>
+              The page is locked until an admin resets it using the WhatsApp reset link.
+            </p>
             <button style={styles.modalButton} onClick={openWhatsAppForRetake}>
-              Chat with Admin on WhatsApp
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowRetakePopup(false)}
-              style={{
-                ...styles.modalButton,
-                backgroundColor: '#374151',
-                marginTop: '0',
-              }}
-            >
-              Close
+              Send Admin Reset Link on WhatsApp
             </button>
           </div>
         </div>
