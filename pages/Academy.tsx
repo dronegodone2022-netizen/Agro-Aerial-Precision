@@ -3,76 +3,10 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import AnimatedSection from "../components/AnimatedSection";
 import { verifyCertificate, type Certificate } from "../src/data/certificates";
 import { currentUserEmail, enrollInCourse, getErrorMessage, getStudentProfile, type StudentProfile } from "../src/examApi";
+import { COURSES as courses } from "../src/data/courses";
 
 const asset = (file: string) => new URL(`../src/assets/${file}`, import.meta.url).href;
 
-const courses = [
-  {
-    id: "drone-basics",
-    title: "Basic  Drone Training for Multimedia Production Certification",
-    image: asset('train.jpg'),
-    summary:
-      "Introduction to drone types, regulations, safety checks, and manual operation for multimedia production.",
-    outline: [
-      "Regulations & permits",
-      "Pre-flight checks",
-      "Battery and Drone maintenance",
-      "Basic flight exercises",
-      "Cinematography techniques",
-      "Emergency procedures",
-    ],
-    duration: "1 weeks",
-    price: "$249",
-  },
-  {
-    id: "precision-spraying",
-    title: "Drone For Precision Aerial Spraying Certification",
-    image: asset('spray1.jpg'),
-    summary:
-      "Advanced spraying techniques, nozzle calibration, chemical safety, and precision application planning.",
-    outline: [
-      "Spray path planning",
-      "Droplet size & drift reduction",
-      "Product handling",
-      "Field verification & reporting",
-      "Drone maintenance for spraying",
-      "Battery management for spraying operations",
-    ],
-    duration: "3 weeks",
-    price: "$499",
-  },
-  {
-    id: "mapping-analytics",
-    title: "Drone For Aerial Mapping & Survey Certification",
-    image: asset('mmap.jpeg'),
-    summary:
-      "Comprehensive aerial survey and mapping with orthomosaic, DEM, and crop health layers for smarter field planning.",
-    outline: [
-      "Flight planning for mapping grids",
-      "GCPs & control points",
-      "Understanding RTK, GNSS, IMU, and flight logs",
-      "Types of drone data: RGB, multispectral, thermal, LiDAR",
-    ],
-    duration: "3 weeks",
-    price: "$310",
-  },
-  {
-    id: "data-processing",
-    title: "Drone Data Processing & Analysis Certification",
-    image: asset('proce.jpg'),
-    summary:
-      "Transform raw aerial capture into actionable farm intelligence with mapping, analytics, and report-driven decision support.",
-    outline: [
-      "Data ingestion & quality checks",
-      "Orthomosaic and DEM generation",
-      "Point cloud processing and 3D modeling",
-      "NDVI/NDRE indices and thermal analytics",
-      "Field-level recommendations & action plans",
-    ],
-    duration: "3 weeks",
-    price: "$399",
-  },
-];
 
 const Academy: React.FC = () => {
   const navigate = useNavigate();
@@ -98,12 +32,12 @@ const Academy: React.FC = () => {
     {
       id: 'duration',
       question: 'How long does each course take?',
-      answer: 'Courses range from 2 to 4 weeks depending on the track and depth. Each course includes interactive workshops, field sessions, and assessment.',
+      answer: 'Courses run from 1 to 3 weeks depending on the track. Each course combines classroom sessions, hands-on field or lab work, and an assessment. Open any course to see its full curriculum.',
     },
     {
       id: 'certification',
       question: 'Do I get a certificate?',
-      answer: 'Yes. Every completed course includes an official AA-PRECISION ACODEMY certificate, plus a digital badge for LinkedIn.',
+      answer: 'Yes. Every completed course includes an official AA-PRECISION ACADEMY certificate with a QR code, so employers and clients can verify it online at any time.',
     },
     {
       id: 'requirements',
@@ -218,7 +152,7 @@ const Academy: React.FC = () => {
                     Analysis Training.”
                 </h1>
                 <p className="max-w-xl sm:max-w-2xl text-sm sm:text-base md:text-lg/6 mb-8  text-slate-200">
-                    Join our AA-PRECISION ACODEMY to gain hands-on experience in drone
+                    Join our AA-PRECISION ACADEMY to gain hands-on experience in drone
                     operations, precision spraying, aerial mapping, and data analytics
                     for agriculture and environmental monitoring. Our expert-led courses are designed to equip you
                     with the skills needed to excel in the rapidly evolving field of
@@ -260,16 +194,16 @@ const Academy: React.FC = () => {
           {courses.map((course) => (
             <article
               key={course.id}
-              className="bg-white rounded-3xl border border-lime-100 overflow-hidden shadow-xl transition-all duration-500 ease-out transform hover:shadow-2xl hover:-translate-y-1"
+              className="flex flex-col bg-white rounded-3xl border border-lime-100 overflow-hidden shadow-xl transition-all duration-500 ease-out transform hover:shadow-2xl hover:-translate-y-1"
             >
               <img loading="lazy"
                 src={course.image}
                 alt={course.title}
                 className="w-full h-44 object-cover"
               />
-              <div className="p-5">
+              <div className="p-5 flex flex-1 flex-col">
                 <h3 className="text-xl font-bold text-green-900 mb-2">
-                  {course.title}
+                  <Link to={`/academy/${course.id}`} className="hover:underline">{course.title}</Link>
                 </h3>
                 <p className="text-slate-600 mb-3">{course.summary}</p>
                 <ul className="text-sm text-slate-600 space-y-1 mb-3">
@@ -282,16 +216,22 @@ const Academy: React.FC = () => {
                     </li>
                   ))}
                 </ul>
-                <div className="flex justify-between items-center mt-5 text-slate-700">
+                <div className="flex justify-between items-center mt-auto pt-5 text-slate-700">
                   <span className="text-sm">{course.duration}</span>
                   <span className="text-lg font-semibold">{course.price}</span>
                 </div>
+                <Link
+                  to={`/academy/${course.id}`}
+                  className="mt-4 inline-flex w-full justify-center border-2 border-green-800 text-green-800 font-bold py-2 rounded-xl hover:bg-green-50 transition-colors"
+                >
+                  View Course Details
+                </Link>
                 <button
                   type="button"
                   onClick={() => openEnrollment(course.id)}
-                  className="mt-4 inline-flex w-full justify-center bg-green-800 text-white font-bold py-2 rounded-xl hover:bg-lime-700 transition-colors"
+                  className="mt-2 inline-flex w-full justify-center bg-green-800 text-white font-bold py-2 rounded-xl hover:bg-lime-700 transition-colors"
                 >
-                  Enquire Now
+                  Enrol Now
                 </button>
               </div>
             </article>
@@ -302,7 +242,7 @@ const Academy: React.FC = () => {
 
       <section className="container mx-auto px-4 py-14">
         <AnimatedSection className="max-w-4xl mx-auto" animationType="unveil" delay={0.05}>
-          <h2 className="text-3xl font-bold text-green-900 mb-6 text-center">AAP ACODEMY FAQ</h2>
+          <h2 className="text-3xl font-bold text-green-900 mb-6 text-center">AAP ACADEMY FAQ</h2>
           <div className="space-y-3">
             {faqItems.map((faq) => (
               <button
@@ -326,7 +266,7 @@ const Academy: React.FC = () => {
       <section className="bg-lime-50 py-14">
         <AnimatedSection className="container mx-auto px-4 text-center" animationType="unveil-left" delay={0.05}>
           <h2 className="text-3xl font-bold text-green-900 mb-4">
-            Why AAP ACODEMY?
+            Why AAP ACADEMY?
           </h2>
           <p className="max-w-3xl mx-auto text-slate-600 mb-8">
             Our curriculum is built from real-world project experience, with

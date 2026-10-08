@@ -20,6 +20,8 @@ import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import StudentDashboard from './pages/StudentDashboard';
+import CourseDetail from './pages/CourseDetail';
+import { findCourse } from './src/data/courses';
 import { getSupabase, isSupabaseConfigured } from './src/supabase';
 import Verify from './pages/Verify';
 
@@ -50,6 +52,10 @@ const getPageTitle = (pathname: string) => {
     return `${category} Services | ${SITE_NAME}`;
   }
   if (pathname.startsWith('/verify')) return `Certificate Verification | ${SITE_NAME}`;
+  if (pathname.startsWith('/academy/')) {
+    const course = findCourse(pathname.split('/')[2]);
+    if (course) return `${course.title} | ${SITE_NAME}`;
+  }
   return PAGE_TITLES['/'];
 };
 
@@ -98,6 +104,7 @@ const App: React.FC = () => {
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/academy" element={<Academy />} />
+            <Route path="/academy/:courseId" element={<CourseDetail />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />

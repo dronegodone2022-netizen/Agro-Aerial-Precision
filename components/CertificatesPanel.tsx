@@ -11,14 +11,10 @@ import {
   type AdminStudent,
 } from '../src/examApi';
 import { certificateQrDataUrl, certificateVerifyUrl } from '../src/certificateQr';
+import { COURSES } from '../src/data/courses';
 
 // Course titles offered on the Academy page (suggestions only - any course name is allowed)
-const ACADEMY_COURSES = [
-  'Basic Drone Training for Multimedia Production Certification',
-  'Drone For Precision Aerial Spraying Certification',
-  'Drone For Aerial Mapping & Survey Certification',
-  'Drone Data Processing & Analysis Certification',
-];
+const ACADEMY_COURSES = COURSES.map((course) => course.title);
 
 const STOP_WORDS = new Set(['for', 'and', 'of', 'the', 'in', 'to', 'with', 'certification', 'certificate', 'course', 'training']);
 
