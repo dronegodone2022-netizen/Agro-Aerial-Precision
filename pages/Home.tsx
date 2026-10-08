@@ -34,7 +34,7 @@ const Home: React.FC = () => {
               Drone Surveys, Inspection &amp; Aerial Data for <span className="text-lime-500 sm:text-lime-600">Mining, Construction &amp; Infrastructure.</span>
             </h1>
             <p className="text-slate-300 sm:text-slate-400 text-base sm:text-lg md:text-lg lg:text-xl mb-8 max-w-xl mx-auto">
-              SLCAA-certified drone operations across Sierra Leone: mine and site surveys, stockpile volumes, infrastructure and thermal inspection, environmental monitoring and precision agriculture - plus professional drone training.
+              Professional drone operations across Sierra Leone: mine and site surveys, stockpile volumes, infrastructure and thermal inspection, environmental monitoring and precision agriculture - plus professional drone training.
             </p>
             <div className="flex flex-col pt-12 md:pt-4 sm:flex-row gap-4 md:flex-row sm:gap-5 justify-center items-center">
               <Link

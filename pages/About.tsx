@@ -140,7 +140,7 @@ const About: React.FC = () => {
                     drone technology has the potential to solve some of the most
                     pressing challenges in modern industries. From slow, risky
                     ground surveys on mine sites to hidden faults on power lines
-                    and pest outbreaks on farms, we recognized that many of these
+                    and crop disease on farms, we recognized that many of these
                     issues could be minimized or even prevented through precise,
                     data-driven insights.
                   </p>
@@ -182,10 +182,10 @@ const About: React.FC = () => {
                         </li>
                       </ul>
                       <p className="text-slate-600 mb-4 leading-relaxed text-lg">
-                        Through my work with drone technology at SKT Live in Ghana and Charis UAS in Rwanda and Ivory Coast, I witnessed firsthand the transformative power of UAVs in agriculture, construction, and rural development. I saw how advanced aerial solutions could improve accuracy, increase yields, reduce waste, cut operational costs, and ultimately support the long-term resilience of farming communities.
-                        Recognizing the potential to bring these innovations to Sierra Leone, I founded Agro Aerial Precision a company built on the mission of introducing smarter, safer, and more sustainable ways of farming and data collection. By leveraging drones, artificial intelligence, and advanced data analytics, we empower farmers, construction companies, and mining operations across the region and beyond.
+                        Through my work with drone technology at SKT Live in Ghana and Charis UAS in Rwanda and Ivory Coast, I witnessed firsthand the transformative power of UAVs in construction, agriculture, and rural development. I saw how aerial data could replace slow and risky ground surveys, improve accuracy, reduce waste and cut operational costs - for mining and construction companies and infrastructure owners as much as for farmers.
+                        Recognizing the potential to bring these innovations to Sierra Leone, I founded Agro Aerial Precision, a company built on the mission of introducing smarter, safer, and more sustainable ways of surveying, inspecting, farming and collecting data. By leveraging drones, artificial intelligence, and advanced data analytics, we empower mining operations, construction companies, infrastructure owners and farmers across the region and beyond.
 
-                        At Agro Aerial Precision, we believe technology should uplift communities, strengthen food systems, and drive meaningful development. Our goal is to make surveying, inspection, agriculture and data collection more efficient, safer, environmentally friendly, and future-ready.
+                        At Agro Aerial Precision, we believe technology should uplift communities, create skilled local jobs, and drive meaningful development. Our goal is to make surveying, inspection, agriculture and data collection more efficient, safer, environmentally friendly, and future-ready.
                       </p>
                       <h2 className="text-2xl font-bold mb-2">
                         Our mission is simple:{" "}
