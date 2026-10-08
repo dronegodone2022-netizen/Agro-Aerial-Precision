@@ -107,7 +107,7 @@ const About: React.FC = () => {
           <h1 className="text-5xl font-bold mb-4">About Us</h1>
           <p className="text-xl text-slate-400 max-w-2xl mx-auto">
             Precision aerial data for mining, construction, infrastructure and agriculture - delivered by
-            certified pilots, and taught in our drone academy.
+            trained, experienced pilots - and taught in our drone academy.
           </p>
         </AnimatedSection>
       </section>

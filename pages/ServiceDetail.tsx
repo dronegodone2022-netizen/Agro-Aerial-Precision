@@ -114,7 +114,7 @@ const ServiceDetail: React.FC = () => {
       },
       {
         question: 'How quickly can you restore a grounded drone?',
-        answer: 'Our technicians aim to diagnose most issues within 24 hours and complete repairs quickly with genuine replacement parts and certified testing.'
+        answer: 'Our technicians aim to diagnose most issues within 24 hours and complete repairs quickly with genuine replacement parts and full test flights.'
       },
       {
         question: 'Can you help prevent future drone failures?',
@@ -124,7 +124,7 @@ const ServiceDetail: React.FC = () => {
     Inspection: [
       {
         question: 'How do you ensure safety during inspections?',
-        answer: 'All our operations follow strict safety protocols including pre-flight checks, certified pilots, and real-time monitoring. We maintain safe distances from structures and power sources.'
+        answer: 'All our operations follow strict safety protocols including pre-flight checks, trained and experienced pilots, and real-time monitoring. We maintain safe distances from structures and power sources.'
       },
       {
         question: 'Can your drones inspect structures at night?',

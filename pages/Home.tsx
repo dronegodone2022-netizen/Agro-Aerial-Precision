@@ -133,7 +133,7 @@ const Home: React.FC = () => {
                   <div className="shrink-0 w-12 h-12 bg-lime-600 rounded-xl flex items-center justify-center font-bold text-xl">2</div>
                   <div>
                     <h4 className="text-xl font-bold mb-2">Capture the Data</h4>
-                    <p className="text-slate-400">Certified pilots fly RGB, thermal, multispectral or LiDAR sensors with ground control and RTK for survey-grade accuracy.</p>
+                    <p className="text-slate-400">Experienced pilots fly RGB, thermal, multispectral or LiDAR sensors with ground control and RTK for survey-grade accuracy.</p>
                   </div>
                 </AnimatedSection>
                 <AnimatedSection className="flex gap-6" animationType="unveil-left" delay={0.6}>

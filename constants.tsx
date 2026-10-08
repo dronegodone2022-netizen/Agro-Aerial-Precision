@@ -177,7 +177,7 @@ export const SERVICES: Service[] = [
     title: 'Drone Repair & Maintenance',
     description: 'Comprehensive repair, maintenance, and technical support services for industrial and commercial drones.',
     image: asset('drone repair.jpg'),
-    longDescription: 'Our Drone Repairing service delivers fast, reliable repairs and preventive maintenance for professional UAV fleets. We handle hardware repairs, software calibration, battery health checks, and airframe restoration with certified technicians who understand the demands of industrial drone operations.\n\n• Fast diagnostics and component-level repairs for motors, controllers, cameras, and gimbals\n• Firmware updates, flight controller tuning, and sensor calibration\n• Battery testing, safe charging guidance, and replacement support\n• Crash and impact recovery for frames, arms, and landing gear\n• Preventive maintenance programs to reduce downtime and extend drone life\n• On-site and workshop repair options for fleet operators',
+    longDescription: 'Our Drone Repairing service delivers fast, reliable repairs and preventive maintenance for professional UAV fleets. We handle hardware repairs, software calibration, battery health checks, and airframe restoration with experienced technicians who understand the demands of industrial drone operations.\n\n• Fast diagnostics and component-level repairs for motors, controllers, cameras, and gimbals\n• Firmware updates, flight controller tuning, and sensor calibration\n• Battery testing, safe charging guidance, and replacement support\n• Crash and impact recovery for frames, arms, and landing gear\n• Preventive maintenance programs to reduce downtime and extend drone life\n• On-site and workshop repair options for fleet operators',
   },
 ];
 
