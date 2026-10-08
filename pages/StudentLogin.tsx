@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { signIn, getErrorMessage } from '../src/examApi';
-import AuthLayout, { ErrorBox, inputClass, labelClass, primaryButtonClass, safeNext } from '../components/AuthLayout';
+import AuthLayout, { ErrorBox, SuccessBox, inputClass, labelClass, primaryButtonClass, safeNext } from '../components/AuthLayout';
 
 const StudentLogin: React.FC = () => {
   const navigate = useNavigate();
@@ -33,6 +33,15 @@ const StudentLogin: React.FC = () => {
       title="Student Sign In"
       subtitle={next.startsWith('/academy') ? 'Sign in or create a free account to enrol in a course.' : 'Agro Aerial Precision Academy student portal.'}
     >
+      {searchParams.get('notice') === 'not-student' && (
+        <div className="mb-4">
+          <SuccessBox>
+            That account is not a student account, so it has been signed out of the Student Portal.
+            Sign in with a student account below. Admins sign in at <Link to="/admin" className="font-semibold underline">Exam Admin</Link>.
+          </SuccessBox>
+        </div>
+      )}
+
       <form onSubmit={handleLogin} className="space-y-4">
         <label className={labelClass}>
           Email

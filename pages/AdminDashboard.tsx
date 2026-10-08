@@ -15,6 +15,7 @@ import {
   type LockedStudent,
 } from '../src/examApi';
 import CertificatesPanel from '../components/CertificatesPanel';
+import { ADMIN_HEARTBEAT_MS, adminAwayTooLong, clearAdminSeen, markAdminSeen } from '../src/adminSession';
 
 // Admins are Supabase Auth users whose ID is listed in the public.admins table.
 // The database checks that on every admin call, so this page only controls the UI.
@@ -50,23 +51,81 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  const clearDashboard = () => {
+    setAdminEmail(null);
+    setLocks([]);
+    setEnrollments([]);
+    setAttempts([]);
+    setError('');
+  };
+
+  // Sign out if the admin has been away from this page for more than a minute
+  const signOutIfAway = async () => {
+    if (!adminAwayTooLong()) return false;
+    await signOut('admin');
+    clearAdminSeen();
+    clearDashboard();
+    setNotice('You were signed out because you left the admin page for more than 1 minute. Please sign in again.');
+    return true;
+  };
+
   useEffect(() => {
-    currentUserEmail()
-      .then((current) => {
-        setAdminEmail(current);
-        if (current) return loadData();
-      })
-      .finally(() => setCheckingSession(false));
+    (async () => {
+      try {
+        const current = await currentUserEmail('admin');
+        if (current && !(await signOutIfAway())) {
+          markAdminSeen();
+          setAdminEmail(current);
+          await loadData();
+        }
+      } finally {
+        setCheckingSession(false);
+      }
+    })();
   }, []);
+
+  // While signed in: keep "last seen" fresh when the page is visible, check on return
+  useEffect(() => {
+    if (!adminEmail) return;
+
+    // A long gap between heartbeats (e.g. the laptop went to sleep) also counts as away
+    const heartbeat = setInterval(() => {
+      if (document.visibilityState !== 'visible') return;
+      signOutIfAway().then((signedOut) => {
+        if (!signedOut) markAdminSeen();
+      });
+    }, ADMIN_HEARTBEAT_MS);
+
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        signOutIfAway().then((signedOut) => {
+          if (!signedOut) markAdminSeen();
+        });
+      } else {
+        markAdminSeen(); // the moment they left
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibility);
+    window.addEventListener('pagehide', markAdminSeen);
+    return () => {
+      clearInterval(heartbeat);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      window.removeEventListener('pagehide', markAdminSeen);
+      markAdminSeen(); // navigating to another page of the site
+    };
+  }, [adminEmail]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
     setError('');
+    setNotice('');
     try {
-      await signIn(email, password);
+      await signIn(email, password, 'admin');
+      markAdminSeen();
       setPassword('');
-      setAdminEmail(await currentUserEmail());
+      setAdminEmail(await currentUserEmail('admin'));
       await loadData();
     } catch (err) {
       setError(getErrorMessage(err));
@@ -76,13 +135,10 @@ const AdminDashboard: React.FC = () => {
   };
 
   const handleSignOut = async () => {
-    await signOut();
-    setAdminEmail(null);
-    setLocks([]);
-    setEnrollments([]);
-    setAttempts([]);
+    await signOut('admin');
+    clearAdminSeen();
+    clearDashboard();
     setNotice('');
-    setError('');
   };
 
   const handleEnrollmentStatus = async (enrollment: AdminEnrollment, status: EnrollmentStatus) => {

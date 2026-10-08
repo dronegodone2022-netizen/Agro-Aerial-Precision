@@ -1,6 +1,6 @@
 // Client for the backend: Supabase Auth plus the Postgres functions in supabase/migrations.
 // All grading happens in the database, so this file never sees the answer key.
-import { getSupabase, isSupabaseConfigured, siteBaseUrl } from './supabase';
+import { getSupabase, isSupabaseConfigured, siteBaseUrl, type AuthKind } from './supabase';
 
 export interface StudentProfile {
   id: string;
@@ -87,17 +87,17 @@ export const isBackendConfigured = isSupabaseConfigured;
 const NOT_CONFIGURED = 'The student portal is not available right now. Please contact us on WhatsApp.';
 const NETWORK_ERROR = 'Could not reach the server. Check your internet connection and try again.';
 
-const client = async () => {
+const client = async (kind: AuthKind = 'student') => {
   if (!isSupabaseConfigured) throw new ExamApiError(NOT_CONFIGURED);
   try {
-    return await getSupabase();
+    return await getSupabase(kind);
   } catch {
     throw new ExamApiError(NETWORK_ERROR);
   }
 };
 
-const rpc = async <T,>(fn: string, params: Record<string, unknown> = {}): Promise<T> => {
-  const supabase = await client();
+const rpc = async <T,>(fn: string, params: Record<string, unknown> = {}, kind: AuthKind = 'student'): Promise<T> => {
+  const supabase = await client(kind);
   let response: ApiResponse<T> | null;
 
   try {
@@ -147,21 +147,22 @@ export const registerStudent = async (details: { fullName: string; email: string
   return { needsEmailConfirmation: !data.session };
 };
 
-export const signIn = async (email: string, password: string) => {
-  const supabase = await client();
+export const signIn = async (email: string, password: string, kind: AuthKind = 'student') => {
+  const supabase = await client(kind);
   const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
   if (error) throw authError(error.message);
 };
 
-export const signOut = async () => {
+export const signOut = async (kind: AuthKind = 'student') => {
   if (!isSupabaseConfigured) return;
-  await (await getSupabase()).auth.signOut();
+  // 'local' only clears this browser's sign-in of this kind
+  await (await getSupabase(kind)).auth.signOut({ scope: 'local' });
 };
 
 /** Email of the signed-in user, or null. */
-export const currentUserEmail = async (): Promise<string | null> => {
+export const currentUserEmail = async (kind: AuthKind = 'student'): Promise<string | null> => {
   if (!isSupabaseConfigured) return null;
-  const { data } = await (await getSupabase()).auth.getSession();
+  const { data } = await (await getSupabase(kind)).auth.getSession();
   return data.session?.user.email ?? null;
 };
 
@@ -200,16 +201,16 @@ export const submitExam = (answers: Record<string, number>) => rpc<SubmitRespons
 
 // --- Admins (Supabase Auth users listed in the public.admins table) ------
 
-export const adminListLocks = () => rpc<LockedStudent[]>('admin_list_locks');
+export const adminListLocks = () => rpc<LockedStudent[]>('admin_list_locks', {}, 'admin');
 
-export const adminUnlock = (studentId: string) => rpc<{ cleared: boolean }>('admin_unlock', { p_student_id: studentId });
+export const adminUnlock = (studentId: string) => rpc<{ cleared: boolean }>('admin_unlock', { p_student_id: studentId }, 'admin');
 
-export const adminRecentAttempts = (limit = 50) => rpc<AttemptSummary[]>('admin_recent_attempts', { p_limit: limit });
+export const adminRecentAttempts = (limit = 50) => rpc<AttemptSummary[]>('admin_recent_attempts', { p_limit: limit }, 'admin');
 
-export const adminListEnrollments = () => rpc<AdminEnrollment[]>('admin_list_enrollments');
+export const adminListEnrollments = () => rpc<AdminEnrollment[]>('admin_list_enrollments', {}, 'admin');
 
 export const adminSetEnrollmentStatus = (enrollmentId: number, status: EnrollmentStatus) =>
-  rpc<Enrollment>('admin_set_enrollment_status', { p_enrollment_id: enrollmentId, p_status: status });
+  rpc<Enrollment>('admin_set_enrollment_status', { p_enrollment_id: enrollmentId, p_status: status }, 'admin');
 
 // --- Admins: certificates -------------------------------------------------
 
@@ -232,9 +233,9 @@ const CERTIFICATE_BUCKET = 'certificates';
 const MAX_CERTIFICATE_FILE_BYTES = 10 * 1024 * 1024;
 const CERTIFICATE_FILE_TYPES: Record<string, string> = { 'application/pdf': 'pdf', 'image/jpeg': 'jpg', 'image/png': 'png' };
 
-export const adminListCertificates = () => rpc<AdminCertificate[]>('admin_list_certificates');
+export const adminListCertificates = () => rpc<AdminCertificate[]>('admin_list_certificates', {}, 'admin');
 
-export const adminListStudents = () => rpc<AdminStudent[]>('admin_list_students');
+export const adminListStudents = () => rpc<AdminStudent[]>('admin_list_students', {}, 'admin');
 
 export const adminSaveCertificate = (
   certificate: { id: string; name: string; course: string; issuedOn: string; link: string; studentId: string | null },
@@ -248,10 +249,10 @@ export const adminSaveCertificate = (
     p_link: certificate.link,
     p_student_id: certificate.studentId || '',
     p_is_new: isNew,
-  });
+  }, 'admin');
 
 export const adminDeleteCertificate = (certificateId: string) =>
-  rpc<AdminCertificate>('admin_delete_certificate', { p_id: certificateId });
+  rpc<AdminCertificate>('admin_delete_certificate', { p_id: certificateId }, 'admin');
 
 /** Uploads a certificate PDF/JPG/PNG to Supabase Storage and returns its public URL. */
 export const uploadCertificateFile = async (file: File, certificateId: string) => {
@@ -259,7 +260,7 @@ export const uploadCertificateFile = async (file: File, certificateId: string) =
   if (!extension) throw new ExamApiError('The certificate file must be a PDF, JPG or PNG.');
   if (file.size > MAX_CERTIFICATE_FILE_BYTES) throw new ExamApiError('The certificate file must be 10 MB or smaller.');
 
-  const supabase = await client();
+  const supabase = await client('admin');
   // Random suffix so a replaced file never shows a cached old version
   const safeId = certificateId.trim().toUpperCase().replace(/[^A-Z0-9_.-]/g, '');
   const path = `${safeId}-${crypto.randomUUID().slice(0, 8)}.${extension}`;
@@ -275,6 +276,6 @@ export const deleteCertificateFile = async (link: string) => {
   const index = link.indexOf(marker);
   if (index === -1) return;
 
-  const supabase = await client();
+  const supabase = await client('admin');
   await supabase.storage.from(CERTIFICATE_BUCKET).remove([decodeURIComponent(link.slice(index + marker.length))]);
 };

@@ -41,6 +41,12 @@ const StudentDashboard: React.FC = () => {
         }
         setAccountEmail(email);
         const profile = await getStudentProfile();
+        if (!profile.student) {
+          // Signed in with a non-student account (e.g. an admin) - clear it and ask for a student sign-in
+          await signOut();
+          navigate('/student-login?next=%2Fstudent&notice=not-student', { replace: true });
+          return;
+        }
         setStudent(profile.student);
         setEnrollments(profile.enrollments);
       } catch (err) {
@@ -92,9 +98,8 @@ const StudentDashboard: React.FC = () => {
   if (!student) {
     return (
       <AuthLayout title="Student Portal">
-        <ErrorBox message={error || `${accountEmail || 'This account'} is not a student account.`} />
+        <ErrorBox message={error || 'We could not load your student profile. Please try again.'} />
         <div className="mt-6 flex flex-col gap-3">
-          <Link to="/admin" className="text-center font-semibold text-green-700 hover:underline">Go to Exam Admin</Link>
           <button type="button" onClick={handleSignOut} className="font-semibold text-slate-600 hover:underline">Sign out</button>
         </div>
       </AuthLayout>
