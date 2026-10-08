@@ -139,5 +139,6 @@ export const NAV_LINKS: NavLink[] = [
     ]
   },
   { label: 'About Us', path: '/about' },
-  { label: 'OUR ACADEMY', path: '/academy' }
+  { label: 'OUR ACADEMY', path: '/academy' },
+  { label: 'Student Portal', path: '/student' }
 ];

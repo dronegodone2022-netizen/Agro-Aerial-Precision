@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import {
-  adminCurrentEmail,
+  adminListEnrollments,
   adminListLocks,
   adminRecentAttempts,
-  adminSignIn,
-  adminSignOut,
+  adminSetEnrollmentStatus,
   adminUnlock,
+  currentUserEmail,
   getErrorMessage,
-  isExamBackendConfigured,
+  signIn,
+  signOut,
+  type AdminEnrollment,
   type AttemptSummary,
+  type EnrollmentStatus,
   type LockedStudent,
 } from '../src/examApi';
 
@@ -27,11 +30,17 @@ const AdminDashboard: React.FC = () => {
   const [notice, setNotice] = useState('');
   const [locks, setLocks] = useState<LockedStudent[]>([]);
   const [attempts, setAttempts] = useState<AttemptSummary[]>([]);
+  const [enrollments, setEnrollments] = useState<AdminEnrollment[]>([]);
 
   const loadData = async () => {
     setError('');
     try {
-      const [lockList, attemptList] = await Promise.all([adminListLocks(), adminRecentAttempts(50)]);
+      const [enrollmentList, lockList, attemptList] = await Promise.all([
+        adminListEnrollments(),
+        adminListLocks(),
+        adminRecentAttempts(50),
+      ]);
+      setEnrollments(enrollmentList);
       setLocks(lockList);
       setAttempts(attemptList);
     } catch (err) {
@@ -40,7 +49,7 @@ const AdminDashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    adminCurrentEmail()
+    currentUserEmail()
       .then((current) => {
         setAdminEmail(current);
         if (current) return loadData();
@@ -53,9 +62,9 @@ const AdminDashboard: React.FC = () => {
     setBusy(true);
     setError('');
     try {
-      await adminSignIn(email, password);
+      await signIn(email, password);
       setPassword('');
-      setAdminEmail(await adminCurrentEmail());
+      setAdminEmail(await currentUserEmail());
       await loadData();
     } catch (err) {
       setError(getErrorMessage(err));
@@ -65,12 +74,31 @@ const AdminDashboard: React.FC = () => {
   };
 
   const handleSignOut = async () => {
-    await adminSignOut();
+    await signOut();
     setAdminEmail(null);
     setLocks([]);
+    setEnrollments([]);
     setAttempts([]);
     setNotice('');
     setError('');
+  };
+
+  const handleEnrollmentStatus = async (enrollment: AdminEnrollment, status: EnrollmentStatus) => {
+    const verb = status === 'approved' ? 'Approve' : status === 'rejected' ? 'Reject' : 'Move back to pending';
+    if (!window.confirm(`${verb} ${enrollment.studentName}'s enrolment in "${enrollment.courseTitle}"?`)) {
+      return;
+    }
+    setBusy(true);
+    setError('');
+    try {
+      await adminSetEnrollmentStatus(enrollment.id, status);
+      setNotice(`${enrollment.studentName} (${enrollment.courseTitle}): ${status}.`);
+      await loadData();
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setBusy(false);
+    }
   };
 
   const handleUnlock = async (lock: LockedStudent) => {
@@ -140,14 +168,66 @@ const AdminDashboard: React.FC = () => {
             <button type="submit" disabled={busy} style={{ ...buttonStyle, marginTop: '8px' }}>
               {busy ? 'Signing in...' : 'Sign In'}
             </button>
-            {import.meta.env.DEV && !isExamBackendConfigured && (
-              <p style={{ fontSize: '13px', color: '#92400e', margin: 0 }}>Local demo mode: admin@example.com / demo-admin</p>
-            )}
           </form>
         )}
 
         {adminEmail && (
           <>
+            <h2 style={{ fontSize: '20px', color: '#14532d', margin: '8px 0 12px' }}>
+              Enrolments ({enrollments.filter((e) => e.status === 'pending').length} pending)
+            </h2>
+            {enrollments.length === 0 ? (
+              <p style={{ color: '#6b7280', marginBottom: '28px' }}>No course enrolments yet.</p>
+            ) : (
+              <div style={{ overflowX: 'auto', marginBottom: '28px' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr>
+                      <th style={headCellStyle}>Student</th>
+                      <th style={headCellStyle}>Course</th>
+                      <th style={headCellStyle}>Status</th>
+                      <th style={headCellStyle}></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {enrollments.map((enrollment) => (
+                      <tr key={enrollment.id}>
+                        <td style={cellStyle}>
+                          <strong>{enrollment.studentName}</strong> ({enrollment.studentId})<br />
+                          <span style={{ color: '#64748b' }}>{enrollment.email}</span><br />
+                          {enrollment.phone && (
+                            <a href={`https://wa.me/${enrollment.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" style={{ color: '#166534' }}>
+                              {enrollment.phone}
+                            </a>
+                          )}
+                        </td>
+                        <td style={cellStyle}>
+                          {enrollment.courseTitle}<br />
+                          <span style={{ color: '#64748b' }}>{formatDate(enrollment.createdAt)}</span>
+                          {enrollment.message && <><br /><em style={{ color: '#475569' }}>"{enrollment.message}"</em></>}
+                        </td>
+                        <td style={{ ...cellStyle, fontWeight: 700, color: enrollment.status === 'approved' ? '#166534' : enrollment.status === 'rejected' ? '#b91c1c' : '#92400e' }}>
+                          {enrollment.status === 'pending' ? 'Pending' : enrollment.status === 'approved' ? 'Approved' : 'Rejected'}
+                        </td>
+                        <td style={{ ...cellStyle, textAlign: 'right', whiteSpace: 'nowrap' }}>
+                          {enrollment.status !== 'approved' && (
+                            <button type="button" onClick={() => handleEnrollmentStatus(enrollment, 'approved')} disabled={busy} style={{ ...buttonStyle, background: '#16a34a', padding: '8px 14px', marginLeft: '6px' }}>
+                              Approve
+                            </button>
+                          )}
+                          {enrollment.status !== 'rejected' && (
+                            <button type="button" onClick={() => handleEnrollmentStatus(enrollment, 'rejected')} disabled={busy} style={{ ...buttonStyle, background: '#b91c1c', padding: '8px 14px', marginLeft: '6px' }}>
+                              Reject
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
             <h2 style={{ fontSize: '20px', color: '#14532d', margin: '8px 0 12px' }}>Locked exams ({locks.length})</h2>
             {locks.length === 0 ? (
               <p style={{ color: '#6b7280', marginBottom: '28px' }}>No students are locked out right now.</p>

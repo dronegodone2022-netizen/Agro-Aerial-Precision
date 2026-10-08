@@ -1,11 +1,23 @@
-// Client for the exam backend: Postgres functions in supabase/migrations.
+// Client for the backend: Supabase Auth plus the Postgres functions in supabase/migrations.
 // All grading happens in the database, so this file never sees the answer key.
-import { getSupabase, isSupabaseConfigured } from './supabase';
+import { getSupabase, isSupabaseConfigured, siteBaseUrl } from './supabase';
 
 export interface StudentProfile {
   id: string;
   name: string;
   email: string;
+  phone: string;
+}
+
+export type EnrollmentStatus = 'pending' | 'approved' | 'rejected';
+
+export interface Enrollment {
+  id: number;
+  courseId: string;
+  courseTitle: string;
+  status: EnrollmentStatus;
+  createdAt: string;
+  decidedAt: string | null;
 }
 
 export interface ExamQuestion {
@@ -23,7 +35,8 @@ export interface ExamResult {
 
 export type ExamState =
   | { status: 'in_progress'; student: StudentProfile; secondsRemaining: number; questions: ExamQuestion[] }
-  | { status: 'locked' | 'passed'; student: StudentProfile; result: ExamResult };
+  | { status: 'locked' | 'passed'; student: StudentProfile; result: ExamResult }
+  | { status: 'not_enrolled'; student: StudentProfile };
 
 export interface SubmitResponse {
   status: 'locked' | 'passed';
@@ -53,7 +66,15 @@ export interface AttemptSummary {
   passed: boolean | null;
 }
 
-export interface ApiResponse<T> {
+export interface AdminEnrollment extends Enrollment {
+  studentId: string;
+  studentName: string;
+  email: string;
+  phone: string;
+  message: string;
+}
+
+interface ApiResponse<T> {
   ok: boolean;
   data?: T;
   error?: string;
@@ -61,111 +82,131 @@ export interface ApiResponse<T> {
 
 export class ExamApiError extends Error {}
 
-export const isExamBackendConfigured = isSupabaseConfigured;
+export const isBackendConfigured = isSupabaseConfigured;
 
-// Frontend action name -> database function name
-const RPC_FUNCTIONS = {
-  loginStudent: 'exam_login',
-  getExam: 'exam_get',
-  submitExam: 'exam_submit',
-  adminListLocks: 'admin_list_locks',
-  adminUnlock: 'admin_unlock',
-  adminRecentAttempts: 'admin_recent_attempts',
-} as const;
+const NOT_CONFIGURED = 'The student portal is not available right now. Please contact us on WhatsApp.';
+const NETWORK_ERROR = 'Could not reach the server. Check your internet connection and try again.';
 
-type Action = keyof typeof RPC_FUNCTIONS;
+const client = async () => {
+  if (!isSupabaseConfigured) throw new ExamApiError(NOT_CONFIGURED);
+  try {
+    return await getSupabase();
+  } catch {
+    throw new ExamApiError(NETWORK_ERROR);
+  }
+};
 
-// { studentId: 'x' } -> { p_student_id: 'x' }
-const toRpcParams = (payload: Record<string, unknown>) =>
-  Object.fromEntries(
-    Object.entries(payload).map(([key, value]) => [`p_${key.replace(/[A-Z]/g, (c) => `_${c.toLowerCase()}`)}`, value])
-  );
-
-const call = async <T,>(action: Action, payload: Record<string, unknown> = {}): Promise<T> => {
-  let response: ApiResponse<unknown>;
+const rpc = async <T,>(fn: string, params: Record<string, unknown> = {}): Promise<T> => {
+  const supabase = await client();
+  let response: ApiResponse<T> | null;
 
   try {
-    if (isSupabaseConfigured) {
-      const supabase = await getSupabase();
-      const { data, error } = await supabase.rpc(RPC_FUNCTIONS[action], toRpcParams(payload));
-      if (error) throw error;
-      response = data as ApiResponse<unknown>;
-    } else if (import.meta.env.DEV) {
-      // Local development only. `import.meta.env.DEV` is a literal `false` in production builds,
-      // so this branch and the demo data are removed from the live site.
-      const { handleDemoRequest } = await import('./demoExamBackend');
-      response = await handleDemoRequest(action, payload);
-    } else {
-      throw new ExamApiError('The exam portal is not configured yet. Please contact the administrator.');
-    }
-  } catch (err) {
-    if (err instanceof ExamApiError) throw err;
-    throw new ExamApiError('Could not reach the exam server. Check your internet connection and try again.');
+    const { data, error } = await supabase.rpc(fn, params);
+    if (error) throw error;
+    response = data as ApiResponse<T>;
+  } catch {
+    throw new ExamApiError(NETWORK_ERROR);
   }
 
   if (!response?.ok || response.data === undefined) {
     throw new ExamApiError(response?.error || 'Request failed. Please try again.');
   }
-  return response.data as T;
+  return response.data;
 };
 
 export const getErrorMessage = (err: unknown) =>
   err instanceof ExamApiError ? err.message : 'Something went wrong. Please try again.';
 
-// --- Students -------------------------------------------------------------
+const AUTH_MESSAGES: Record<string, string> = {
+  'Invalid login credentials': 'Invalid email or password.',
+  'Email not confirmed': 'Please confirm your email first - check your inbox for the confirmation link.',
+  'User already registered': 'An account with this email already exists. Please sign in instead.',
+};
 
-export const loginStudent = (studentId: string, pin: string) =>
-  call<{ sessionToken: string; student: StudentProfile }>('loginStudent', { studentId, pin });
+const authError = (message: string) => new ExamApiError(AUTH_MESSAGES[message] || message);
 
-export const getExam = (sessionToken: string) =>
-  call<ExamState>('getExam', { sessionToken });
+// --- Accounts (students and admins both use Supabase Auth) ---------------
 
-export const submitExam = (sessionToken: string, answers: Record<string, number>) =>
-  call<SubmitResponse>('submitExam', { sessionToken, answers });
-
-// --- Admins (Supabase Auth users listed in the public.admins table) ------
-
-export const adminListLocks = () => call<LockedStudent[]>('adminListLocks');
-
-export const adminUnlock = (studentId: string) => call<{ cleared: boolean }>('adminUnlock', { studentId });
-
-export const adminRecentAttempts = (limit = 50) => call<AttemptSummary[]>('adminRecentAttempts', { limit });
-
-export const adminSignIn = async (email: string, password: string) => {
-  if (import.meta.env.DEV && !isSupabaseConfigured) {
-    try {
-      (await import('./demoExamBackend')).demoAdminSignIn(email, password);
-    } catch (err) {
-      throw new ExamApiError((err as Error).message);
-    }
-    return;
+export const registerStudent = async (details: { fullName: string; email: string; phone: string; password: string }) => {
+  const supabase = await client();
+  const { data, error } = await supabase.auth.signUp({
+    email: details.email.trim(),
+    password: details.password,
+    options: {
+      // Picked up by the database trigger that creates the student profile
+      data: { account_type: 'student', full_name: details.fullName.trim(), phone: details.phone.trim() },
+      emailRedirectTo: `${siteBaseUrl()}#/student`,
+    },
+  });
+  if (error) throw authError(error.message);
+  // With "Confirm email" on, there's no session until the link in the email is clicked.
+  // Supabase also returns no identities for an email that's already registered.
+  if (data.user && data.user.identities?.length === 0) {
+    throw authError('User already registered');
   }
-  if (!isSupabaseConfigured) {
-    throw new ExamApiError('The exam portal is not configured yet.');
-  }
+  return { needsEmailConfirmation: !data.session };
+};
 
-  const supabase = await getSupabase();
+export const signIn = async (email: string, password: string) => {
+  const supabase = await client();
   const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
-  if (error) {
-    throw new ExamApiError(error.message === 'Invalid login credentials' ? 'Invalid email or password.' : error.message);
-  }
+  if (error) throw authError(error.message);
 };
 
-export const adminSignOut = async () => {
-  if (import.meta.env.DEV && !isSupabaseConfigured) {
-    (await import('./demoExamBackend')).demoAdminSignOut();
-  } else if (isSupabaseConfigured) {
-    await (await getSupabase()).auth.signOut();
-  }
+export const signOut = async () => {
+  if (!isSupabaseConfigured) return;
+  await (await getSupabase()).auth.signOut();
 };
 
-/** Email of the signed-in admin, or null. */
-export const adminCurrentEmail = async (): Promise<string | null> => {
-  if (import.meta.env.DEV && !isSupabaseConfigured) {
-    return (await import('./demoExamBackend')).demoAdminEmail();
-  }
+/** Email of the signed-in user, or null. */
+export const currentUserEmail = async (): Promise<string | null> => {
   if (!isSupabaseConfigured) return null;
-
   const { data } = await (await getSupabase()).auth.getSession();
   return data.session?.user.email ?? null;
 };
+
+export const requestPasswordReset = async (email: string) => {
+  const supabase = await client();
+  const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+    redirectTo: `${siteBaseUrl()}#/reset-password`,
+  });
+  if (error) throw authError(error.message);
+};
+
+export const updatePassword = async (password: string) => {
+  const supabase = await client();
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) throw authError(error.message);
+};
+
+// --- Students -------------------------------------------------------------
+
+export const getStudentProfile = () =>
+  rpc<{ student: StudentProfile | null; enrollments: Enrollment[] }>('student_profile');
+
+export const updateStudentProfile = (name: string, phone: string) =>
+  rpc<StudentProfile>('student_update_profile', { p_name: name, p_phone: phone });
+
+export const enrollInCourse = (courseId: string, courseTitle: string, message: string) =>
+  rpc<Enrollment & { alreadyEnrolled: boolean }>('student_enroll', {
+    p_course_id: courseId,
+    p_course_title: courseTitle,
+    p_message: message,
+  });
+
+export const getExam = () => rpc<ExamState>('exam_get');
+
+export const submitExam = (answers: Record<string, number>) => rpc<SubmitResponse>('exam_submit', { p_answers: answers });
+
+// --- Admins (Supabase Auth users listed in the public.admins table) ------
+
+export const adminListLocks = () => rpc<LockedStudent[]>('admin_list_locks');
+
+export const adminUnlock = (studentId: string) => rpc<{ cleared: boolean }>('admin_unlock', { p_student_id: studentId });
+
+export const adminRecentAttempts = (limit = 50) => rpc<AttemptSummary[]>('admin_recent_attempts', { p_limit: limit });
+
+export const adminListEnrollments = () => rpc<AdminEnrollment[]>('admin_list_enrollments');
+
+export const adminSetEnrollmentStatus = (enrollmentId: number, status: EnrollmentStatus) =>
+  rpc<Enrollment>('admin_set_enrollment_status', { p_enrollment_id: enrollmentId, p_status: status });

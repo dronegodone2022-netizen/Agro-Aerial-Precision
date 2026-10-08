@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getStudentSession, clearStudentSession } from '../src/students';
 import {
+  currentUserEmail,
   getExam,
   submitExam,
   getErrorMessage,
@@ -16,7 +16,7 @@ const PASSING_SCORE_PERCENTAGE = 80;
 const RETAKE_PRICE = 'Le 250 (SLE)';
 const ADMIN_PHONE = '+23277840105';
 
-type Phase = 'loading' | 'error' | 'in_progress' | 'finished';
+type Phase = 'loading' | 'error' | 'not_enrolled' | 'in_progress' | 'finished';
 
 const shuffleArray = <T,>(items: T[]) => {
   const copy = [...items];
@@ -47,31 +47,32 @@ const DroneExam = () => {
   const [explanations, setExplanations] = useState<SubmitResponse['explanations']>();
   const submittingRef = useRef(false);
 
-  const sessionToken = getStudentSession()?.sessionToken || '';
-
   // Load the exam (or the existing result) from the server
   useEffect(() => {
-    if (!sessionToken) {
-      navigate('/student-login');
-      return;
-    }
+    (async () => {
+      try {
+        if (!(await currentUserEmail())) {
+          navigate('/student-login?next=%2Fdrone-exam', { replace: true });
+          return;
+        }
 
-    getExam(sessionToken)
-      .then((state) => {
+        const state = await getExam();
         setStudent(state.student);
         if (state.status === 'in_progress') {
           setQuestions(state.questions.map((q) => ({ ...q, options: shuffleArray(q.options) })));
           setTimeLeft(state.secondsRemaining);
           setPhase('in_progress');
+        } else if (state.status === 'not_enrolled') {
+          setPhase('not_enrolled');
         } else {
           setResult(state.result);
           setPhase('finished');
         }
-      })
-      .catch((err) => {
+      } catch (err) {
         setErrorMessage(getErrorMessage(err));
         setPhase('error');
-      });
+      }
+    })();
   }, []);
 
   // Timer countdown. The server enforces the real deadline; this is the visible clock.
@@ -111,7 +112,7 @@ const DroneExam = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await submitExam(sessionToken, selectedAnswers);
+      const response = await submitExam(selectedAnswers);
       setResult(response.result);
       setReview(response.review);
       setExplanations(response.explanations);
@@ -143,10 +144,8 @@ const DroneExam = () => {
     finishExam(false);
   };
 
-  const handleLogout = () => {
-    clearStudentSession();
-    navigate('/student-login');
-  };
+  // Leaving mid-exam doesn't stop the server-side timer; the student can come back.
+  const goToPortal = () => navigate('/student');
 
   const openWhatsAppForRetake = () => {
     const message = `Hello Agro Aerial Precision admin, I did not pass the drone certification exam and would like to retake it.\n\nName: ${student?.name || 'Student'}\nStudent ID: ${student?.id || ''}\nScore: ${result?.percentage ?? 0}%\n\nPlease share the retake payment instructions.`;
@@ -232,10 +231,19 @@ const DroneExam = () => {
 
       {phase === 'loading' && <p style={styles.message}>Loading your exam...</p>}
 
+      {phase === 'not_enrolled' && (
+        <>
+          <div style={{ ...styles.errorBox, color: '#92400e', background: '#fffbeb', border: '1px solid #fcd34d' }}>
+            Your exam unlocks once your course enrolment is approved. If you've already paid, please message us on WhatsApp.
+          </div>
+          <button type="button" onClick={goToPortal} style={styles.secondaryButton}>Back to Student Portal</button>
+        </>
+      )}
+
       {phase === 'error' && (
         <>
           <div style={styles.errorBox}>{errorMessage}</div>
-          <button type="button" onClick={handleLogout} style={styles.secondaryButton}>Back to Login</button>
+          <button type="button" onClick={goToPortal} style={styles.secondaryButton}>Back to Student Portal</button>
         </>
       )}
 
@@ -244,7 +252,7 @@ const DroneExam = () => {
           <div style={styles.studentInfo}>Student: <strong>{student?.name}</strong></div>
           <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
             <div style={styles.timerText}>⏱ Time Left: {formatTime(timeLeft)}</div>
-            <button type="button" onClick={handleLogout} style={styles.logoutBtn}>Logout</button>
+            <button type="button" onClick={goToPortal} style={styles.logoutBtn}>Exit</button>
           </div>
         </div>
       )}
@@ -324,8 +332,8 @@ const DroneExam = () => {
             <button type="button" style={styles.modalButton} onClick={openWhatsAppForRetake}>
               Contact Admin on WhatsApp
             </button>
-            <button type="button" style={styles.secondaryButton} onClick={handleLogout}>
-              Log Out
+            <button type="button" style={styles.secondaryButton} onClick={goToPortal}>
+              Back to Student Portal
             </button>
           </div>
         </div>

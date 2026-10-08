@@ -5,7 +5,7 @@ React + Vite + Tailwind CSS v4 site, deployed to GitHub Pages by
 
 ```bash
 npm install
-npm run dev      # local development (exam pages use a built-in demo backend)
+npm run dev      # local development (uses the Supabase project in .env)
 npm run build    # type-check + production build into dist/
 ```
 
@@ -26,48 +26,53 @@ in the build is visible to every visitor.
 
 ## Backend (Supabase)
 
-The exam and certificate verification run on Supabase. All logic lives in Postgres
-functions in `supabase/migrations/`. Every table is locked down (RLS on, no policies,
-privileges revoked), so the browser can only call those functions. The answer key
-never reaches the browser.
+Accounts, course enrolments, the exam and certificate verification run on Supabase.
+Logic lives in Postgres functions in `supabase/migrations/`. Every table is locked down
+(RLS on, no policies, privileges revoked), so the browser can only call those functions.
+The answer key never reaches the browser.
 
 ### Setup
 
 1. Create a project at [supabase.com](https://supabase.com).
-2. **SQL Editor**: paste and run `supabase/migrations/20261008000000_init.sql`.
+2. **SQL Editor**: run each file in `supabase/migrations/` in order (oldest first).
 3. **SQL Editor**: run `private/seed-questions.sql` to load the exam questions.
    The `private/` folder is git-ignored; never commit the answer key.
    To edit questions later, use the `exam_questions` table. `options` is a list, and
    `correct_option` is the position of the right answer, starting at 1.
-4. **Table Editor > students**: add one row per student (`id`, `name`, `email`, `pin`).
-   Type the PIN as plain text. It is hashed automatically when saved.
-5. **Table Editor > certificates**: import your certificate CSV (columns `id`, `name`,
-   `course`, `issued_on`, `drive_link`; drop the old `qr` column). Then unpublish the old
-   Google Sheet, because it exposes every certificate holder's name.
-6. **Admins**:
-   * **Authentication > Users > Add user**: create your admin account (email + password).
-   * **SQL Editor**: `insert into public.admins (user_id) select id from auth.users where email = 'you@example.com';`
-   * Recommended: **Authentication > Sign In / Providers**: turn off "Allow new users to sign up".
-     Strangers who sign up still can't do anything, but there's no reason to allow it.
-7. Put the project URL and anon key into the GitHub repository variables above.
+4. **Table Editor > certificates**: import your certificate CSV (`id`, `name`, `course`,
+   `issued_on`, `drive_link`).
+5. **Admins**: create the user in **Authentication > Users > Add user**, then run
+   `insert into public.admins (user_id) select id from auth.users where email = 'you@example.com';`
+6. **Authentication > URL Configuration**:
+   * Site URL: `https://dronegodone2022-netizen.github.io/Agro-Aerial-Precision/`
+   * Redirect URLs: add `https://dronegodone2022-netizen.github.io/Agro-Aerial-Precision/**`
+     and `http://localhost:5173/**`
+7. **Authentication > Sign In / Providers > Email**: "Allow new users to sign up" must be **on**.
+   Admin rights come only from the `admins` table, so public sign-up is safe.
+8. **Email delivery** (needed for password-reset and confirmation emails). Supabase's
+   built-in email only delivers to your own team's addresses. Create a free
+   [Resend](https://resend.com) account, verify `agroaerialprecision.com`, then enter its
+   SMTP details in **Authentication > Emails > SMTP Settings**. Until this is done, turn
+   **off** "Confirm email" so new students can sign in straight after registering.
+9. Put the project URL and anon key into the GitHub repository variables above.
 
-### How the exam works
+### How it works
 
-* Students log in at `/#/student-login` with their ID and PIN. 5 wrong PINs lock that ID
-  for 15 minutes.
-* The 5-minute timer is enforced by the database. Reloading or logging in again doesn't
-  reset it, and late submissions are graded as blank.
-* Pass mark is 80%. A failed attempt locks the exam.
-* Admins sign in at `/#/admin` to see locked students and recent results, and to unlock
-  a student after the retake fee is paid.
-* Correct answers and explanations are shown only to students who pass.
-* Timing, pass mark and session length are set in `_exam_config()` in the migration.
+* **Students** create an account at `/#/register` (name, email, WhatsApp number,
+  password) and get a Student ID such as `AAP-26-0001`. They sign in at
+  `/#/student-login` and manage everything from the Student Portal at `/#/student`.
+  Forgotten passwords are reset by email from `/#/forgot-password`.
+* **Enrolling**: "Enroll" on the Academy page requires an account. The enrolment is saved
+  as *pending* and WhatsApp opens so the team can send payment details.
+* **Admins** sign in at `/#/admin` to approve or reject enrolments, unlock exams and see
+  recent results.
+* **Exam**: only students with an *approved* enrolment can take it. The 5-minute timer is
+  enforced by the database. Reloading doesn't reset it, and late submissions are graded
+  as blank. Pass mark is 80%. A failed attempt locks the exam until an admin unlocks it.
+  Correct answers and explanations are shown only to students who pass.
+* Timing, pass mark and session length are set in `_exam_config()` in the first migration.
 
-### Local development
-
-Without `VITE_SUPABASE_*` set, `npm run dev` uses a built-in demo backend
-(`src/demoExamBackend.ts`): student `AAP-001` / `1234`, admin `admin@example.com` /
-`demo-admin`. It is never included in production builds.
+`npm run dev` uses the Supabase project in `.env`, so local testing uses real data.
 
 ## Certificates
 

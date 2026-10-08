@@ -17,9 +17,19 @@ export const getSupabase = () => {
   if (!clientPromise) {
     clientPromise = import('@supabase/supabase-js').then(({ createClient }) =>
       createClient(supabaseUrl, supabaseAnonKey, {
-        auth: { persistSession: true, storageKey: 'aap-admin-auth' },
+        auth: {
+          persistSession: true,
+          storageKey: 'aap-auth',
+          // PKCE puts the email-link code in "?code=", which works alongside the
+          // HashRouter's "#/route" (the default flow would clash with the hash).
+          flowType: 'pkce',
+          detectSessionInUrl: true,
+        },
       })
     );
   }
   return clientPromise;
 };
+
+/** Site root including the GitHub Pages base path, e.g. https://x.github.io/Agro-Aerial-Precision/ */
+export const siteBaseUrl = () => `${window.location.origin}${window.location.pathname}`;

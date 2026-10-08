@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import AnimatedSection from "../components/AnimatedSection";
 import { verifyCertificate, type Certificate } from "../src/data/certificates";
+import { currentUserEmail, enrollInCourse, getErrorMessage, getStudentProfile, type StudentProfile } from "../src/examApi";
 
 const asset = (file: string) => new URL(`../src/assets/${file}`, import.meta.url).href;
 
@@ -74,11 +75,14 @@ const courses = [
 ];
 
 const Academy: React.FC = () => {
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
+  const [student, setStudent] = useState<StudentProfile | null>(null);
   const [selectedCourse, setSelectedCourse] = useState('drone-basics');
+  const [enrolling, setEnrolling] = useState(false);
+  const [enrollError, setEnrollError] = useState('');
+  const [enrollSuccess, setEnrollSuccess] = useState('');
   const [message, setMessage] = useState('');
   const [activeFaq, setActiveFaq] = useState<string | null>(null);
 
@@ -109,32 +113,78 @@ const Academy: React.FC = () => {
     {
       id: 'payment',
       question: 'How do I pay and enroll?',
-      answer: 'Use the course application form, then our team will send payment details by WhatsApp and email. We support bank transfer and mobile money.',
+      answer: 'Create a free student account, then click Enroll on your course. Our team will send payment details by WhatsApp. We support bank transfer and mobile money. Your exam unlocks once your enrolment is approved.',
     },
   ];
-const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-  event.preventDefault();
+  // Enrolling requires a student account: send visitors to sign in / register first,
+  // then bring them back here with the course pre-selected.
+  const openEnrollment = async (courseId?: string) => {
+    const course = courseId || selectedCourse;
+    setSelectedCourse(course);
+    setEnrollError('');
+    setEnrollSuccess('');
 
-  const course = courses.find((c) => c.id === selectedCourse);
-  const courseName = course?.title ?? "selected course";
+    try {
+      if (!(await currentUserEmail())) {
+        navigate(`/student-login?next=${encodeURIComponent(`/academy?enroll=${course}`)}`);
+        return;
+      }
+      const profile = await getStudentProfile();
+      if (!profile.student) {
+        setEnrollError('This account is not a student account. Please sign out and create a student account to enrol.');
+      }
+      setStudent(profile.student);
+    } catch (err) {
+      setEnrollError(getErrorMessage(err));
+    }
+    setIsOpen(true);
+  };
 
-  // Build a clean body first
-  const mailBody = `
-Hello Agro Aerial Precision team,
+  // Returning from sign-in / registration with ?enroll=<course id>
+  useEffect(() => {
+    const courseId = searchParams.get('enroll');
+    if (!courseId) return;
+    setSearchParams({}, { replace: true });
+    openEnrollment(courses.some((c) => c.id === courseId) ? courseId : undefined);
+  }, []);
 
-Name: ${name}
-Email: ${email}
-Phone: ${phone}
-Course: ${courseName}
-Message: ${message}
+  const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!student) return;
 
-Please contact me with enrollment details.
-`;
+    const course = courses.find((c) => c.id === selectedCourse);
+    if (!course) return;
 
-  const waUrl = `https://api.whatsapp.com/send?phone=23277840105&text=${encodeURIComponent(mailBody)}`;
-  window.open(waUrl, "_blank");
-  setIsOpen(false);
-};
+    setEnrolling(true);
+    setEnrollError('');
+    try {
+      const enrollment = await enrollInCourse(course.id, course.title, message);
+
+      const whatsappText = [
+        'Hello Agro Aerial Precision team,',
+        '',
+        'I have enrolled for a course and would like the payment details.',
+        '',
+        `Student ID: ${student.id}`,
+        `Name: ${student.name}`,
+        `Phone: ${student.phone}`,
+        `Course: ${course.title}`,
+        ...(message ? [`Message: ${message}`] : []),
+      ].join('\n');
+      window.open(`https://api.whatsapp.com/send?phone=23277840105&text=${encodeURIComponent(whatsappText)}`, "_blank", "noopener");
+
+      setMessage('');
+      setEnrollSuccess(
+        enrollment.alreadyEnrolled
+          ? `You are already enrolled in ${course.title} (status: ${enrollment.status}). WhatsApp has opened so you can follow up with us.`
+          : `Enrolment received for ${course.title}. Send the WhatsApp message that just opened and we'll reply with payment details. You can track your status in the Student Portal.`
+      );
+    } catch (err) {
+      setEnrollError(getErrorMessage(err));
+    } finally {
+      setEnrolling(false);
+    }
+  };
 
   const searchCertificate = async (query: string) => {
     if (!query.trim()) return;
@@ -182,7 +232,7 @@ Please contact me with enrollment details.
                       Verify Certificate
                     </button>
                     <button
-                      onClick={() => setIsOpen(true)}
+                      onClick={() => openEnrollment()}
                       className="inline-block bg-lime-300 hover:bg-green-600 hover:text-white text-slate-900 font-bold py-3 px-6 rounded-xl transition-colors duration-300"
                     >
                       Enroll Now
@@ -238,10 +288,7 @@ Please contact me with enrollment details.
                 </div>
                 <button
                   type="button"
-                  onClick={() => {
-                    setSelectedCourse(course.id);
-                    setIsOpen(true);
-                  }}
+                  onClick={() => openEnrollment(course.id)}
                   className="mt-4 inline-flex w-full justify-center bg-green-800 text-white font-bold py-2 rounded-xl hover:bg-lime-700 transition-colors"
                 >
                   Enquire Now
@@ -315,10 +362,10 @@ Please contact me with enrollment details.
         <AnimatedSection className="w-full" animationType="unveil-scale" delay={0.05}>
           <h2 className="text-2xl font-bold mb-4">Ready to start?</h2>
           <p className="mb-6 text-slate-600">
-            Send your details and we’ll help you choose the right course package.
+            Create a free student account, choose your course, and we’ll send you the payment details.
           </p>
           <button
-            onClick={() => setIsOpen(true)}
+            onClick={() => openEnrollment()}
             className="bg-green-800 text-white px-8 py-3 rounded-full font-bold hover:bg-lime-700 transition-colors"
           >
             Apply for a Course
@@ -330,43 +377,32 @@ Please contact me with enrollment details.
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-lime-800/70 p-4">
           <div className="w-full max-w-lg sm:max-w-xl mx-auto rounded-2xl bg-white/80 p-4 sm:p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-lime-900">Course Application</h3>
+              <h3 className="text-xl font-bold text-lime-900">Course Enrolment</h3>
               <button onClick={() => setIsOpen(false)} className="text-slate-500 hover:text-slate-900">
                 ✕
               </button>
             </div>
+            {enrollError && (
+              <div role="alert" className="mb-4 rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-700">{enrollError}</div>
+            )}
+            {enrollSuccess ? (
+              <div className="space-y-4">
+                <div className="rounded-lg border border-green-400 bg-green-50 p-3 text-sm text-green-800">{enrollSuccess}</div>
+                <div className="flex gap-3 justify-end">
+                  <Link to="/student" className="px-5 py-2 rounded-lg bg-green-800 text-white font-bold hover:bg-lime-700">Go to Student Portal</Link>
+                  <button type="button" onClick={() => setIsOpen(false)} className="px-5 py-2 rounded-lg border border-green-700 text-green-700 hover:bg-green-200">Close</button>
+                </div>
+              </div>
+            ) : student && (
             <form onSubmit={handleFormSubmit} className="space-y-4">
-              <label className="block">
-                <span className="text-sm font-medium text-lime-700">Name</span>
-                <input
-                  required
-                  value={name}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
-                  className="mt-1 block w-full border border-green-700 rounded-lg px-3 py-2 focus:border-lime-600 outline-none"
-                />
-              </label>
-              <label className="block">
-                <span className="text-sm font-medium text-lime-700">Email</span>
-                <input
-                  required
-                  type="email"
-                  value={email}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                  className="mt-1 block w-full border border-green-700 rounded-lg px-3 py-2 focus:border-lime-600 outline-none"
-                />
-              </label>
-                <label className="block">
-                <span className="text-sm font-medium text-lime-700">Phone</span>
-                <input
-                  required
-                  type="tel"
-                  inputMode="numeric"
-                  pattern="[0-9]+"
-                  value={phone}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPhone(e.target.value.replace(/\D/g, ''))}
-                  className="mt-1 block w-full border border-green-700 rounded-lg px-3 py-2 focus:border-lime-600 outline-none"
-                />
-                </label>
+              {student && (
+                <div className="rounded-lg border border-green-700/40 bg-white p-3 text-sm text-slate-700">
+                  <p><strong>{student.name}</strong> ({student.id})</p>
+                  <p>{student.email}</p>
+                  <p>{student.phone}</p>
+                  <Link to="/student" className="text-green-700 underline text-xs">Edit my details</Link>
+                </div>
+              )}
               <label className="block">
                 <span className="text-sm font-medium text-lime-700">Course</span>
                 <select
@@ -402,13 +438,15 @@ Please contact me with enrollment details.
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-lg bg-green-800 text-white font-bold hover:bg-lime-700"
+                  disabled={enrolling}
+                  className="px-5 py-2 rounded-lg bg-green-800 text-white font-bold hover:bg-lime-700 disabled:opacity-60"
                 >
-                  Submit Application
+                  {enrolling ? 'Enrolling...' : 'Enrol'}
                 </button>
               </div>
-              <p className="text-xs text-slate-500">After submitting, WhatsApp opens in a new tab and your email client will prepare a message.</p>
+              <p className="text-xs text-slate-500">Your enrolment is saved to your student account, then WhatsApp opens so we can send you the payment details.</p>
             </form>
+            )}
           </div>
         </div>
       )}

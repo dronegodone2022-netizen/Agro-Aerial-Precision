@@ -1,6 +1,6 @@
 
 import React, { useEffect } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import WhatsAppWidget from './components/WhatsAppWidget';
@@ -16,6 +16,11 @@ import QRGenerator from './pages/QRGenerator';
 import DroneExam from './pages/DroneExam';
 import StudentLogin from './pages/StudentLogin';
 import AdminDashboard from './pages/AdminDashboard';
+import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import StudentDashboard from './pages/StudentDashboard';
+import { getSupabase, isSupabaseConfigured } from './src/supabase';
 import Verify from './pages/Verify';
 
 const SITE_NAME = 'Agro Aerial Precision';
@@ -27,7 +32,11 @@ const PAGE_TITLES: Record<string, string> = {
   '/contact': `Contact Us | ${SITE_NAME}`,
   '/privacy-policy': `Privacy Policy | ${SITE_NAME}`,
   '/terms-of-service': `Terms of Service | ${SITE_NAME}`,
-  '/student-login': `Exam Portal | ${SITE_NAME}`,
+  '/student-login': `Student Sign In | ${SITE_NAME}`,
+  '/register': `Create Student Account | ${SITE_NAME}`,
+  '/forgot-password': `Reset Password | ${SITE_NAME}`,
+  '/reset-password': `Choose New Password | ${SITE_NAME}`,
+  '/student': `Student Portal | ${SITE_NAME}`,
   '/drone-exam': `Certification Exam | ${SITE_NAME}`,
   '/admin': `Exam Admin | ${SITE_NAME}`,
 };
@@ -54,12 +63,34 @@ const ScrollToTop = () => {
   return null;
 };
 
+// Email confirmation and password-reset links come back as "<site>/?code=...#/route".
+// Load Supabase so it can exchange the code for a session, then tidy the URL.
+const AuthLinkHandler = () => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!isSupabaseConfigured || !new URLSearchParams(window.location.search).has('code')) return;
+
+    getSupabase()
+      .then((supabase) => supabase.auth.getSession())
+      .finally(() => {
+        const cleanUrl = `${window.location.origin}${window.location.pathname}${window.location.hash}`;
+        window.history.replaceState(window.history.state, '', cleanUrl);
+        // If the link lost its route, send the user to their portal
+        if (!window.location.hash || window.location.hash === '#/') {
+          navigate('/student', { replace: true });
+        }
+      });
+  }, []);
+  return null;
+};
+
 const App: React.FC = () => {
 
   return (
     <Router>
       <div className="flex flex-col min-h-screen">
         <ScrollToTop />
+        <AuthLinkHandler />
         <Header />
         
         <main className="grow">
@@ -76,6 +107,10 @@ const App: React.FC = () => {
             <Route path="/verify" element={<Verify />} />
             <Route path="/verify/:id" element={<Verify />} />
             <Route path="/student-login" element={<StudentLogin />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/student" element={<StudentDashboard />} />
             <Route path="/drone-exam" element={<DroneExam />} />
             <Route path="/admin" element={<AdminDashboard />} />
             {/* Old admin links from the Google Apps Script version */}
