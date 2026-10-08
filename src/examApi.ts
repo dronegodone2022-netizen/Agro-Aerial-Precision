@@ -294,6 +294,8 @@ export interface ContactMessage {
   source: string;
   status: MessageStatus;
   createdAt: string;
+  replyText: string | null;
+  repliedAt: string | null;
 }
 
 /** Saves a contact form / inquiry message; the database emails it to the admin. */
@@ -315,6 +317,11 @@ export const submitContactMessage = (message: {
   });
 
 export const adminListMessages = () => rpc<ContactMessage[]>('admin_list_messages', {}, 'admin');
+
+/** Emails a reply to the visitor from info@ (copy to the admin inbox) and saves it. */
+export const adminReplyMessage = (messageId: number, body: string) =>
+  rpc<{ id: number; status: MessageStatus; replyText: string; repliedAt: string }>(
+    'admin_reply_message', { p_message_id: messageId, p_body: body }, 'admin');
 
 export const adminSetMessageStatus = (messageId: number, status: MessageStatus) =>
   rpc<{ id: number; status: MessageStatus }>('admin_set_message_status', { p_message_id: messageId, p_status: status }, 'admin');
