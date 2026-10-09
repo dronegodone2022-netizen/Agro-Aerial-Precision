@@ -90,6 +90,20 @@ const TeamMember: React.FC = () => {
           </section>
         )}
 
+        {member.qualifications && member.qualifications.length > 0 && (
+          <section className="rounded-2xl bg-white p-6 shadow-md sm:p-8">
+            <h2 className="mb-4 text-2xl font-bold text-green-900">Qualifications</h2>
+            <ul className="space-y-3">
+              {member.qualifications.map((item) => (
+                <li key={item} className="flex items-start gap-3 text-lg text-slate-700">
+                  <i className="ri-award-fill mt-0.5 text-lime-600" aria-hidden="true"></i>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         {member.expertise && member.expertise.length > 0 && (
           <section className="rounded-2xl bg-white p-6 shadow-md sm:p-8">
             <h2 className="mb-4 text-2xl font-bold text-green-900">Expertise</h2>

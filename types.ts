@@ -50,6 +50,7 @@ export interface Team  {
   currentPosition?: string;
   specializations?: TeamSpecialization[];
   expertise?: string[];
+  qualifications?: string[];
   socials: {
     facebook?: string;
     instagram?: string;
