@@ -115,6 +115,12 @@ const AuthLinkHandler = () => {
   return null;
 };
 
+// Visitor-only widgets (e.g. WhatsApp chat) are hidden on the admin dashboard
+const PublicOnly: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { pathname } = useLocation();
+  return pathname.startsWith('/admin') ? null : <>{children}</>;
+};
+
 const App: React.FC = () => {
 
   return (
@@ -156,7 +162,9 @@ const App: React.FC = () => {
         </main>
         
         <Footer />
-        <WhatsAppWidget />
+        <PublicOnly>
+          <WhatsAppWidget />
+        </PublicOnly>
       </div>
     </Router>
        
