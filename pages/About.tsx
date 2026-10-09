@@ -1,5 +1,6 @@
 import React from "react";
 import { Users, Clock, Database, Plane } from "lucide-react";
+import { Link } from "react-router-dom";
 import { TEAM } from "../constants";
 import AnimatedSection from "../components/AnimatedSection";
 import { useIntersectionObserver } from "../hooks/useIntersectionObserver";
@@ -369,21 +370,27 @@ const About: React.FC = () => {
               >
                 {/* Image Container */}
                 <div className="relative w-full aspect-square overflow-hidden bg-linear-to-br from-green-50 to-lime-50">
+                  <Link to={`/team/${member.slug}`} aria-label={`${member.name} - view profile`}>
                   <img loading="lazy"
                     src={member.image}
                     alt={member.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
+                  </Link>
                 </div>
 
                 {/* Content Container */}
                 <div className="p-4 sm:p-4 md:p-6 lg:p-8">
                   <h3 className="text-2xl sm:text-xl font-bold text-slate-900 mb-1">
-                    {member.name}
+                    <Link to={`/team/${member.slug}`} className="hover:text-green-800">{member.name}</Link>
                   </h3>
-                  <p className="text-green-800 font-semibold text-lg sm:text-sm mb-4">
+                  <p className="text-green-800 font-semibold text-lg sm:text-sm mb-3">
                     {member.role}
                   </p>
+                  <p className="text-slate-600 text-sm leading-relaxed mb-4">{member.summary}</p>
+                  <Link to={`/team/${member.slug}`} className="inline-flex items-center gap-1 text-sm font-bold text-green-800 hover:gap-2 transition-all mb-4">
+                    View profile <i className="ri-arrow-right-line" aria-hidden="true"></i>
+                  </Link>
 
                   {/* Social Links */}
                   <div className="flex gap-2 sm:gap-3">

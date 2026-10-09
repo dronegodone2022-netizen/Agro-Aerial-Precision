@@ -21,6 +21,8 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import StudentDashboard from './pages/StudentDashboard';
 import CourseDetail from './pages/CourseDetail';
+import TeamMember from './pages/TeamMember';
+import { TEAM } from './constants';
 import { findCourse } from './src/data/courses';
 import { getSupabase, isSupabaseConfigured } from './src/supabase';
 import Verify from './pages/Verify';
@@ -52,6 +54,10 @@ const getPageTitle = (pathname: string) => {
     return `${category} Services | ${SITE_NAME}`;
   }
   if (pathname.startsWith('/verify')) return `Certificate Verification | ${SITE_NAME}`;
+  if (pathname.startsWith('/team/')) {
+    const member = TEAM.find((m) => m.slug === pathname.split('/')[2]);
+    if (member) return `${member.name} | ${SITE_NAME}`;
+  }
   if (pathname.startsWith('/academy/')) {
     const course = findCourse(pathname.split('/')[2]);
     if (course) return `${course.title} | ${SITE_NAME}`;
@@ -103,6 +109,7 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
+            <Route path="/team/:slug" element={<TeamMember />} />
             <Route path="/academy" element={<Academy />} />
             <Route path="/academy/:courseId" element={<CourseDetail />} />
             <Route path="/contact" element={<Contact />} />

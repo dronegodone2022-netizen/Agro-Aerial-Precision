@@ -30,11 +30,26 @@ export interface Testimonial {
   /** Industry label shown with the quote, e.g. 'Mining' or 'Agriculture' */
   sector?: string;
 }
+export interface TeamSpecialization {
+  title: string;
+  detail: string;
+}
+
 export interface Team  {
   id: number;
+  /** Page address: /team/<slug> */
+  slug: string;
   name: string;
   role: string;
   image: string;
+  /** One or two sentences shown on the About page card */
+  summary: string;
+  /** Full profile paragraphs for the team member's page */
+  bio: string[];
+  /** Other current position, if any (e.g. at another company) */
+  currentPosition?: string;
+  specializations?: TeamSpecialization[];
+  expertise?: string[];
   socials: {
     facebook?: string;
     instagram?: string;

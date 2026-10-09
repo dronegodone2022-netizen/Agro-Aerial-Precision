@@ -184,23 +184,53 @@ export const SERVICES: Service[] = [
 export const TEAM: Team []=[
   {
     id: 1,
+    slug: 'sylvester-abu-gbamoi',
     name: 'Sylvester Abu Gbamoi',
     role: 'Founder & Managing Director',
     image: asset('sylv.jpg'),
+    summary: 'Founded Agro Aerial Precision in 2023 after working with drone technology in Ghana, Rwanda and Ivory Coast. Leads the company and its drone academy.',
+    bio: [
+      'Sylvester Abu Gbamoi founded Agro Aerial Precision in 2023. Before starting the company, he worked with drone technology at SKT Live in Ghana and Charis UAS in Rwanda and Ivory Coast, where he saw first-hand how aerial data could improve accuracy, cut costs and make work safer in construction, agriculture and rural development.',
+      'Recognising the potential to bring these innovations to Sierra Leone, he built Agro Aerial Precision to deliver drone surveys, inspection and aerial data services for mining, construction, infrastructure and agriculture - and to train the next generation of Sierra Leonean drone pilots and data analysts through the AAP Academy.',
+      "As Founder and Managing Director, he leads the company's strategy, operations, client relationships and training programmes.",
+    ],
+    expertise: ['Drone operations', 'Aerial data services', 'Business leadership', 'Drone training'],
     socials: { facebook: 'https://www.facebook.com/SEF.abu.gbamoi.9/', instagram: 'https://www.instagram.com/drone_godone/', linkedin: 'https://www.linkedin.com/in/sylvester-abu-gbamoi01/' }
   },
   {
     id: 2,
+    slug: 'kallie-balla-koroma',
     name: 'Eng. Kallie Balla Koroma',
     role: 'Founding Partner',
     image: asset('En_Kaillie.jpg'),
+    summary: 'Mining engineer specialising in mine planning, GIS, surveying and drone mapping. Senior Mining Engineer at Rift Valley Gold (SL) Limited.',
+    currentPosition: 'Senior Mining Engineer, Rift Valley Gold (SL) Limited',
+    bio: [
+      'Eng. Kallie Balla Koroma is a mining engineer and founding partner of Agro Aerial Precision. He brings a multidisciplinary background in mining engineering, Geographic Information Systems (GIS), surveying and remote sensing, combining expertise in mine planning and field operations with geospatial technology to support mineral exploration, resource development and data-driven decisions in the mining industry.',
+      'His experience covers minerals planning, production engineering, GIS mapping, GNSS surveying, drone-based aerial mapping and topographic data processing. He has contributed to projects involving spatial data acquisition, concession mapping, terrain modelling, and the use of geospatial information to support exploration and mine development.',
+      'He currently serves as Senior Mining Engineer at Rift Valley Gold (SL) Limited, providing technical support for exploration, mine planning, excavation and the safe, efficient development of mining operations. He also holds the AAP Academy certification in Drone for Aerial Mapping, Survey & Data Processing.',
+      'His approach centres on integrating mining engineering with modern geospatial technology to improve operational efficiency, support sound technical decisions and promote sustainable mineral resource development.',
+    ],
+    specializations: [
+      { title: 'Mining Engineering & Mine Planning', detail: 'Production planning, excavation design, operational coordination and mine development.' },
+      { title: 'GIS & Spatial Analysis', detail: 'Concession mapping, land-use analysis, spatial data management and geospatial decision support.' },
+      { title: 'Remote Sensing & Drone Mapping', detail: 'UAV-based aerial surveys, orthomosaic generation, digital terrain models (DTM) and digital surface models (DSM).' },
+      { title: 'Surveying & GNSS Applications', detail: 'Coordinate data collection, boundary and point staking, ground control and field positioning.' },
+      { title: 'Digital Terrain Modelling', detail: 'Processing topographic data and building terrain surfaces for mine planning and engineering.' },
+      { title: 'Mineral Exploration Support', detail: 'Integrating field surveys, geospatial data and terrain analysis to support exploration targeting and site development.' },
+    ],
     socials: { facebook: 'https://www.facebook.com/AgroAerialPrecision/', linkedin: 'https://www.linkedin.com/in/kallie-balla-koroma-583828282/' }
   },
   {
     id: 5,
+    slug: 'bintu-gbamoi',
     name: 'Bintu Gbamoi',
     role: 'Admin Finance',
     image: asset('bint.jpg'),
+    summary: 'Manages finance and administration at Agro Aerial Precision.',
+    bio: [
+      'Bintu Gbamoi manages finance and administration at Agro Aerial Precision.',
+    ],
     socials: { facebook: 'https://www.facebook.com/bintu.gbamoi.9/', instagram: 'https://www.instagram.com/bintu_gbamoi/', tiktok: 'https://www.tiktok.com/@missgbamoi/' }
   },
 ];
