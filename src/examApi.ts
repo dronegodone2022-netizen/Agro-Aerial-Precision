@@ -329,3 +329,19 @@ export const adminSetMessageStatus = (messageId: number, status: MessageStatus) 
 /** WhatsApp chat link to the company number, with optional pre-filled text. */
 export const companyWhatsAppUrl = (text: string) =>
   `https://api.whatsapp.com/send?phone=23277840105&text=${encodeURIComponent(text)}`;
+
+// --- Newsletter -------------------------------------------------------------
+
+export interface NewsletterSubscriber {
+  id: number;
+  email: string;
+  source: string;
+  createdAt: string;
+}
+
+export const subscribeNewsletter = (email: string) =>
+  rpc<{ subscribed: boolean }>('subscribe_newsletter', { p_email: email, p_source: 'footer' });
+
+export const adminListSubscribers = () => rpc<NewsletterSubscriber[]>('admin_list_subscribers', {}, 'admin');
+
+export const adminDeleteSubscriber = (id: number) => rpc<{ deleted: boolean }>('admin_delete_subscriber', { p_id: id }, 'admin');

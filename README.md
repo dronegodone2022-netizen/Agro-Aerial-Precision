@@ -21,7 +21,6 @@ copy `.env.example` to `.env`.
 | --- | --- |
 | `VITE_SUPABASE_URL` | Supabase project URL (Project Settings > API). |
 | `VITE_SUPABASE_ANON_KEY` | Supabase **anon / publishable** key. It is safe to publish: the database only lets it call the exam and certificate functions. **Never** use the `service_role` key here. |
-| `VITE_MAILERLITE_FORM_ID` | ID of a MailerLite embedded form, used by the footer newsletter sign-up. |
 
 Never put secret keys or passwords in frontend code or `VITE_*` variables: everything
 in the build is visible to every visitor.
@@ -75,6 +74,11 @@ The answer key never reaches the browser.
 * Timing, pass mark and session length are set in `_exam_config()` in the first migration.
 
 `npm run dev` uses the Supabase project in `.env`, so local testing uses real data.
+
+## Newsletter
+
+The footer sign-up form saves email addresses in the Supabase `newsletter_subscribers`
+table. Admins see, search, remove and export them (CSV) at `/admin` > **Subscribers**.
 
 ## Certificates
 

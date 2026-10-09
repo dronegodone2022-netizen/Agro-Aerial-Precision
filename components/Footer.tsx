@@ -2,51 +2,30 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { INDUSTRIES } from '../constants';
+import { getErrorMessage, subscribeNewsletter } from '../src/examApi';
 
 const footerLogo = new URL('../src/assets/AAP LOGO w.png', import.meta.url).href;
-
-// Account ID matches the MailerLite Universal script in index.html.
-// Form ID comes from MailerLite > Forms > Embedded forms > (your form) > HTML code.
-const MAILERLITE_ACCOUNT_ID = '2239723';
-const MAILERLITE_FORM_ID = import.meta.env.VITE_MAILERLITE_FORM_ID?.trim() || '';
 
 const Footer: React.FC = () => {
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [subscribeMessage, setSubscribeMessage] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
 
+  // Sign-ups are saved in our database (see /admin > Subscribers)
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubscribing(true);
     setSubscribeMessage('');
 
     try {
-      // Public MailerLite embedded-form endpoint. Never put a MailerLite API key in frontend code:
-      // everything in this bundle is visible to every visitor.
-      if (!MAILERLITE_FORM_ID) {
-        setSubscribeMessage('Newsletter sign-up is not available right now. Please try again later.');
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append('fields[email]', newsletterEmail);
-      formData.append('ml-submit', '1');
-      formData.append('anticsrf', 'true');
-
-      const response = await fetch(
-        `https://assets.mailerlite.com/jsonp/${MAILERLITE_ACCOUNT_ID}/forms/${MAILERLITE_FORM_ID}/subscribe`,
-        { method: 'POST', body: formData }
-      );
-      const result = await response.json().catch(() => ({}));
-
-      if (response.ok && result.success !== false) {
-        setSubscribeMessage('Successfully subscribed! Welcome to our newsletter.');
-        setNewsletterEmail('');
-      } else {
-        setSubscribeMessage('Failed to subscribe. Please try again.');
-      }
-    } catch (error) {
-      setSubscribeMessage('Network error. Please try again later.');
+      await subscribeNewsletter(newsletterEmail);
+      setSubscribed(true);
+      setSubscribeMessage('Thank you for subscribing! We will keep you posted.');
+      setNewsletterEmail('');
+    } catch (err) {
+      setSubscribed(false);
+      setSubscribeMessage(getErrorMessage(err));
     } finally {
       setIsSubscribing(false);
     }
@@ -122,7 +101,7 @@ const Footer: React.FC = () => {
               {isSubscribing ? 'Subscribing...' : 'Subscribe'} <i className="ri-send-plane-fill"></i>
             </button>
             {subscribeMessage && (
-              <p className={`text-sm mt-2 ${subscribeMessage.includes('Successfully') ? 'text-green-400' : 'text-red-400'}`}>
+              <p className={`text-sm mt-2 ${subscribed ? 'text-green-400' : 'text-red-400'}`}>
                 {subscribeMessage}
               </p>
             )}

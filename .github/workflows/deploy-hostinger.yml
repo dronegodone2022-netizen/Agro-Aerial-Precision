@@ -5,7 +5,7 @@ name: Deploy to Hostinger
 #
 # Setup (GitHub repo > Settings > Secrets and variables > Actions):
 #   Secrets:   FTP_SERVER, FTP_USERNAME, FTP_PASSWORD   (from Hostinger hPanel > Files > FTP Accounts)
-#   Variables: VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, VITE_MAILERLITE_FORM_ID (already used by GitHub Pages)
+#   Variables: VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY (already used by GitHub Pages)
 #              SITE_URL        e.g. https://www.agroaerialprecision.com/  (must end with "/")
 #              FTP_SERVER_DIR  folder to upload into, e.g. public_html/   (optional, defaults to public_html/)
 
@@ -56,7 +56,6 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
-          VITE_MAILERLITE_FORM_ID: ${{ vars.VITE_MAILERLITE_FORM_ID }}
           # Hostinger serves the site from the domain root
           VITE_BASE_PATH: /
           VITE_SITE_URL: ${{ vars.SITE_URL }}
