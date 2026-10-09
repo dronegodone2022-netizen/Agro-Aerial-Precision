@@ -39,6 +39,9 @@ jobs:
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
           VITE_MAILERLITE_FORM_ID: ${{ vars.VITE_MAILERLITE_FORM_ID }}
+          # GitHub Pages serves the site from /<repo-name>/
+          VITE_BASE_PATH: /Agro-Aerial-Precision/
+          VITE_SITE_URL: https://dronegodone2022-netizen.github.io/Agro-Aerial-Precision/
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

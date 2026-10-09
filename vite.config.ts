@@ -1,8 +1,13 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
-  base: "/Agro-Aerial-Precision/",
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+  return {
+    plugins: [react(), tailwindcss()],
+    // Folder the site is served from: "/" for a domain root (Hostinger),
+    // "/Agro-Aerial-Precision/" for GitHub Pages. Set VITE_BASE_PATH to override.
+    base: env.VITE_BASE_PATH || '/',
+  };
 });
