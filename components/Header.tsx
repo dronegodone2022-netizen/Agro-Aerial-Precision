@@ -41,7 +41,7 @@ const Header: React.FC = () => {
           }
           setIsOpen(false);
         }}>
-        <div className="w-32 h-70 overflow-hidden shrink-0">
+        <div className="w-32 h-12 overflow-hidden shrink-0">
           <img src={logoSrc} alt="Agro Aerial Precision logo" className={`min-w-32 h-full object-contain ${scrolled ? 'brightness-0 invert' : ''}`} />
         </div>
           <span className={`font-bold text-sm sm:text-base lg:text-xl hidden sm:block ${scrolled ? 'text-slate-900' : 'text-lime-300'}`}>
