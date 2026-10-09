@@ -32,8 +32,7 @@ export const getSupabase = (kind: AuthKind = 'student') => {
         auth: {
           persistSession: true,
           storageKey: STORAGE_KEYS[kind],
-          // PKCE puts the email-link code in "?code=", which works alongside the
-          // HashRouter's "#/route" (the default flow would clash with the hash).
+          // PKCE puts the email-link code in "?code=" (handled by AuthLinkHandler in App.tsx)
           flowType: 'pkce',
           // Email links (confirm, password reset) are handled by the student client only
           detectSessionInUrl: kind === 'student',
@@ -44,5 +43,5 @@ export const getSupabase = (kind: AuthKind = 'student') => {
   return clientPromises[kind]!;
 };
 
-/** Site root including the GitHub Pages base path, e.g. https://x.github.io/Agro-Aerial-Precision/ */
-export const siteBaseUrl = () => `${window.location.origin}${window.location.pathname}`;
+/** Site root including any base path, e.g. https://www.agroaerialprecision.com/ */
+export const siteBaseUrl = () => `${window.location.origin}${import.meta.env.BASE_URL}`;

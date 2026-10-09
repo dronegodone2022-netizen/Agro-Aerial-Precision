@@ -135,7 +135,7 @@ export const registerStudent = async (details: { fullName: string; email: string
     options: {
       // Picked up by the database trigger that creates the student profile
       data: { account_type: 'student', full_name: details.fullName.trim(), phone: details.phone.trim() },
-      emailRedirectTo: `${siteBaseUrl()}#/student`,
+      emailRedirectTo: `${siteBaseUrl()}student`,
     },
   });
   if (error) throw authError(error.message);
@@ -169,7 +169,7 @@ export const currentUserEmail = async (kind: AuthKind = 'student'): Promise<stri
 export const requestPasswordReset = async (email: string) => {
   const supabase = await client();
   const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-    redirectTo: `${siteBaseUrl()}#/reset-password`,
+    redirectTo: `${siteBaseUrl()}reset-password`,
   });
   if (error) throw authError(error.message);
 };

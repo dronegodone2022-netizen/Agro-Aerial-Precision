@@ -43,6 +43,10 @@ jobs:
           VITE_BASE_PATH: /Agro-Aerial-Precision/
           VITE_SITE_URL: https://dronegodone2022-netizen.github.io/Agro-Aerial-Precision/
 
+      - name: Single-page app fallback
+        # GitHub Pages has no rewrite rules: serve the app for unknown addresses
+        run: cp dist/index.html dist/404.html
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

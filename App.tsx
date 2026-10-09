@@ -1,6 +1,6 @@
 
 import React, { useEffect } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import WhatsAppWidget from './components/WhatsAppWidget';
@@ -29,6 +29,9 @@ import { getSupabase, isSupabaseConfigured } from './src/supabase';
 import Verify from './pages/Verify';
 
 const SITE_NAME = 'Agro Aerial Precision';
+
+// "/" on Hostinger, "/Agro-Aerial-Precision" on GitHub Pages
+const ROUTER_BASENAME = import.meta.env.BASE_URL.replace(/\/$/, '') || '/';
 
 const PAGE_TITLES: Record<string, string> = {
   '/': `${SITE_NAME} - Drone Solutions`,
@@ -90,31 +93,32 @@ const ScrollToTop = () => {
   return null;
 };
 
-// Email confirmation and password-reset links come back as "<site>/?code=...#/route".
-// Load Supabase so it can exchange the code for a session, then tidy the URL.
+// Email confirmation and password-reset links come back as "<site>/<route>?code=...".
+// Load Supabase so it can exchange the code for a session, then remove the code from the URL.
 const AuthLinkHandler = () => {
   const navigate = useNavigate();
+  const { pathname, search } = useLocation();
   useEffect(() => {
-    if (!isSupabaseConfigured || !new URLSearchParams(window.location.search).has('code')) return;
+    const params = new URLSearchParams(search);
+    if (!isSupabaseConfigured || !params.has('code')) return;
 
     getSupabase()
       .then((supabase) => supabase.auth.getSession())
       .finally(() => {
-        const cleanUrl = `${window.location.origin}${window.location.pathname}${window.location.hash}`;
-        window.history.replaceState(window.history.state, '', cleanUrl);
+        params.delete('code');
+        const rest = params.toString();
         // If the link lost its route, send the user to their portal
-        if (!window.location.hash || window.location.hash === '#/') {
-          navigate('/student', { replace: true });
-        }
+        const target = pathname === '/' ? '/student' : pathname;
+        navigate(`${target}${rest ? `?${rest}` : ''}`, { replace: true });
       });
-  }, []);
+  }, [search]);
   return null;
 };
 
 const App: React.FC = () => {
 
   return (
-    <Router>
+    <Router basename={ROUTER_BASENAME}>
       <div className="flex flex-col min-h-screen">
         <ScrollToTop />
         <AuthLinkHandler />
@@ -123,6 +127,7 @@ const App: React.FC = () => {
         <main className="grow">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Navigate to="/" replace />} />
             <Route path="/about" element={<About />} />
             <Route path="/team/:slug" element={<TeamMember />} />
             <Route path="/academy" element={<Academy />} />
@@ -145,6 +150,8 @@ const App: React.FC = () => {
             {/* Old admin links from the Google Apps Script version */}
             <Route path="/admin-reset" element={<Navigate to="/admin" replace />} />
             <Route path="/exam-reset" element={<Navigate to="/admin" replace />} />
+            {/* Unknown addresses go to the Home page */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
         
