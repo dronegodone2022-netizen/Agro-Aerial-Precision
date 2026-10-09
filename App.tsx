@@ -22,6 +22,7 @@ import ResetPassword from './pages/ResetPassword';
 import StudentDashboard from './pages/StudentDashboard';
 import CourseDetail from './pages/CourseDetail';
 import TeamMember from './pages/TeamMember';
+import Services from './pages/Services';
 import { TEAM } from './constants';
 import { findCourse } from './src/data/courses';
 import { getSupabase, isSupabaseConfigured } from './src/supabase';
@@ -43,6 +44,7 @@ const PAGE_TITLES: Record<string, string> = {
   '/student': `Student Portal | ${SITE_NAME}`,
   '/drone-exam': `Certification Exam | ${SITE_NAME}`,
   '/admin': `Exam Admin | ${SITE_NAME}`,
+  '/services': `Our Services | ${SITE_NAME}`,
 };
 
 const getPageTitle = (pathname: string) => {
@@ -66,12 +68,25 @@ const getPageTitle = (pathname: string) => {
 };
 
 // Scroll to top and update the page title on route change
+// Links can point at a section of a page with "?section=<element id>"
+const sectionFor = (search: string) => new URLSearchParams(search).get('section');
+
+// Scroll to the top (or to the requested section) and update the page title on route change
 const ScrollToTop = () => {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
     document.title = getPageTitle(pathname);
-  }, [pathname]);
+    const sectionId = sectionFor(search);
+    if (!sectionId) {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      return;
+    }
+    // Wait for the page to render before scrolling to the section
+    const timer = window.setTimeout(() => {
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+    return () => window.clearTimeout(timer);
+  }, [pathname, search]);
   return null;
 };
 
@@ -116,7 +131,7 @@ const App: React.FC = () => {
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="/services/:category" element={<ServiceDetail />} />
-            <Route path="/services" element={<Home />} /> {/* Fallback or Services overview */}
+            <Route path="/services" element={<Services />} />
             <Route path="/qr" element={<QRGenerator />} />
             <Route path="/verify" element={<Verify />} />
             <Route path="/verify/:id" element={<Verify />} />

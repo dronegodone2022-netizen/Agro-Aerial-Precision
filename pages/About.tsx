@@ -355,7 +355,7 @@ const About: React.FC = () => {
       <ImpactStatsSection />
 
       {/* Management Team */}
-      <section className="py-24 bg-slate-50">
+      <section id="team" className="scroll-mt-16 py-24 bg-slate-50">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl font-bold mb-4">Meet Our Management</h2>
           <p className="text-slate-500 text-lg mb-16 max-w-2xl mx-auto">

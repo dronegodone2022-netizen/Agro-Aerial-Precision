@@ -19,7 +19,7 @@ const TeamMember: React.FC = () => {
     return (
       <div className="min-h-[70vh] px-4 pt-32 text-center">
         <h1 className="text-3xl font-bold text-green-900">Team member not found</h1>
-        <Link to="/about" className="mt-6 inline-block rounded-full bg-green-800 px-6 py-3 font-bold text-white hover:bg-lime-700">
+        <Link to="/about?section=team" className="mt-6 inline-block rounded-full bg-green-800 px-6 py-3 font-bold text-white hover:bg-lime-700">
           Meet our team
         </Link>
       </div>
@@ -33,7 +33,7 @@ const TeamMember: React.FC = () => {
       {/* Header */}
       <section className="bg-green-950 pt-28 pb-12 text-white">
         <AnimatedSection className="container mx-auto px-4" animationType="unveil" delay={0.05}>
-          <Link to="/about" className="text-sm font-semibold text-lime-300 hover:underline">← Our team</Link>
+          <Link to="/about?section=team" className="text-sm font-semibold text-lime-300 hover:underline">← Our team</Link>
           <div className="mt-6 flex flex-col items-center gap-8 md:flex-row md:items-end">
             <img
               src={member.image}

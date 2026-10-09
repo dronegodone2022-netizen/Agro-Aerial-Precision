@@ -77,7 +77,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* Solutions Section */}
-      <section className="py-12 bg-slate-50">
+      <section id="services" className="scroll-mt-20 py-12 bg-slate-50">
         <AnimatedSection className="container mx-auto px-4" animationType="unveil" delay={0.05}>
           <div className="text-center max-w-2xl mx-auto mb-16">
             <h2 className="text-4xl font-bold mb-4">Industries We Serve</h2>
