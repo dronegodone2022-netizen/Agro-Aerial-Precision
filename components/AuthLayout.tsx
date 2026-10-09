@@ -40,3 +40,17 @@ export const SuccessBox: React.FC<{ children: React.ReactNode }> = ({ children }
 /** Only allow in-site redirect targets like "/academy" (never "//evil.com"). */
 export const safeNext = (value: string | null, fallback = '/student') =>
   value && value.startsWith('/') && !value.startsWith('//') ? value : fallback;
+
+/** "?next=/drone-exam" style query (readable: "/", "?" and "=" left as they are).
+ *  Empty for the Student Portal, which is where sign-in goes by default. */
+export const nextQuery = (next: string | null | undefined, extra = '') => {
+  const parts = [];
+  if (next && next !== '/student') {
+    parts.push(`next=${encodeURIComponent(next).replace(/%2F/gi, '/').replace(/%3F/gi, '?').replace(/%3D/gi, '=')}`);
+  }
+  if (extra) parts.push(extra);
+  return parts.length ? `?${parts.join('&')}` : '';
+};
+
+/** Sign-in page address that returns to `next` afterwards. */
+export const loginPath = (next?: string, extra = '') => `/student-login${nextQuery(next, extra)}`;

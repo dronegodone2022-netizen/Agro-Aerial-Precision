@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { loginPath } from '../components/AuthLayout';
 import {
   currentUserEmail,
   getExam,
@@ -52,7 +53,7 @@ const DroneExam = () => {
     (async () => {
       try {
         if (!(await currentUserEmail())) {
-          navigate('/student-login?next=%2Fdrone-exam', { replace: true });
+          navigate(loginPath('/drone-exam'), { replace: true });
           return;
         }
 

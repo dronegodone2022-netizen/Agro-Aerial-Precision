@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { registerStudent, getErrorMessage } from '../src/examApi';
-import AuthLayout, { ErrorBox, SuccessBox, inputClass, labelClass, primaryButtonClass, safeNext } from '../components/AuthLayout';
+import AuthLayout, { ErrorBox, SuccessBox, inputClass, labelClass, primaryButtonClass, safeNext, loginPath } from '../components/AuthLayout';
 
 const MIN_PASSWORD_LENGTH = 8;
 
@@ -96,7 +96,7 @@ const Register: React.FC = () => {
 
       <p className="mt-6 text-center text-slate-600">
         Already have an account?{' '}
-        <Link to={`/student-login${searchParams.get('next') ? `?next=${encodeURIComponent(next)}` : ''}`} className="font-semibold text-green-700 hover:underline">
+        <Link to={loginPath(searchParams.get('next') ? next : undefined)} className="font-semibold text-green-700 hover:underline">
           Sign in
         </Link>
       </p>

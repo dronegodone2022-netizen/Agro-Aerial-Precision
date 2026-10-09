@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import AnimatedSection from "../components/AnimatedSection";
 import { verifyCertificate, type Certificate } from "../src/data/certificates";
 import CertificateResult from "../components/CertificateResult";
+import { loginPath } from "../components/AuthLayout";
 import { currentUserEmail, enrollInCourse, getErrorMessage, getStudentProfile, type StudentProfile } from "../src/examApi";
 import { COURSES as courses } from "../src/data/courses";
 
@@ -61,7 +62,7 @@ const Academy: React.FC = () => {
 
     try {
       if (!(await currentUserEmail())) {
-        navigate(`/student-login?next=${encodeURIComponent(`/academy?enroll=${course}`)}`);
+        navigate(loginPath(`/academy?enroll=${course}`));
         return;
       }
       const profile = await getStudentProfile();

@@ -10,7 +10,7 @@ import {
   type EnrollmentStatus,
   type StudentProfile,
 } from '../src/examApi';
-import AuthLayout, { ErrorBox, SuccessBox, inputClass, labelClass } from '../components/AuthLayout';
+import AuthLayout, { ErrorBox, SuccessBox, inputClass, labelClass, loginPath } from '../components/AuthLayout';
 
 const STATUS_STYLES: Record<EnrollmentStatus, { label: string; className: string }> = {
   pending: { label: 'Awaiting payment / approval', className: 'bg-amber-100 text-amber-800' },
@@ -36,7 +36,7 @@ const StudentDashboard: React.FC = () => {
       try {
         const email = await currentUserEmail();
         if (!email) {
-          navigate('/student-login?next=%2Fstudent', { replace: true });
+          navigate(loginPath(), { replace: true });
           return;
         }
         setAccountEmail(email);
@@ -44,7 +44,7 @@ const StudentDashboard: React.FC = () => {
         if (!profile.student) {
           // Signed in with a non-student account (e.g. an admin) - clear it and ask for a student sign-in
           await signOut();
-          navigate('/student-login?next=%2Fstudent&notice=not-student', { replace: true });
+          navigate(loginPath(undefined, 'notice=not-student'), { replace: true });
           return;
         }
         setStudent(profile.student);

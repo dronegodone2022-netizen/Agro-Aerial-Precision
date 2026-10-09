@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { signIn, getErrorMessage } from '../src/examApi';
-import AuthLayout, { ErrorBox, SuccessBox, inputClass, labelClass, primaryButtonClass, safeNext } from '../components/AuthLayout';
+import AuthLayout, { ErrorBox, SuccessBox, inputClass, labelClass, nextQuery, primaryButtonClass, safeNext } from '../components/AuthLayout';
 
 const StudentLogin: React.FC = () => {
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ const StudentLogin: React.FC = () => {
     }
   };
 
-  const nextQuery = searchParams.get('next') ? `?next=${encodeURIComponent(next)}` : '';
+  const keepNext = nextQuery(searchParams.get('next') ? next : undefined);
 
   return (
     <AuthLayout
@@ -65,7 +65,7 @@ const StudentLogin: React.FC = () => {
 
       <p className="mt-6 text-center text-slate-600">
         New student?{' '}
-        <Link to={`/register${nextQuery}`} className="font-semibold text-green-700 hover:underline">Create an account</Link>
+        <Link to={`/register${keepNext}`} className="font-semibold text-green-700 hover:underline">Create an account</Link>
       </p>
     </AuthLayout>
   );
