@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import AnimatedSection from "../components/AnimatedSection";
 import { verifyCertificate, type Certificate } from "../src/data/certificates";
 import CertificateResult from "../components/CertificateResult";
+import CloseButton from "../components/CloseButton";
 import { loginPath } from "../components/AuthLayout";
 import { currentUserEmail, enrollInCourse, getErrorMessage, getStudentProfile, type StudentProfile } from "../src/examApi";
 import { COURSES as courses } from "../src/data/courses";
@@ -136,6 +137,13 @@ const Academy: React.FC = () => {
       setLoading(false);
       setHasSearched(true);
     }
+  };
+
+  const closeVerify = () => {
+    setVerifyOpen(false);
+    setCertificate(null);
+    setCertId('');
+    setHasSearched(false);
   };
 
   const handleVerifySearch = () => {
@@ -318,9 +326,7 @@ const Academy: React.FC = () => {
           <div className="w-full max-w-lg sm:max-w-xl mx-auto rounded-2xl bg-white/80 p-4 sm:p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold text-lime-900">Course Enrolment</h3>
-              <button onClick={() => setIsOpen(false)} className="text-slate-500 hover:text-slate-900">
-                ✕
-              </button>
+              <CloseButton onClose={() => setIsOpen(false)} label="Close enrolment form" />
             </div>
             {enrollError && (
               <div role="alert" className="mb-4 rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-700">{enrollError}</div>
@@ -397,14 +403,7 @@ const Academy: React.FC = () => {
           <div className="w-full max-w-lg mx-auto rounded-2xl bg-white/95 p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold text-lime-900">AAP Academy Certificate Verification</h3>
-              <button onClick={() => {
-                setVerifyOpen(false);
-                setCertificate(null);
-                setCertId('');
-                setHasSearched(false);
-              }} className="text-slate-500 hover:text-slate-900">
-                ✕
-              </button>
+              <CloseButton onClose={closeVerify} label="Close certificate verification" />
             </div>
 
             <div className="space-y-4">

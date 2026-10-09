@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginPath } from '../components/AuthLayout';
+import CloseButton from '../components/CloseButton';
 import {
   currentUserEmail,
   getExam,
@@ -147,6 +148,7 @@ const DroneExam = () => {
 
   // Leaving mid-exam doesn't stop the server-side timer; the student can come back.
   const goToPortal = () => navigate('/student');
+  const [retakeDismissed, setRetakeDismissed] = useState(false);
 
   const openWhatsAppForRetake = () => {
     const message = `Hello Agro Aerial Precision admin, I did not pass the drone certification exam and would like to retake it.\n\nName: ${student?.name || 'Student'}\nStudent ID: ${student?.id || ''}\nScore: ${result?.percentage ?? 0}%\n\nPlease share the retake payment instructions.`;
@@ -317,9 +319,10 @@ const DroneExam = () => {
         </div>
       )}
 
-      {phase === 'finished' && result && !isPassed && (
+      {phase === 'finished' && result && !isPassed && !retakeDismissed && (
         <div style={styles.modalOverlay}>
           <div style={styles.modalContent}>
+            <CloseButton onClose={() => setRetakeDismissed(true)} label="Close" className="absolute right-4 top-4" />
             <h3 style={styles.modalTitle}>Exam Retake Required</h3>
             <p style={styles.modalText}>
               You scored {result.percentage}%. The minimum pass mark is {PASSING_SCORE_PERCENTAGE}%.

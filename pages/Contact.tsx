@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import AnimatedSection from '../components/AnimatedSection';
+import CloseButton from '../components/CloseButton';
 import { companyWhatsAppUrl, getErrorMessage, submitContactMessage } from '../src/examApi';
 
 const getInTouch = new URL('../src/assets/getIn Touch.jpg', import.meta.url).href;
@@ -260,7 +261,8 @@ const Contact: React.FC = () => {
       </section>
       {sentWhatsAppText !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true">
-          <div className="rounded-xl bg-white p-6 text-center shadow-2xl max-w-sm w-full">
+          <div className="relative rounded-xl bg-white p-6 text-center shadow-2xl max-w-sm w-full">
+            <CloseButton onClose={() => setSentWhatsAppText(null)} label="Close" className="absolute right-3 top-3" />
             <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
               <i className="ri-check-line text-3xl text-green-600" aria-hidden="true"></i>
             </div>

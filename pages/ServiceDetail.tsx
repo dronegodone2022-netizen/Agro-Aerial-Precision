@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { SERVICES, findIndustry } from '../constants';
 import AnimatedSection from '../components/AnimatedSection';
+import CloseButton from '../components/CloseButton';
 import { companyWhatsAppUrl, getErrorMessage, submitContactMessage } from '../src/examApi';
 
 const serviceDetailVideo = new URL('../src/assets/home-videoBG1.mp4', import.meta.url).href;
@@ -376,13 +377,7 @@ const ServiceDetail: React.FC = () => {
                 <div className="bg-lime-600 p-6 text-white rounded-t-2xl">
                   <div className="flex items-center justify-between">
                     <h3 className="text-xl font-bold">Free Inquiry</h3>
-                    <button
-                      onClick={() => setIsPopupOpen(false)}
-                      className="text-white hover:text-lime-200 transition-colors"
-                      aria-label="Close inquiry popup"
-                    >
-                      <i className="ri-close-line text-2xl"></i>
-                    </button>
+                    <CloseButton onClose={() => setIsPopupOpen(false)} label="Close inquiry form" tone="light" />
                   </div>
                   <p className="text-lime-100 mt-2">Get a free consultation for {inquiryService || pageTitle}</p>
                 </div>
@@ -463,7 +458,15 @@ const ServiceDetail: React.FC = () => {
                 </form>
               </>
             ) : (
-              <div className="p-8 text-center">
+              <div className="relative p-8 text-center">
+                <CloseButton
+                  onClose={() => {
+                    setIsPopupOpen(false);
+                    setIsSubmitted(false);
+                  }}
+                  label="Close"
+                  className="absolute right-3 top-3"
+                />
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <i className="ri-check-line text-3xl text-green-600"></i>
                 </div>
