@@ -1,7 +1,9 @@
 # Agro Aerial Precision website
 
-React + Vite + Tailwind CSS v4 site, deployed to GitHub Pages by
-`.github/workflows/deploy-pages.yml` on every push to `main`.
+React + Vite + Tailwind CSS v4 site. Every push to `main` is built and uploaded to Hostinger
+(https://www.agroaerialprecision.com/) by `.github/workflows/deploy-hostinger.yml`, using the
+FTP_SERVER / FTP_USERNAME / FTP_PASSWORD secrets and the SITE_URL / FTP_SERVER_DIR variables.
+A copy is also published to GitHub Pages by `.github/workflows/deploy-pages.yml`.
 
 ```bash
 npm install
@@ -44,8 +46,8 @@ The answer key never reaches the browser.
 5. **Admins**: create the user in **Authentication > Users > Add user**, then run
    `insert into public.admins (user_id) select id from auth.users where email = 'you@example.com';`
 6. **Authentication > URL Configuration**:
-   * Site URL: `https://dronegodone2022-netizen.github.io/Agro-Aerial-Precision/`
-   * Redirect URLs: add `https://dronegodone2022-netizen.github.io/Agro-Aerial-Precision/**`
+   * Site URL: `https://www.agroaerialprecision.com/`
+   * Redirect URLs: add `https://www.agroaerialprecision.com/**`
      and `http://localhost:5173/**`
 7. **Authentication > Sign In / Providers > Email**: "Allow new users to sign up" must be **on**.
    Admin rights come only from the `admins` table, so public sign-up is safe.
