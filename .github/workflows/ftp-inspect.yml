@@ -1,0 +1,16 @@
+name: FTP folder check (temporary)
+on: workflow_dispatch
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: List FTP folders (names only)
+        env:
+          S: ${{ secrets.FTP_SERVER }}
+          U: ${{ secrets.FTP_USERNAME }}
+          P: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          for d in "" "public_html/" "domains/" "domains/agroaerialprecision.com/" "domains/agroaerialprecision.com/public_html/" "public_html/public_html/"; do
+            echo "=== /$d"
+            curl -s --list-only --max-time 30 "ftp://$S/$d" --user "$U:$P" | head -40 || echo "(not found)"
+          done
