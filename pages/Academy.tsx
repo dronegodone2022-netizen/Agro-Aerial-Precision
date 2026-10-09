@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import AnimatedSection from "../components/AnimatedSection";
 import { verifyCertificate, type Certificate } from "../src/data/certificates";
+import CertificateResult from "../components/CertificateResult";
 import { currentUserEmail, enrollInCourse, getErrorMessage, getStudentProfile, type StudentProfile } from "../src/examApi";
 import { COURSES as courses } from "../src/data/courses";
 
@@ -427,25 +428,7 @@ const Academy: React.FC = () => {
 
               {loading && <p className="text-center text-slate-600">Checking…</p>}
 
-              {certificate && (
-                <div className="border border-green-500 bg-green-50 p-4 rounded">
-                  <h4 className="text-lg font-semibold text-green-700 mb-2">Certificate Verified ✔</h4>
-                  <p><strong>ID:</strong> {certificate.id}</p>
-                  <p><strong>Name:</strong> {certificate.name}</p>
-                  <p><strong>Course:</strong> {certificate.course}</p>
-                  <p><strong>Issued:</strong> {certificate.issued_on}</p>
-
-                  <a
-                    href={certificate.drive_link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block mt-3 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
-                  >
-                    View Certificate
-                  </a>
-
-                </div>
-              )}
+              {certificate && <CertificateResult certificate={certificate} />}
 
               {lookupError && !loading && (
                 <div className="border border-amber-500 bg-amber-50 p-4 rounded">
