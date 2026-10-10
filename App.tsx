@@ -79,6 +79,13 @@ const ScrollToTop = () => {
   const { pathname, search } = useLocation();
   useEffect(() => {
     document.title = getPageTitle(pathname);
+    // One official address per page for search engines (no query string, no trailing slash)
+    const siteUrl = import.meta.env.VITE_SITE_URL;
+    if (siteUrl) {
+      const canonical = `${siteUrl.replace(/\/$/, '')}${pathname === '/' ? '/' : pathname.replace(/\/$/, '')}`;
+      document.querySelector('link[rel="canonical"]')?.setAttribute('href', canonical);
+      document.querySelector('meta[property="og:url"]')?.setAttribute('content', canonical);
+    }
     const sectionId = sectionFor(search);
     if (!sectionId) {
       window.scrollTo({ top: 0, behavior: 'instant' });
