@@ -74,7 +74,7 @@ function ImpactStatsSection() {
           Since our founding, we’ve been dedicated to making a real difference for mining operations, construction projects, infrastructure owners, farmers and drone students across Sierra Leone and beyond.
         </p>
       </AnimatedSection>
-      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 text-center">
+      <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-8 text-center">
         {stats.map((item, i) => (
           <div
             key={i}
